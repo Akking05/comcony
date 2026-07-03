@@ -1,402 +1,134 @@
 <!DOCTYPE html>
-
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>SERIES-X DRONE | KAE Engineering</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&amp;family=Inter:wght@400;600&amp;family=Space+Mono&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary-fixed": "#62f9ee",
-                        "surface-container": "#1f1f24",
-                        "outline-variant": "#3c4948",
-                        "inverse-surface": "#e3e2e8",
-                        "inverse-on-surface": "#2f3035",
-                        "tertiary-fixed": "#dae3f2",
-                        "inverse-primary": "#006a64",
-                        "surface-container-high": "#292a2e",
-                        "on-primary-fixed": "#00201e",
-                        "surface-tint": "#3cdcd1",
-                        "tertiary-container": "#dae3f2",
-                        "primary-container": "#62f9ee",
-                        "on-surface": "#e3e2e8",
-                        "surface-dim": "#121317",
-                        "on-error": "#690005",
-                        "surface-bright": "#38393e",
-                        "on-background": "#e3e2e8",
-                        "error": "#ffb4ab",
-                        "secondary-fixed": "#98f2ed",
-                        "surface-variant": "#343439",
-                        "on-tertiary-fixed-variant": "#3e4753",
-                        "on-tertiary-container": "#5c6572",
-                        "primary": "#ffffff",
-                        "on-error-container": "#ffdad6",
-                        "on-surface-variant": "#bacac7",
-                        "outline": "#859491",
-                        "secondary-fixed-dim": "#7bd6d1",
-                        "background": "#121317",
-                        "on-tertiary": "#28313c",
-                        "primary-fixed-dim": "#3cdcd1",
-                        "surface": "#121317",
-                        "secondary": "#7bd6d1",
-                        "on-primary": "#003734",
-                        "tertiary-fixed-dim": "#bec7d6",
-                        "tertiary": "#ffffff",
-                        "on-secondary-fixed": "#00201f",
-                        "surface-container-highest": "#343439",
-                        "on-primary-fixed-variant": "#00504b",
-                        "surface-container-low": "#1a1b20",
-                        "on-secondary-fixed-variant": "#00504d",
-                        "on-secondary-container": "#a1fcf7",
-                        "on-tertiary-fixed": "#131c27",
-                        "on-primary-container": "#00716b",
-                        "secondary-container": "#007774",
-                        "error-container": "#93000a",
-                        "surface-container-lowest": "#0d0e12",
-                        "on-secondary": "#003735"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    "spacing": {
-                        "margin-desktop": "64px",
-                        "gutter": "24px",
-                        "margin-mobile": "20px",
-                        "container-max": "1440px",
-                        "base": "8px"
-                    },
-                    "fontFamily": {
-                        "body-md": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "label-mono": ["Space Mono"],
-                        "headline-md": ["Montserrat"],
-                        "headline-lg": ["Montserrat"],
-                        "headline-lg-mobile": ["Montserrat"],
-                        "button-text": ["Montserrat"]
-                    },
-                    "fontSize": {
-                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                        "label-mono": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "400"}],
-                        "headline-md": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
-                        "headline-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
-                        "button-text": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}]
-                    }
-                },
-            },
-        }
-    </script>
-<style>
-        body {
-            background-color: #121317;
-            color: #e3e2e8;
-            background-image: 
-                linear-gradient(rgba(98, 249, 238, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(98, 249, 238, 0.03) 1px, transparent 1px);
-            background-size: 32px 32px;
-        }
-        .glass-panel {
-            background: rgba(31, 31, 36, 0.4);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(98, 249, 238, 0.1);
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
-        }
-        .neon-glow {
-            box-shadow: 0 0 15px rgba(98, 249, 238, 0.3);
-        }
-        .scanline {
-            width: 100%;
-            height: 2px;
-            background: rgba(98, 249, 238, 0.1);
-            position: absolute;
-            animation: scan 8s linear infinite;
-            z-index: 10;
-        }
-        @keyframes scan {
-            from { top: 0%; }
-            to { top: 100%; }
-        }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-    </style>
+<html class="dark" lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>KAE Engineering | Детали товара</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="tailwind-config.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500&amp;family=Geist:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
 </head>
-<body class="font-body-md overflow-x-hidden">
-<!-- TopAppBar -->
-<header class="fixed top-0 w-full z-50 bg-surface/60 dark:bg-surface/60 backdrop-blur-xl border-b border-outline-variant/30 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16">
-<div class="flex items-center gap-4">
-<span class="material-symbols-outlined text-primary-fixed cursor-pointer active:scale-95 transition-transform">menu</span>
-<span class="font-headline-md text-headline-md tracking-tighter text-primary-fixed">ASTANA_DRONE_V.1</span>
-</div>
-<div class="hidden md:flex gap-8 items-center">
-<nav class="flex gap-6 font-label-mono text-label-mono">
-<a class="text-primary-fixed hover:text-primary-fixed transition-colors duration-200" href="#">HANGAR</a>
-<a class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-200" href="#">MISSIONS</a>
-<a class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-200" href="#">INTEL</a>
-<a class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-200" href="#">SPECIFICATIONS</a>
-</nav>
-<span class="material-symbols-outlined text-primary-fixed cursor-pointer active:scale-95 transition-transform">shopping_cart</span>
-</div>
-</header>
-<main class="pt-16 pb-24 md:pb-0">
-<!-- Hero Section -->
-<section class="relative min-h-[80vh] flex flex-col justify-end items-start px-margin-mobile md:px-margin-desktop py-20 overflow-hidden">
-<div class="absolute inset-0 z-0">
-<img alt="Hero Background" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjq_djkBWBF_D1nrlDg04MVgFsPOm63dkVPOWwnVp0-nCcztu-7V0H1gNUI6TF42IW-X8To9dtuvmFxa1v-KF70LD2CqDVmYFcPsV6RQMUTn9vMkazmL-ezoM7Q-QcK-8cnYYKkwj-n24ycJ2DULWuedGo6acWxr9kE2QNyUJA0vR2HcH_K-A2YKbLgZkJk3aPv2ZXwfxFzqg7_QclaVVjKc2bQi289egts64ipbaaL0EXF4ozqE8EwtWNhcqIEBUztDn4hlhW1LE"/>
-<div class="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
-<div class="scanline"></div>
-</div>
-<div class="relative z-20 max-w-4xl">
-<div class="flex items-center gap-2 mb-4">
-<div class="w-12 h-[1px] bg-primary-fixed"></div>
-<span class="font-label-mono text-label-mono text-primary-fixed uppercase">Tactical Unmanned Aerial Systems</span>
-</div>
-<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-white mb-6 tracking-tight">
-                    SERIES-X DRONE
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+    <div class="fixed inset-0 tech-grid pointer-events-none z-0"></div>
+    <div class="scanline pointer-events-none z-1"></div>
+    <header class="fixed top-0 w-full z-50 bg-surface/30 backdrop-blur-xl border-b border-white/10">
+        <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+            <div class="flex items-center gap-4">
+                <img alt="KAE Engineering" class="h-8 md:h-10 w-auto" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAABQCAYAAAAnSfh8AAAJSklEQVR4AexdTY8URRh+a4GN4qoYE1yNnvSAX+zevCsXv4LxYEgIIbAQNfEgnjQbPagx3iDxYGJ2UTeRLEuA3QTCAX8Ch91ETvwA1xi/QGWzIbbvszO1zM7U9PTM1FdXvZN6pqaru9966+l66GeHnu4RkpcwIAzUlgERcG0PnSQuDBCJgGUWCAM1ZkAEXOODJ6kLAzkLWI6+MFB7BkTAtT+EMoCcGUhDwNeLpwjI+UjK2LNkwI6AfyrGaaWYY6w2MUdo80HpSvE13aEbG1guvvLRZcg+iqKYYfzBuM44HjIX133z+MYZc4xVRuwFOSLXcde8tMa3I+A7dIqIDjEeaeIQCwptvOiwLBenOfo7jEZR9B4tF582FtJ75xn8JY9qirGL8QzjG26b5rrfUpftMYf0vIo9Z8x95IqcveVqR8CKXu3IWNG+jjZbDUWhWKizpOiIIeRHdK3YaWivdRML9R4ewAlGe5lurmtvT2G5c17FPyp3894wdjsCJhozxH7Y0DZ8E8S7QjOk6KgxmKLtNEbbjOvq3fgGpz/KaC/3csN+RorFNK9SHOfAYxoZeM9QO64Qzrxm8TZymqU96lbjY1Lvb5WMpmxdyW6yygEDVx3E7BqyPgLGmXe5gHhNtrkxwIJO04Q61lhI571pkcvs5MvNbdIZtLuRuIr8CweeY7zP8FbqIWCId4W622bQBfFOKnzBg6XU0M0+63GmbKP1GDdrFedrnNM6zICQN3N1/SF+AYt4MQeqWOQq2yCWICEG4hawiJea1rjMPuvpKDZaM5FRHa+ARbx6Gvayz3q7rGy0HnTudZ8C9kSXiLeV6H6scT/btvYhn2vKQHwCFvFuTqU+7LPeR2y0ZiKTOi4Bi3jbpx0u0DBdvNG+nV6GjX5dL0idPgPxCFjEa5ptRkt8/vx5unjxoml7tB3AmyAPBuIQcC3E63dCsH3G2fRNU6/nzp0jwLSO28RGMwm5lPACFvF2m2uwzx3r1tfXaWlpaeMMjM8dGxBB+MZ9DdtKU80ZCCtgEW/Z9DHa50uXLtHa2toGLl++3G1/477dNpb2+jIQTsAi3q6zhu0zfjpovHij1Tq3fm4LJja6jZBUF8MIWMTbaz4ZL96AZV5cXNzcF19koW2z4e4Hyzb6bmD5FBcD/gUs4q0yA4wWWNtnHQBWWmy0ZiPP2q+ARbw9Z1lV+6wDiY3WTORZ+xOwiLfqDKtkn3UwsdGaiTxrPwIW8fYzuyrZZx1QbLRmwlUdd1z3AhbxVp4B/dpnHVhstGYiv9qtgEW8/c6ovuyzDi42WjORX+1WwCs9b0A3Q5PJ3gaHBnj1ZZ91fLHRmon8arcCNt+3ucFysXEDuqSfLNAYaLX3Qe2zji42WjORV+1WwN24hHjlzNvOzkD2WQcRG62ZyKv2L2ARb7cZNpB91sHERmsm8qp9C3iW5MxL7a9h7bOOJzZaM5FP7U/AOPMmeNN1S1NlKPusc8jFRvM/eD5LkKcO6mPaq/Yl4Py+be7F/Nb1Q9lnHUpstGbCaq2fOnjSalRLwYYX8I3igR65zNCEkm+bu5DEp5JKPx3ssntHs9joDkpsNbxkK5DNOMML+A7tKE2ooJul62WlFfusaczFRuvxeqyVx74qdzW8gJ9Wv5X2pugDWilmSrfJe6UV+6wpFButmbBe/2g9ooWAwwu4WhJTIuJOomzbZ91DcButE0mjxsPK5ngoXp86yP1VKr4EjGRExGBhK6zaZx06dRut/L6CPHVQH8tetU8BI5cpWi5m8UGwwYBV+7wRkd/ERjMJmRTfAiZSdFRETKVPHSyxwFT1VRJDbnhXlcQabOdfwCBFRAwWnNhnBAZSt9EYY5TwnJRrAX/fdTwQcabfTvOXV+PMi/FLkdHRUbp9+zbO0EMBMRCL+zGVE80cTOukrUYMuBXwXjpCuISyOyG5/k18iil5gRGqoG/kEKp/6dcSA24FrFRBE3SMykSMM3F+X2wZb9pu6ZhWDbOv6oayXbwMuBUwxi0iBgvtWGtvCLD8X4A+pUvLDLgXMBKuKGLK4EzMf3uOMSV4cgJXQctOzuW+oBlI50Mz4EfASFNEDBaA1/gtBuEgh1c4Fyk1ZsCfgEGSiBgsGC/euHDhAimlnAD/pYSODThgaJOmGjHgV8AgJmMRs2Xt+tPBhYUFsOMEclGHE1qjCOpfwBh2viI2XryB/7NdWloCM06AM/D6+ropNv4W329aIW31YCCMgMFNniI22ucrV64Qrl8GLS6A2PIUQxfMho8ZTsAYe0YiLrPPJRYXLFlBSR9ybbQVhsMECStgjDkfERvtM6zt4uIimHAKsdFO6Q0WPLyAMfQ8RGy0z+0P7QYdLhCzjXYx3lxixiFgsJ2wiEPbZ9ALiI0GC2khHgGD13RFHNQ+g1pAbDRYSAtxCRjcpinioPYZtAJio8FCWohPwOA3IRHHYp9BKyA2GizEg2EziVPAGFU6Io7CPoNSQGw0WEgH8QoYHKch4ijsM+gExEaDhXQQt4DBc41FHJt9Bp2A2GiwkAbiFzB4rq+Io7LPoBKou43mfxhjLEGeYlgPAWPWdYoYrVvRuD3PZ1sbgy5FZZ81E2KjNRNW6yBPMayPgMF1FRETfUjXip3YPAIY7zu14PCng1XHfPbs2W6bvththbRXYsDrUwxtCdj0gDNTWyUGSjfqJWJF22mMtpXG8LCSPR5++3u/qav5+XncVkfxumBo5sApdJRdHS3hGtzMIbfjGXEbfmt0O50VZHpy29WtXVlcgogn1RQV9K0h6iztUbcM7V6blFK4cd28odPPed0/hnavTc0cvjB0+oOhLVSTaV6FyqVqv+7mvSEDOwLeTrhJ+Rkq6FciajzNbYTQRk5fk+oo4fGlBf3L/fzNOEET6hjXsZS3ORGIZJXrPxkzSqmPuR62WNmfc5nmQN8xbjJ+ZuD7g3e5jqVgDp3hZDCvuIq6NOY9EXImXy87An5OrbJwDtKk2s31OOMwPa8wIHL+2qtO0g56gsboce43qpuVs0BuMqYZjzIeYhx3zkefHXBORxgPMh5jfMII7l70EDiXVcZBxm5G7CXIUwxHNFm1rp9Vv9OT6q9aj0GSFwYGYCANAQ8wcNlFGEiBARFwCkcxrzHIaFsYEAG3kCEfhYG6MSACrtsRk3yFgRYGRMAtZMhHYaBuDPwPAAD//1PivN4AAAAGSURBVAMA+X+y7G3uf0cAAAAASUVORK5CYII=" />
+                <span class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">KAE</span>
+            </div>
+            <nav class="hidden lg:flex items-center gap-8">
+                <a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300" href="index.html">Главная</a>
+                <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="products.html">Продукция</a>
+                <a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300" href="about.html">О компании</a>
+                <a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300" href="contacts.html">Контакты</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-sm font-label-md text-label-md font-bold hover:scale-95 transition-transform duration-200 primary-glow">
+                    Get in Touch
+                </button>
+                <button id="menu-toggle" class="lg:hidden text-primary">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-drawer" class="fixed inset-0 z-[100] closed pointer-events-none flex justify-end">
+        <div id="drawer-overlay" class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+        <div class="relative w-64 md:w-80 bg-surface border-l border-white/10 p-6 flex flex-col gap-8 h-full drawer-content bg-surface/90 backdrop-blur-xl pointer-events-auto">
+            <div class="flex justify-between items-center">
+                <span class="font-headline-md text-primary font-bold">KAE</span>
+                <button id="menu-close" class="text-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-6 mt-8">
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="index.html">Главная</a>
+                <a class="text-primary font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="products.html">Продукция</a>
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="about.html">О компании</a>
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="contacts.html">Контакты</a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="pt-[120px] pb-stack-xl max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
+        <!-- Кнопка назад -->
+        <a href="products.html" class="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-8 group reveal-element">
+            <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+            <span class="font-label-md text-label-md uppercase tracking-widest">Назад к каталогу</span>
+        </a>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
+            <!-- Изображение товара -->
+            <div class="glass-card p-2 rounded-lg reveal-element">
+                <div class="aspect-[4/3] w-full overflow-hidden rounded relative">
+                    <img id="product-image" alt="Product Image" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD6x6uTf6vNd4PCzVVmnY_29gRbXsolGYsuBQ1T8csAICDEYj7zaW0lonjfDgPbKdxNmfdOd_x-YrWsIS_dbw8JqxqNazeBr_wBWc1iMGNy3D033Rble_99l1JjNV6DEjv7BtkC4oKWlg3HtKsyb6nll9_JhYw8wbFqXaP13ICPSaoHsJdGCu57PlxjFDRyhYV8uiXdA4ESTKKHaEDOkXMHGagiGPs2s_BY3LUueevZi1eskS6dbKAhDxcIzLtTLVj71FcXN2IGI4" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"></div>
+                </div>
+            </div>
+
+            <!-- Информация о товаре -->
+            <div class="flex flex-col justify-center h-full reveal-element stagger-1">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="active-glow"></div>
+                    <span id="product-category" class="font-label-md text-label-md text-primary tracking-[0.2em] uppercase px-3 py-1 border border-primary/30 rounded-full bg-primary/5">
+                        Беспилотные системы
+                    </span>
+                </div>
+                
+                <h1 id="product-title" class="font-display-lg text-headline-lg-mobile md:text-display-lg text-white mb-6">
+                    Series-X
                 </h1>
-<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-10 leading-relaxed">
-                    Designed for high-intensity reconnaissance and rapid deployment. The Series-X represents the pinnacle of KAE Engineering's autonomous flight research.
-                </p>
-<div class="flex flex-wrap gap-4">
-<button class="bg-primary-fixed text-on-primary-fixed px-8 py-4 font-button-text text-button-text flex items-center gap-2 neon-glow hover:scale-105 transition-all duration-300">
-<span class="material-symbols-outlined">rocket_launch</span>
-                        DEPLOY UNIT
-                    </button>
-<button class="border border-outline-variant text-white px-8 py-4 font-button-text text-button-text hover:bg-surface-variant/30 transition-all duration-300">
-                        TECHNICAL DOSSIER
-                    </button>
-</div>
-</div>
-<!-- HUD Elements -->
-<div class="absolute top-24 right-margin-desktop hidden lg:block glass-panel p-6 border-l-4 border-l-primary-fixed">
-<div class="font-label-mono text-[10px] text-on-surface-variant mb-2">TELEMETRY_FEED_01</div>
-<div class="space-y-3">
-<div class="flex justify-between gap-12">
-<span class="text-on-surface-variant/60">LAT:</span>
-<span class="text-primary-fixed">51.1694° N</span>
-</div>
-<div class="flex justify-between gap-12">
-<span class="text-on-surface-variant/60">LNG:</span>
-<span class="text-primary-fixed">71.4491° E</span>
-</div>
-<div class="flex justify-between gap-12">
-<span class="text-on-surface-variant/60">ALT:</span>
-<span class="text-primary-fixed">428.5 m</span>
-</div>
-</div>
-</div>
-</section>
-<!-- Features Bento Grid -->
-<section class="px-margin-mobile md:px-margin-desktop py-24 space-y-12">
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-<div>
-<h2 class="font-headline-md text-headline-md text-white mb-2">SYSTEM_CAPABILITIES</h2>
-<p class="font-body-md text-on-surface-variant">Core technologies powering the Series-X ecosystem.</p>
-</div>
-<div class="font-label-mono text-label-mono text-primary-fixed bg-primary-fixed/10 px-3 py-1">
-                    STATUS: OPTIMAL
+                
+                <div class="w-16 h-px bg-primary/50 mb-8 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-primary animate-pulse"></div>
                 </div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-<!-- Precision Avionics -->
-<div class="glass-panel p-8 group hover:border-primary-fixed/40 transition-all duration-500">
-<div class="w-12 h-12 rounded-full border border-primary-fixed/30 flex items-center justify-center mb-6 text-primary-fixed group-hover:bg-primary-fixed group-hover:text-black transition-all">
-<span class="material-symbols-outlined">settings_input_component</span>
-</div>
-<h3 class="font-headline-md text-[24px] text-white mb-4">Precision Avionics</h3>
-<p class="font-body-md text-on-surface-variant mb-6">
-                        Six-axis stabilization coupled with redundant flight controllers ensures operational stability in extreme meteorological conditions.
-                    </p>
-<div class="font-label-mono text-[10px] text-on-surface-variant/40 mt-auto">AV_CORE_VERSION_4.2.0</div>
-</div>
-<!-- Stealth Ops -->
-<div class="glass-panel p-8 group hover:border-primary-fixed/40 transition-all duration-500">
-<div class="w-12 h-12 rounded-full border border-primary-fixed/30 flex items-center justify-center mb-6 text-primary-fixed group-hover:bg-primary-fixed group-hover:text-black transition-all">
-<span class="material-symbols-outlined">visibility_off</span>
-</div>
-<h3 class="font-headline-md text-[24px] text-white mb-4">Stealth Ops</h3>
-<p class="font-body-md text-on-surface-variant mb-6">
-                        Acoustic dampening rotators and composite carbon-fiber frame minimize both radar signature and audible footprint during night sorties.
-                    </p>
-<div class="font-label-mono text-[10px] text-on-surface-variant/40 mt-auto">SIG_REDUCTION_88%</div>
-</div>
-<!-- AI Pathfinding -->
-<div class="glass-panel p-8 group hover:border-primary-fixed/40 transition-all duration-500">
-<div class="w-12 h-12 rounded-full border border-primary-fixed/30 flex items-center justify-center mb-6 text-primary-fixed group-hover:bg-primary-fixed group-hover:text-black transition-all">
-<span class="material-symbols-outlined">psychology</span>
-</div>
-<h3 class="font-headline-md text-[24px] text-white mb-4">AI Pathfinding</h3>
-<p class="font-body-md text-on-surface-variant mb-6">
-                        Integrated neural processor for real-time obstacle avoidance and autonomous re-routing in GPS-denied environments.
-                    </p>
-<div class="font-label-mono text-[10px] text-on-surface-variant/40 mt-auto">NP_CHIP_X2_ENABLED</div>
-</div>
-</div>
-</section>
-<!-- Technical Specs Section -->
-<section class="px-margin-mobile md:px-margin-desktop py-24 bg-surface-container-low/30">
-<div class="max-w-container-max mx-auto">
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-<div class="relative order-2 lg:order-1">
-<div class="aspect-square glass-panel relative overflow-hidden flex items-center justify-center border-dashed border-2 border-outline-variant">
-<div class="absolute inset-0 bg-cover bg-center opacity-40" data-alt="A detailed orthographic view of a futuristic carbon-fiber drone, showing internal skeletal structures and glowing blue circuitry. The style is technical blueprint drawing meets high-end industrial design visualization. Background is a dark engineering lab with grid lines and diagnostic readouts." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQDdURyei7E9MqqnbgdeJXJk4H70I22L4W8QXaenU1oU3GntqM2AcY63u23RoB3WE9lRVaAr-30CA1JTYelNc6g4cFv66UzbfnIsV5vwVS02ElETEYCDMKZY02eaM6TZd_1trtxWJPNV2KuGICU3mUirG5aYtgNVdbnqfFgAsNJMghfhF17lD5cQB0DEN1GA4wzGZNsLp750BWJtsiMD9HPG1pzbzQMBpztoqcCYeB4sXh5bO39uqvqxS_wi27pH6wAi9txiKrEOY')"></div>
-<div class="relative z-10 p-10 text-center">
-<span class="material-symbols-outlined text-primary-fixed text-6xl mb-4">query_stats</span>
-<div class="font-label-mono text-label-mono text-white">HARDWARE_DIAGNOSTICS</div>
-</div>
-<!-- Corner markers -->
-<div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-primary-fixed"></div>
-<div class="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-primary-fixed"></div>
-<div class="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-primary-fixed"></div>
-<div class="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-primary-fixed"></div>
-</div>
-</div>
-<div class="order-1 lg:order-2">
-<h2 class="font-headline-md text-headline-md text-white mb-8">TECHNICAL_SPECIFICATIONS</h2>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-<div class="glass-panel p-6 border-l-2 border-l-primary-fixed">
-<div class="font-label-mono text-label-mono text-on-surface-variant/60 mb-1">MAX ALTITUDE</div>
-<div class="font-headline-md text-[28px] text-white">5000<span class="text-primary-fixed text-[18px] ml-1">m</span></div>
-</div>
-<div class="glass-panel p-6 border-l-2 border-l-primary-fixed">
-<div class="font-label-mono text-label-mono text-on-surface-variant/60 mb-1">PAYLOAD CAPACITY</div>
-<div class="font-headline-md text-[28px] text-white">15<span class="text-primary-fixed text-[18px] ml-1">kg</span></div>
-</div>
-<div class="glass-panel p-6 border-l-2 border-l-primary-fixed">
-<div class="font-label-mono text-label-mono text-on-surface-variant/60 mb-1">OPERATIONAL RANGE</div>
-<div class="font-headline-md text-[28px] text-white">120<span class="text-primary-fixed text-[18px] ml-1">km</span></div>
-</div>
-<div class="glass-panel p-6 border-l-2 border-l-primary-fixed">
-<div class="font-label-mono text-label-mono text-on-surface-variant/60 mb-1">MISSION ENDURANCE</div>
-<div class="font-headline-md text-[28px] text-white">08<span class="text-primary-fixed text-[18px] ml-1">h</span></div>
-</div>
-</div>
-<div class="mt-8 space-y-4">
-<div class="flex items-center justify-between py-2 border-b border-outline-variant/30">
-<span class="font-label-mono text-on-surface-variant">PROPULSION</span>
-<span class="font-label-mono text-white">QUAD-ROTOR BRUSHLESS</span>
-</div>
-<div class="flex items-center justify-between py-2 border-b border-outline-variant/30">
-<span class="font-label-mono text-on-surface-variant">CHASSIS</span>
-<span class="font-label-mono text-white">T800 CARBON COMPOSITE</span>
-</div>
-<div class="flex items-center justify-between py-2 border-b border-outline-variant/30">
-<span class="font-label-mono text-on-surface-variant">COMM LINK</span>
-<span class="font-label-mono text-white">ENCRYPTED SAT-LINK V2</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Pricing / CTA Section -->
-<section class="px-margin-mobile md:px-margin-desktop py-32 relative overflow-hidden">
-<div class="absolute inset-0 z-0 opacity-10">
-<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-primary-fixed rounded-full animate-pulse"></div>
-</div>
-<div class="relative z-10 max-w-4xl mx-auto glass-panel p-12 md:p-20 text-center">
-<div class="inline-block px-4 py-1 bg-primary-fixed/10 border border-primary-fixed/30 text-primary-fixed font-label-mono text-label-mono mb-8">
-                    ENTERPRISE ACQUISITION
+
+                <p id="product-description" class="font-body-lg text-body-lg text-on-surface-variant mb-10 leading-relaxed">
+                    Автономные решения для разведки и логистики. Designed for high-intensity reconnaissance and rapid deployment. The Series-X represents the pinnacle of autonomous flight research, engineered for complex industrial and tactical applications.
+                </p>
+
+                <!-- Основные характеристики (Placeholder для JS) -->
+                <div id="product-specs" class="grid grid-cols-2 gap-6 mb-12">
+                    <div class="border-l border-white/10 pl-4">
+                        <div class="text-[10px] text-outline tracking-widest uppercase mb-1">Max Altitude</div>
+                        <div class="font-label-md text-white">5000 m</div>
+                    </div>
+                    <div class="border-l border-white/10 pl-4">
+                        <div class="text-[10px] text-outline tracking-widest uppercase mb-1">Payload</div>
+                        <div class="font-label-md text-white">15 kg</div>
+                    </div>
                 </div>
-<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-white mb-6">READY FOR DEPLOYMENT?</h2>
-<p class="font-body-lg text-on-surface-variant mb-12 max-w-2xl mx-auto">
-                    KAE Engineering provides custom configurations for government and private enterprise. Pricing varies based on payload requirements and tactical software packages.
-                </p>
-<div class="flex flex-col sm:flex-row gap-6 justify-center">
-<button class="bg-[#62f9ee] text-black px-12 py-5 font-button-text text-button-text tracking-widest hover:brightness-110 transition-all active:scale-95 shadow-[0_0_25px_rgba(98,249,238,0.3)]">
-                        CONTACT FOR PRICING
+
+                <div class="flex flex-wrap gap-4">
+                    <button class="bg-primary-container text-on-primary-container px-8 py-4 rounded-sm font-label-md text-label-md font-bold uppercase tracking-widest hover:scale-95 transition-transform duration-200 primary-glow">
+                        Запросить цену
                     </button>
-<button class="border border-outline-variant text-white px-12 py-5 font-button-text text-button-text tracking-widest hover:bg-surface-variant/50 transition-all">
-                        REQUEST DEMO UNIT
+                    <button class="glass-panel text-white px-8 py-4 rounded-sm font-label-md text-label-md font-bold uppercase tracking-widest border border-outline hover:bg-white/5 transition-all">
+                        Документация
                     </button>
-</div>
-</div>
-</section>
-</main>
-<!-- Navigation Footer (BottomNavBar) -->
-<footer class="fixed bottom-0 left-0 w-full h-20 bg-surface-container-low/40 dark:bg-surface-container-low/40 backdrop-blur-lg border-t border-outline-variant/30 shadow-[0px_0px_15px_rgba(60,220,209,0.15)] flex justify-around items-center z-50 md:hidden">
-<div class="flex flex-col items-center justify-center text-primary-fixed drop-shadow-[0_0_8px_rgba(98,249,238,0.5)] active:scale-90 transition-all">
-<span class="material-symbols-outlined">rocket_launch</span>
-<span class="font-label-mono text-label-mono">Deploy</span>
-</div>
-<div class="flex flex-col items-center justify-center text-on-surface-variant/60 active:scale-90 transition-all">
-<span class="material-symbols-outlined">monitor_heart</span>
-<span class="font-label-mono text-label-mono">Status</span>
-</div>
-<div class="flex flex-col items-center justify-center text-on-surface-variant/60 active:scale-90 transition-all">
-<span class="material-symbols-outlined">database</span>
-<span class="font-label-mono text-label-mono">Intel</span>
-</div>
-<div class="flex flex-col items-center justify-center text-on-surface-variant/60 active:scale-90 transition-all">
-<span class="material-symbols-outlined">memory</span>
-<span class="font-label-mono text-label-mono">Profile</span>
-</div>
-</footer>
-<!-- Global Footer -->
-<footer class="hidden md:block py-16 px-margin-desktop bg-surface-container-lowest border-t border-outline-variant/10">
-<div class="flex flex-col md:flex-row justify-between items-start gap-12">
-<div>
-<div class="font-headline-md text-headline-md text-primary-fixed tracking-tighter mb-4">ASTANA_DRONE_V.1</div>
-<p class="font-body-md text-on-surface-variant max-w-sm">
-                    Advanced drone systems for the future of logistics and security. Built in the heart of Astana's tech corridor.
-                </p>
-</div>
-<div class="grid grid-cols-2 md:grid-cols-3 gap-16">
-<div>
-<h4 class="font-label-mono text-white mb-6">SYSTEMS</h4>
-<ul class="space-y-3 font-label-mono text-[11px] text-on-surface-variant/70">
-<li><a class="hover:text-primary-fixed transition-colors" href="#">HANGAR_CORE</a></li>
-<li><a class="hover:text-primary-fixed transition-colors" href="#">TELEMETRY_LINK</a></li>
-<li><a class="hover:text-primary-fixed transition-colors" href="#">NAV_AI_V3</a></li>
-</ul>
-</div>
-<div>
-<h4 class="font-label-mono text-white mb-6">RESOURCES</h4>
-<ul class="space-y-3 font-label-mono text-[11px] text-on-surface-variant/70">
-<li><a class="hover:text-primary-fixed transition-colors" href="#">API_DOCS</a></li>
-<li><a class="hover:text-primary-fixed transition-colors" href="#">OS_DOWNLOADS</a></li>
-<li><a class="hover:text-primary-fixed transition-colors" href="#">LICENSE_KEYS</a></li>
-</ul>
-</div>
-<div>
-<h4 class="font-label-mono text-white mb-6">COMPANY</h4>
-<ul class="space-y-3 font-label-mono text-[11px] text-on-surface-variant/70">
-<li><a class="hover:text-primary-fixed transition-colors" href="#">KAE_ENGINEERING</a></li>
-<li><a class="hover:text-primary-fixed transition-colors" href="#">CAREERS</a></li>
-<li><a class="hover:text-primary-fixed transition-colors" href="#">PRESS_KIT</a></li>
-</ul>
-</div>
-</div>
-</div>
-<div class="mt-20 pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center font-label-mono text-[10px] text-on-surface-variant/40">
-<div>© 2024 KAE ENGINEERING. ALL RIGHTS RESERVED.</div>
-<div class="flex gap-8 mt-4 md:mt-0">
-<span>ENCRYPTED_SESSION_STABLE</span>
-<span>SYSTEM_TIME: 14:22:09_AST</span>
-</div>
-</div>
-</footer>
-<script>
-        // Micro-interaction for hover effects on spec cards
-        document.querySelectorAll('.glass-panel').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            });
-        });
-    </script>
-</body></html>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="relative z-10 w-full py-stack-lg bg-surface-container-lowest border-t border-outline-variant mt-stack-xl reveal-element">
+        <div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop gap-stack-md max-w-container-max mx-auto">
+            <div class="flex flex-col items-center md:items-start gap-2">
+                <div class="font-headline-md text-headline-md font-black text-on-surface">KAE Engineering</div>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 KAE Engineering. READY FOR TOMORROW.</p>
+            </div>
+            <div class="flex gap-8">
+                <a class="text-on-surface-variant font-label-md hover:text-secondary transition-opacity hover:opacity-80" href="#">LinkedIn</a>
+                <a class="text-on-surface-variant font-label-md hover:text-secondary transition-opacity hover:opacity-80" href="#">Twitter</a>
+                <a class="text-on-surface-variant font-label-md hover:text-secondary transition-opacity hover:opacity-80" href="#">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
