@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>KAE Engineering | О компании</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="tailwind-config.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:wght@400;500&family=Geist:wght@400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+    <div class="fixed inset-0 tech-grid pointer-events-none z-0 opacity-20"></div>
+    <div class="scanline pointer-events-none z-1"></div>
+    <header class="fixed top-0 w-full z-50 bg-surface/30 backdrop-blur-xl border-b border-white/10">
+        <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+            <div class="flex items-center gap-4">
+                <img alt="KAE Engineering" class="h-8 md:h-10 w-auto" src="data:image/png;base64,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" />
+                <span class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">KAE</span>
+            </div>
+            <nav class="hidden lg:flex items-center gap-8">
+                <a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300" href="index.html">Главная</a>
+                <a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300" href="products.html">Продукция</a>
+                <a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="about.html">О компании</a>
+                <a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300" href="contacts.html">Контакты</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-sm font-label-md text-label-md font-bold hover:scale-95 transition-transform duration-200 primary-glow">
+                    Get in Touch
+                </button>
+                <button id="menu-toggle" class="lg:hidden text-primary">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-drawer" class="fixed inset-0 z-[100] closed pointer-events-none flex justify-end">
+        <div id="drawer-overlay" class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div class="relative w-64 md:w-80 bg-surface border-l border-white/10 p-6 flex flex-col gap-8 h-full drawer-content bg-surface/90 backdrop-blur-xl">
+            <div class="flex justify-between items-center">
+                <span class="font-headline-md text-primary font-bold">KAE</span>
+                <button id="menu-close" class="text-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-6 mt-8">
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="index.html">Главная</a>
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="products.html">Продукция</a>
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="about.html">О компании</a>
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="contacts.html">Контакты</a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="pt-24">
+        <!-- Hero Section -->
+        <section class="py-16 md:py-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                <div class="md:col-span-5 text-center md:text-left reveal stagger-1">
+                    <span class="font-label-mono text-label-mono text-primary-fixed uppercase tracking-widest block mb-4">Инженерное будущее Казахстана</span>
+                    <h1 class="font-headline-lg-mobile md:font-display-md text-white mb-6 uppercase">О компании</h1>
+                    <div class="w-16 h-[2px] bg-primary-fixed mx-auto md:mx-0 mb-8"></div>
+                </div>
+                <div class="md:col-span-7 space-y-6 reveal stagger-2">
+                    <p class="font-body-lg text-body-lg text-on-surface">
+                        KAE Engineering занимает центральное место в технологической модернизации Казахстана. Наша деятельность охватывает проектирование сложных систем, разработку программно-аппаратных комплексов и интеграцию интеллектуальных решений для индустриального сектора.
+                    </p>
+                    <p class="font-body-md text-body-md text-on-surface-variant">
+                        Будучи резидентом инновационного кластера столицы, мы не просто производим оборудование — мы формируем стандарты инженерии нового поколения. Наша лаборатория в Астане является колыбелью для решений в области автоматизации, систем безопасности и высокоточного приборостроения.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 mt-12">
+                        <div class="glass-panel p-6 border-l-4 border-l-primary-fixed">
+                            <div class="font-label-mono text-[32px] text-primary-fixed font-bold mb-1">250+</div>
+                            <div class="font-label-mono text-[10px] text-outline uppercase">Инженеров высшей категории</div>
+                        </div>
+                        <div class="glass-panel p-6 border-l-4 border-l-secondary">
+                            <div class="font-label-mono text-[32px] text-secondary font-bold mb-1">15+</div>
+                            <div class="font-label-mono text-[10px] text-outline uppercase">Запатентованных технологий</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission Section -->
+        <section class="py-16 md:py-24 bg-surface-container-lowest relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full scanline opacity-20 pointer-events-none"></div>
+            <div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto relative z-10">
+                <div class="text-center mb-16 reveal">
+                    <span class="font-label-mono text-label-mono text-primary-fixed uppercase tracking-widest">Стратегия</span>
+                    <h2 class="font-headline-md text-headline-md text-white mt-4 uppercase">Миссия и Видение</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Mission Card 1 -->
+                    <div class="glass-panel p-8 relative group hover:border-primary-fixed/50 transition-all duration-500 reveal stagger-1">
+                        <div class="absolute -top-4 -right-4 font-label-mono text-outline-variant/20 text-6xl font-bold italic">01</div>
+                        <div class="w-12 h-12 flex items-center justify-center bg-primary-fixed/10 border border-primary-fixed/30 mb-6 text-primary-fixed">
+                            <span class="material-symbols-outlined">architecture</span>
+                        </div>
+                        <h3 class="font-headline-md text-[24px] text-white mb-4">Инновации</h3>
+                        <p class="font-body-md text-on-surface-variant">Внедрение передовых инженерных решений, которые определяют конкурентоспособность отечественной промышленности на мировом рынке.</p>
+                    </div>
+                    <!-- Mission Card 2 -->
+                    <div class="glass-panel p-8 relative group hover:border-secondary/50 transition-all duration-500 reveal stagger-2">
+                        <div class="absolute -top-4 -right-4 font-label-mono text-outline-variant/20 text-6xl font-bold italic">02</div>
+                        <div class="w-12 h-12 flex items-center justify-center bg-secondary/10 border border-secondary/30 mb-6 text-secondary">
+                            <span class="material-symbols-outlined">diversity_3</span>
+                        </div>
+                        <h3 class="font-headline-md text-[24px] text-white mb-4">Развитие талантов</h3>
+                        <p class="font-body-md text-on-surface-variant">Создание уникальной среды для роста инженерных кадров Казахстана через трансфер технологий и практический опыт.</p>
+                    </div>
+                    <!-- Mission Card 3 -->
+                    <div class="glass-panel p-8 relative group hover:border-primary-fixed/50 transition-all duration-500 reveal stagger-3">
+                        <div class="absolute -top-4 -right-4 font-label-mono text-outline-variant/20 text-6xl font-bold italic">03</div>
+                        <div class="w-12 h-12 flex items-center justify-center bg-primary-fixed/10 border border-primary-fixed/30 mb-6 text-primary-fixed">
+                            <span class="material-symbols-outlined">verified_user</span>
+                        </div>
+                        <h3 class="font-headline-md text-[24px] text-white mb-4">Надежность</h3>
+                        <p class="font-body-md text-on-surface-variant">Гарантия безупречного качества и безопасности каждого узла, разработанного в стенах KAE Engineering.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="py-16 md:py-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 reveal">
+                <div>
+                    <span class="font-label-mono text-label-mono text-secondary uppercase block mb-4">Экспертиза</span>
+                    <h2 class="font-headline-md text-headline-md text-white uppercase">Наша команда</h2>
+                </div>
+                <p class="font-body-md text-on-surface-variant max-w-sm">
+                    Сообщество профессионалов, вдохновленных идеей создания технологий, которые работают на благо прогресса.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Team Member 1 -->
+                <div class="group reveal stagger-1">
+                    <div class="relative mb-6 overflow-hidden aspect-[3/4] rounded-sm">
+                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBB18ZXo0sXjVg4sqToVZtIa-MVgF0GJWHkiJ-OBNFl4ZUd3iIA_2cSoMjeIqoMt79rqwUbX7upADsA5-nYXMNZPYfITMgKWNqisRtRoMw1LcZknqi8zJwuQVWxE-EEWZMGAkEff1nih0UsbfhcwujWgymusu99UCcv7ZYNXSGBgEgrzSzRCArREwd0-NMWW7OKl-X44s1g4O3c7ZQwrVakavHro6m1l2MV3Fr8xSoSdWlJLaihv90gstG4pIhhb2QuXW21aXDvm38')"></div>
+                        <div class="absolute bottom-4 left-4 flex flex-wrap gap-2">
+                            <span class="bg-surface/80 backdrop-blur px-2 py-1 font-label-mono text-[10px] text-primary-fixed border border-primary-fixed/30 uppercase">Senior Eng</span>
+                            <span class="bg-surface/80 backdrop-blur px-2 py-1 font-label-mono text-[10px] text-secondary border border-secondary/30 uppercase">PhD</span>
+                        </div>
+                    </div>
+                    <h4 class="font-headline-md text-[18px] text-white">Арман Искаков</h4>
+                    <p class="font-label-mono text-outline uppercase text-[12px] mt-1">Главный архитектор систем</p>
+                </div>
+                <!-- Team Member 2 -->
+                <div class="group reveal stagger-2">
+                    <div class="relative mb-6 overflow-hidden aspect-[3/4] rounded-sm">
+                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC3TG56giZZ_NQVACNerzwPObmT_BELn8nrIUupBDy0z1A80R7inLQbLepei34CscJ3vMJQPOaUvzWatzz3Yr5ShIp1eukvKi7W9DuVw_tyO9YELbWsNePyTclmOzfTfDM0ARqHxTga6741gOd4CvSfKB0u_U5oamlk6zAgAaXBLHCWZnB6w2A6p8Ai5ZO047dloPAjXFpXNAa39Ou-7CrSkB7BHPTMAzfwHzPI3-5g1w1lbQJhy35dJQQaGO7dzLHFK2Zs35N4Vrg')"></div>
+                        <div class="absolute bottom-4 left-4 flex flex-wrap gap-2">
+                            <span class="bg-surface/80 backdrop-blur px-2 py-1 font-label-mono text-[10px] text-primary-fixed border border-primary-fixed/30 uppercase">Robotics</span>
+                            <span class="bg-surface/80 backdrop-blur px-2 py-1 font-label-mono text-[10px] text-secondary border border-secondary/30 uppercase">Lead</span>
+                        </div>
+                    </div>
+                    <h4 class="font-headline-md text-[18px] text-white">Динара Султан</h4>
+                    <p class="font-label-mono text-outline uppercase text-[12px] mt-1">Руководитель отдела робототехники</p>
+                </div>
+                <!-- Team Member 3 -->
+                <div class="group reveal stagger-3">
+                    <div class="relative mb-6 overflow-hidden aspect-[3/4] rounded-sm">
+                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCObsC_IXwroikR-Dwhl-E2tIHHC1v5fOZgCNTA4zRx0RLoC18T8CAufGPyB118c13cqOx9s4mtP3KkbFR6Prcoc0iHmFHzScFJxypKYV8yOtICqov9xTMOYC4eGfegm5h62sG-Tql_57AxstOa1oqaXdnUS9HDv_mppfV8D_-NYsCmje9EpnFjmF9c4VwZZ-_RUHIdenp34YXskYYRm2_qu_sPqP4Xf1YQM_zo1i_blAcXDV5UmjsU3kHUJccQ-YHQTtbcwLu1oss')"></div>
+                        <div class="absolute bottom-4 left-4 flex flex-wrap gap-2">
+                            <span class="bg-surface/80 backdrop-blur px-2 py-1 font-label-mono text-[10px] text-primary-fixed border border-primary-fixed/30 uppercase">Hardware</span>
+                            <span class="bg-surface/80 backdrop-blur px-2 py-1 font-label-mono text-[10px] text-secondary border border-secondary/30 uppercase">Dev</span>
+                        </div>
+                    </div>
+                    <h4 class="font-headline-md text-[18px] text-white">Виктор Пак</h4>
+                    <p class="font-label-mono text-outline uppercase text-[12px] mt-1">Ведущий разработчик плат</p>
+                </div>
+                <!-- Team Member 4 -->
+                <div class="group reveal stagger-4">
+                    <div class="relative mb-6 overflow-hidden aspect-[3/4] rounded-sm">
+                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQBLO-UTZA2w2nzTIxGmgEVOKb19P_aGDx89hJeRm2sRk9AuYLoDxZfuRLqQohK5snyQpFQu8zCBAcN60-JQK97GBmN93wE2qgouPh1oUU1GxXCLRoBgPjEItHDS4Y-h5K9nHLgBG_6IjDphTkFnxnD0207My11p7Ccxk24ZrY-f5C3DxDr1mwuZ_G5btY4l8ZzMz3fV0YZO4yFVmLTuQjJApFU904t7vRnQS_aGM0QPX40dXtvVCl7Xav2uZFyl5m5J2VpgQ_7IY')"></div>
+                        <div class="absolute bottom-4 left-4 flex flex-wrap gap-2">
+                            <span class="bg-surface/80 backdrop-blur px-2 py-1 font-label-mono text-[10px] text-primary-fixed border border-primary-fixed/30 uppercase">Ops</span>
+                            <span class="bg-surface/80 backdrop-blur px-2 py-1 font-label-mono text-[10px] text-secondary border border-secondary/30 uppercase">Director</span>
+                        </div>
+                    </div>
+                    <h4 class="font-headline-md text-[18px] text-white">Данияр Омаров</h4>
+                    <p class="font-label-mono text-outline uppercase text-[12px] mt-1">Директор по операциям</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-16 md:py-24 px-margin-mobile md:px-margin-desktop">
+            <div class="max-w-container-max mx-auto glass-panel p-8 md:p-12 text-center relative overflow-hidden reveal">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary-fixed to-transparent"></div>
+                <h2 class="font-headline-md text-headline-md text-white mb-6 uppercase tracking-tight">Готовы к сотрудничеству?</h2>
+                <p class="font-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">
+                    Присоединяйтесь к числу лидеров индустрии, выбирающих KAE Engineering для реализации самых сложных технологических задач.
+                </p>
+                <button class="bg-primary-container text-on-primary-container px-10 py-5 font-button-text uppercase tracking-widest hover:scale-95 transition-transform duration-300 rounded-sm">
+                    Связаться с нами
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-surface-container-lowest py-stack-lg border-t border-outline-variant relative z-10">
+        <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col lg:flex-row justify-between items-center gap-stack-md">
+            <div class="flex flex-col items-center lg:items-start gap-4">
+                <div class="flex items-center gap-2">
+                    <img alt="KAE Logo" class="h-6 opacity-80" src="data:image/png;base64,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" />
+                    <span class="font-headline-md text-headline-md font-black text-on-surface">KAE</span>
+                </div>
+                <p class="font-body-md text-body-md text-on-surface-variant text-center lg:text-left">© 2024 KAE Engineering. READY FOR TOMORROW.</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-8">
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-opacity" href="#">LinkedIn</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-opacity" href="#">Twitter</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-opacity" href="#">GitHub</a>
+            </div>
+            <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-sm glass-panel flex items-center justify-center hover:opacity-80 cursor-pointer">
+                    <span class="material-symbols-outlined text-primary text-xl">language</span>
+                </div>
+                <div class="w-10 h-10 rounded-sm glass-panel flex items-center justify-center hover:opacity-80 cursor-pointer">
+                    <span class="material-symbols-outlined text-primary text-xl">terminal</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

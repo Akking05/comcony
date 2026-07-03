@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html class="dark" lang="ru"><head>
 <meta charset="utf-8"/>
@@ -31,27 +31,22 @@
 </div>
 </div>
 </nav>
-<div class="fixed inset-0 z-[70] closed md:hidden" id="mobile-drawer">
-<div class="absolute inset-0 bg-background/80 backdrop-blur-sm" id="drawer-overlay"></div>
-<div class="absolute right-0 top-0 h-full w-[80%] bg-surface-container-high border-l border-white/10 p-8 flex flex-col">
-<div class="flex justify-between items-center mb-12">
-<div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">KAE</div>
-<button class="text-primary" id="menu-close">
-<span class="material-symbols-outlined text-3xl">close</span>
-</button>
-</div>
-<div class="flex flex-col gap-8">
-<a class="text-2xl font-headline-md text-on-surface-variant hover:text-primary" href="index.html">Главная</a>
-<a class="text-2xl font-headline-md text-primary" href="products.html">Продукция</a>
-<a class="text-2xl font-headline-md text-on-surface-variant hover:text-primary" href="#">О компании</a>
-<a class="text-2xl font-headline-md text-on-surface-variant hover:text-primary" href="#">Контакты</a>
-</div>
-<div class="mt-auto">
-<button class="w-full bg-primary text-on-primary font-label-md py-4 rounded-lg glow-button">
-                    Get in Touch
-                </button>
-</div>
-</div>
+<div id="mobile-drawer" class="fixed inset-0 z-[100] closed pointer-events-none flex justify-end">
+    <div id="drawer-overlay" class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+    <div class="relative w-64 md:w-80 bg-surface border-l border-white/10 p-6 flex flex-col gap-8 h-full drawer-content bg-surface/90 backdrop-blur-xl pointer-events-auto">
+        <div class="flex justify-between items-center">
+            <span class="font-headline-md text-primary font-bold">KAE</span>
+            <button id="menu-close" class="text-primary hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+        <nav class="flex flex-col gap-6 mt-8">
+            <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="index.html">Главная</a>
+            <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="products.html">Продукция</a>
+            <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="about.html">О компании</a>
+            <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="contacts.html">Контакты</a>
+        </nav>
+    </div>
 </div>
 <main class="relative z-10 pt-[120px] pb-stack-xl max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
 <header class="mb-stack-lg md:mb-stack-xl relative reveal-element">

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html class="dark" lang="ru">
 
@@ -31,38 +31,56 @@
                 <a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300"
                     href="products.html">Продукция</a>
                 <a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300"
-                    href="#">О компании</a>
+                    href="about.html">О компании</a>
                 <a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300"
-                    href="#">Контакты</a>
+                    href="contacts.html">Контакты</a>
             </nav>
             <div class="flex items-center gap-4">
                 <button
                     class="bg-primary-container text-on-primary-container px-6 py-2 rounded-sm font-label-md text-label-md font-bold hover:scale-95 transition-transform duration-200 primary-glow">
                     Get in Touch
                 </button>
-                <button class="lg:hidden text-primary">
+                <button id="menu-toggle" class="lg:hidden text-primary">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
             </div>
         </div>
     </header>
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-drawer" class="fixed inset-0 z-[100] closed pointer-events-none flex justify-end">
+        <div id="drawer-overlay" class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div class="relative w-64 md:w-80 bg-surface border-l border-white/10 p-6 flex flex-col gap-8 h-full drawer-content bg-surface/90 backdrop-blur-xl">
+            <div class="flex justify-between items-center">
+                <span class="font-headline-md text-primary font-bold">KAE</span>
+                <button id="menu-close" class="text-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-6 mt-8">
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="index.html">Главная</a>
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="products.html">Продукция</a>
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="about.html">О компании</a>
+                <a class="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="contacts.html">Контакты</a>
+            </nav>
+        </div>
+    </div>
     <main>
         <section class="relative h-screen flex items-center justify-center overflow-hidden">
             <div class="absolute inset-0 z-0">
-                <div class="absolute inset-0 overflow-hidden">
-                    <img alt="Futuristic Engineering Lab"
-                        class="w-full h-full object-cover opacity-40 transition-transform duration-[20000ms] hover:scale-110"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCydVGiLiHMupiWljh2S4z3mTAOXMxmksrfDbS3FSg6Bo7k-jMJpvR0yb-zTCVUn9Jnrrg5KQ-d2lNvcOVEQ01LhYGtWdbSPo2_8n2_0piPUg-vAx2PQWt8c7NmyG54xbk9ad3u09qqgrLl8mOIAi5JiE31cYYhIVcjMEpoM214vLJGTYN7Qe8HoWGOi5rv0o19OXjNjg2z1pIbPKTY_y318fyyYlFUGrb54rPCws5T1AXZEnj4cXjZxXc37Ftxk2UneENg-DAJWiI" />
-                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0e1417_80%)]">
+                <div class="absolute inset-0 overflow-hidden bg-background">
+                    <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-0 video-zest">
+                        <source src="https://cdn.pixabay.com/video/2020/04/23/36979-415518292_large.mp4" type="video/mp4" />
+                    </video>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0e1417_90%)]">
                     </div>
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background"></div>
                 <div class="absolute inset-0 pointer-events-none hidden md:block">
-                    <div class="absolute top-1/4 left-10 border-l border-primary/30 pl-4 py-2 reveal">
+                    <div class="absolute top-1/4 left-10 border-l border-primary/30 pl-4 py-2 text-zest zest-stagger-1">
                         <div class="text-[10px] text-primary/60 tracking-widest uppercase">System Status</div>
                         <div class="text-label-md text-primary font-bold">NOMINAL</div>
                     </div>
-                    <div class="absolute bottom-1/4 right-10 border-r border-primary/30 pr-4 py-2 text-right reveal">
+                    <div class="absolute bottom-1/4 right-10 border-r border-primary/30 pr-4 py-2 text-right text-zest zest-stagger-2">
                         <div class="text-[10px] text-primary/60 tracking-widest uppercase">Data Stream</div>
                         <div class="text-label-md text-primary font-bold">1.2 GB/S</div>
                     </div>
@@ -72,25 +90,25 @@
                 class="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
                 <div class="lg:col-span-7 space-y-stack-md text-left">
                     <div
-                        class="inline-flex items-center gap-2 px-3 py-1 glass-panel rounded-full border border-primary/30 mb-4 reveal stagger-1">
+                        class="inline-flex items-center gap-2 px-3 py-1 glass-panel rounded-full border border-primary/30 mb-4 text-zest zest-stagger-1">
                         <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
                         <span class="font-label-sm text-label-sm tracking-[0.2em] text-primary uppercase">FUTURE
                             TECHNOLOGY</span>
                     </div>
                     <h1
-                        class="font-headline-lg-mobile md:font-display-lg md:text-display-lg text-white leading-tight reveal stagger-2">
+                        class="font-headline-lg-mobile md:font-display-lg md:text-display-lg text-white leading-tight text-zest zest-stagger-1">
                         <span class="tracking-widest uppercase block mb-2">Инженерные решения</span>
                         <span class="text-primary">нового поколения</span>
                     </h1>
-                    <div class="w-24 h-px bg-primary/50 relative overflow-hidden reveal stagger-2">
+                    <div class="w-24 h-px bg-primary/50 relative overflow-hidden text-zest zest-stagger-2">
                         <div class="absolute inset-0 bg-primary animate-pulse"></div>
                     </div>
-                    <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl reveal stagger-3">
+                    <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl text-zest zest-stagger-2">
                         Создаем современные технологические продукты для промышленности, безопасности и будущих
                         проектов.
                     </p>
                     <div
-                        class="flex flex-col sm:flex-row items-stretch sm:items-start gap-stack-md mt-stack-lg reveal stagger-3">
+                        class="flex flex-col sm:flex-row items-stretch sm:items-start gap-stack-md mt-stack-lg text-zest zest-stagger-3">
                         <div class="relative group">
                             <span
                                 class="absolute -top-4 left-0 font-label-sm text-[10px] text-primary/40 tracking-widest uppercase hidden sm:block">SYS_AUTH:
@@ -102,7 +120,7 @@
                         <div class="relative group">
                             <span
                                 class="absolute -top-4 left-0 font-label-sm text-[10px] text-primary/40 tracking-widest uppercase hidden sm:block">COORD:
-                                55.7558° N</span>
+                                51.1694° N</span>
                             <button
                                 class="w-full sm:w-auto glass-panel text-white px-10 py-4 rounded-sm font-label-md text-label-md font-black uppercase tracking-widest border border-outline hover:bg-white/5 transition-all">
                                 Связаться с нами
@@ -110,7 +128,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="hidden lg:flex lg:col-span-5 flex-col items-end gap-8 reveal">
+                <div class="hidden lg:flex lg:col-span-5 flex-col items-end gap-8 text-zest zest-stagger-3">
                     <div class="glass-panel p-4 border-l-2 border-primary">
                         <div class="flex items-center gap-4 mb-2">
                             <span class="material-symbols-outlined text-primary animate-pulse">sensors</span>
@@ -135,7 +153,7 @@
                 </div>
             </div>
             <div
-                class="absolute bottom-10 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-4 text-on-surface-variant/40 reveal">
+                class="absolute bottom-10 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-4 text-on-surface-variant/40 text-zest zest-stagger-3">
                 <span class="font-label-sm text-label-sm">SCROLL TO EXPLORE</span>
                 <div class="w-px h-16 bg-gradient-to-b from-primary-container to-transparent"></div>
             </div>
