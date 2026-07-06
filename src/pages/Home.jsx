@@ -1,5 +1,7 @@
 import { ReactLenis } from "lenis/dist/lenis-react";
 import { ParallaxHero } from "../components/ParallaxSchedule.jsx";
+import { SplineWrapper } from "../components/SplineWrapper.jsx";
+
 
 export default function Home() {
   return (
@@ -116,20 +118,8 @@ export default function Home() {
                           </div>
                       </div>
                       <div className="hidden lg:flex lg:col-span-5 flex-col items-end gap-8 text-zest zest-stagger-3">
-                          <div className="glass-panel p-4 border-l-2 border-primary">
-                              <div className="flex items-center gap-4 mb-2">
-                                  <span className="material-symbols-outlined text-primary animate-pulse">sensors</span>
-                                  <span className="font-label-sm text-primary tracking-widest">SYSTEM STATUS: ACTIVE</span>
-                              </div>
-                              <div className="space-y-2">
-                                  <div className="flex justify-between gap-8">
-                                      <span className="text-on-surface-variant text-[10px] uppercase">Core Temp</span>
-                                      <span className="text-primary text-[10px]">32°C</span>
-                                  </div>
-                                  <div className="w-32 h-1 bg-white/10 rounded-full overflow-hidden">
-                                      <div className="w-2/3 h-full bg-primary"></div>
-                                  </div>
-                              </div>
+                          <div className="w-full max-w-[750px] h-[500px] ml-auto relative pointer-events-auto rounded-xl overflow-visible">
+                              <SplineWrapper />
                           </div>
                           <div className="opacity-40 text-right">
                               <p className="font-label-sm text-[10px] tracking-widest text-on-surface-variant uppercase">Neural
