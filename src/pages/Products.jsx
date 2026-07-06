@@ -1,0 +1,189 @@
+export default function Products() {
+  return (
+    <>
+      <div className="fixed inset-0 technical-grid z-0 pointer-events-none"></div>
+      <div className="fixed inset-0 bg-gradient-to-b from-transparent via-surface/50 to-background z-0 pointer-events-none"></div>
+      <nav className="fixed top-0 w-full z-[60] bg-surface/30 backdrop-blur-xl border-b border-white/10">
+      <div className="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+      <div className="flex items-center gap-4">
+          <span className="font-headline-md text-4xl md:text-5xl font-bold tracking-tighter"><span className="text-[#a4e6ff]">K</span><span className="text-white">AE</span></span>
+      </div>
+      <div className="hidden md:flex gap-10">
+      <a className="text-on-surface-variant font-label-md hover:text-primary transition-colors duration-300" href="/">Главная</a>
+      <a className="text-primary font-bold border-b-2 border-primary pb-1" href="/products">Продукция</a>
+      <a className="text-on-surface-variant font-label-md hover:text-primary transition-colors duration-300" href="/about">О компании</a>
+      <a className="text-on-surface-variant font-label-md hover:text-primary transition-colors duration-300" href="/contacts">Контакты</a>
+      </div>
+      <div className="flex items-center gap-4">
+      <button className="hidden md:block bg-primary text-on-primary font-label-md px-6 py-2 rounded-lg glow-button active:scale-95 transition-transform duration-200">
+                          Get in Touch
+                      </button>
+      <button className="md:hidden text-primary p-2" id="menu-toggle">
+      <span className="material-symbols-outlined text-3xl">menu</span>
+      </button>
+      </div>
+      </div>
+      </nav>
+      <div id="mobile-drawer" className="fixed inset-0 z-[100] closed pointer-events-none flex justify-end">
+          <div id="drawer-overlay" className="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+          <div className="relative w-64 md:w-80 bg-surface border-l border-white/10 p-6 flex flex-col gap-8 h-full drawer-content bg-surface/90 backdrop-blur-xl pointer-events-auto">
+              <div className="flex justify-between items-center">
+                  <span className="font-headline-md text-3xl md:text-4xl font-bold tracking-tighter"><span className="text-[#a4e6ff]">K</span><span className="text-white">AE</span></span>
+                  <button id="menu-close" className="text-primary hover:text-white transition-colors">
+                      <span className="material-symbols-outlined text-2xl">close</span>
+                  </button>
+              </div>
+              <nav className="flex flex-col gap-6 mt-8">
+                  <a className="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="/">Главная</a>
+                  <a className="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="/products">Продукция</a>
+                  <a className="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="/about">О компании</a>
+                  <a className="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="/contacts">Контакты</a>
+              </nav>
+          </div>
+      </div>
+      <main className="relative z-10 pt-[120px] pb-stack-xl max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+      <header className="mb-stack-lg md:mb-stack-xl relative reveal-element">
+      <div className="absolute top-0 right-0 hidden lg:flex flex-col items-end gap-2 p-4 border border-white/10 bg-surface/30 backdrop-blur-md rounded-lg">
+      <div className="flex items-center gap-4">
+      <div className="flex flex-col items-end">
+      <span className="text-[10px] text-outline uppercase tracking-tighter">Core Status</span>
+      <span className="text-label-sm text-primary font-bold">OPERATIONAL</span>
+      </div>
+      <div className="w-12 h-12 rounded-full border-2 border-primary/20 flex items-center justify-center relative">
+      <div className="absolute inset-0 border-t-2 border-primary rounded-full animate-spin"></div>
+      <span className="material-symbols-outlined text-primary text-sm">memory</span>
+      </div>
+      </div>
+      <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-full bg-primary w-3/4 animate-pulse"></div>
+      </div>
+      </div>
+      <div className="flex items-center gap-3 mb-stack-sm">
+      <div className="active-glow"></div>
+      <span className="font-label-md text-label-md text-primary tracking-[0.2em] uppercase px-3 py-1 border border-primary/30 rounded-full bg-primary/5">Enterprise Portfolio</span>
+      </div>
+      <div className="font-label-sm text-label-sm text-outline/60 mb-2 tracking-widest">SYSTEM ID: KAE-PRD-024</div>
+      <h1 className="font-display-lg text-headline-lg-mobile md:text-display-lg mb-4 max-w-3xl">Наша продукция</h1>
+      <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                      Технологии, созданные для сложных задач. Мы проектируем будущее через призму инженерного совершенства и абсолютной надежности.
+                  </p>
+      </header>
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+      <div className="glass-card group flex flex-col p-2 reveal-element">
+      <div className="overflow-hidden h-[320px] mb-4 bg-surface-container-high relative">
+      <img alt="Drones" loading="lazy" decoding="async" className="card-image w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD6x6uTf6vNd4PCzVVmnY_29gRbXsolGYsuBQ1T8csAICDEYj7zaW0lonjfDgPbKdxNmfdOd_x-YrWsIS_dbw8JqxqNazeBr_wBWc1iMGNy3D033Rble_99l1JjNV6DEjv7BtkC4oKWlg3HtKsyb6nll9_JhYw8wbFqXaP13ICPSaoHsJdGCu57PlxjFDRyhYV8uiXdA4ESTKKHaEDOkXMHGagiGPs2s_BY3LUueevZi1eskS6dbKAhDxcIzLtTLVj71FcXN2IGI4" />
+      <div className="absolute top-4 right-4 bg-surface/80 backdrop-blur-md px-3 py-1 border border-white/10 rounded flex items-center gap-2">
+      <div className="active-glow"></div>
+      <span className="font-label-sm text-label-sm text-white">SYSTEM ACTIVE</span>
+      </div>
+      </div>
+      <div className="px-4 pb-6 pt-2">
+      <h3 className="font-headline-md text-headline-md mb-2 text-primary">Беспилотные системы</h3>
+      <p className="font-body-md text-body-md text-on-surface-variant mb-6">Автономные решения для разведки и логистики.</p>
+      <a href="/product-details" className="flex justify-between items-center border-t border-white/10 pt-4 cursor-pointer">
+      <span className="font-label-sm text-label-sm text-outline tracking-widest uppercase">Series-X</span>
+      <span className="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform duration-300">arrow_forward</span>
+      </a>
+      </div>
+      </div>
+      <div className="glass-card group flex flex-col p-2 reveal-element">
+      <div className="overflow-hidden h-[320px] mb-4 bg-surface-container-high relative">
+      <img alt="Electronics" loading="lazy" decoding="async" className="card-image w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAS_63Kua_g7zgZvD35_9I8lrQKbPZnLCZYBjuaTCTh90zpFgZLVmcrhr7HF7Y0jyLEZI7RtWo1aNgV9joWFU3oT6_ygo5I_d-tZQ0cBm7Rf3Coi01NBbg_8E2Og1zIMPUbkQD8BMJql9-YUYXRPWTMj6gPgExPDhZTmoXXELKke8_z6uUq-gn4eSoOyJkt1sSEfzeCmq7mPOpkDxPlTnG8kuSo3O3bEwbPalWkVFlD2zz5QLCwWaz479Dnbtvl2jFIsEe4LlVM_rY" />
+      <div className="absolute top-4 right-4 bg-surface/80 backdrop-blur-md px-3 py-1 border border-white/10 rounded flex items-center gap-2">
+      <div className="active-glow"></div>
+      <span className="font-label-sm text-label-sm text-white">HI-RES DATA</span>
+      </div>
+      </div>
+      <div className="px-4 pb-6 pt-2">
+      <h3 className="font-headline-md text-headline-md mb-2 text-primary">Электронное оборудование</h3>
+      <p className="font-body-md text-body-md text-on-surface-variant mb-6">Высокоточная электроника для критически важных систем.</p>
+      <a href="/product-details" className="flex justify-between items-center border-t border-white/10 pt-4 cursor-pointer">
+      <span className="font-label-sm text-label-sm text-outline tracking-widest uppercase">Precision-Core</span>
+      <span className="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform duration-300">arrow_forward</span>
+      </a>
+      </div>
+      </div>
+      <div className="glass-card group flex flex-col p-2 reveal-element">
+      <div className="overflow-hidden h-[320px] mb-4 bg-surface-container-high relative">
+      <img alt="Engineering" loading="lazy" decoding="async" className="card-image w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1Nm2DU0btOBWgFXfjwTDYEVrkQbR3dWj5uUzRj8k7mnYN_Ezs1y86aCCAGFS2lb9R3OpkMFbMGkIJzQxjAi9m2Zn9QgSnvR1cpecJCDMIcKO4xNwabX97SDbyv7S02k0nb_cZgqJsHg4EkpwRvxYicc-RMHxqGG9lO-NRkonqcXXIcz3UdtdwCZx1Q92cFRSpHAhicbvnQfnSwu6LFs-CKIBSUilk3S9qzizG_aKQTDews41T8kRXwU3Olff86w1buk_YTFCWGGU" />
+      <div className="absolute bottom-4 left-4 right-4 h-1 bg-white/10 overflow-hidden">
+      <div className="h-full bg-primary w-1/3 animate-pulse"></div>
+      </div>
+      </div>
+      <div className="px-4 pb-6 pt-2">
+      <h3 className="font-headline-md text-headline-md mb-2 text-primary">Инженерные комплексы</h3>
+      <p className="font-body-md text-body-md text-on-surface-variant mb-6">Масштабные модульные системы для индустрии.</p>
+      <a href="/product-details" className="flex justify-between items-center border-t border-white/10 pt-4 cursor-pointer">
+      <span className="font-label-sm text-label-sm text-outline tracking-widest uppercase">Modular-X</span>
+      <span className="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform duration-300">arrow_forward</span>
+      </a>
+      </div>
+      </div>
+      <div className="glass-card group flex flex-col p-2 reveal-element">
+      <div className="overflow-hidden h-[320px] mb-4 bg-surface-container-high relative">
+      <img alt="Monitoring" loading="lazy" decoding="async" className="card-image w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjySDmA2EvBqieaEux147dq7-vuU6mh5mrUtT18XMdVSZjvDbbxnxbxPXqC5FmfbICOIN_VK_9MW4155xrTKNFbxbFgCFJQj7CPprBIGmm0JkD4EFuYC7W4zyMJcTM0QXwkB_cJaSN3jR6wglAWugxpLFscTevra_7aIlEgHWtxbdlpn-iXimMnYAcPk0AYHAe0iiaWWIq60KPRfA1LNWGjrLIrRVtl3GxP3_m1W4jwq3H7uKfg0-oC84wyjSLm73nVCoU6xozJpI" />
+      </div>
+      <div className="px-4 pb-6 pt-2">
+      <h3 className="font-headline-md text-headline-md mb-2 text-primary">Системы наблюдения</h3>
+      <p className="font-body-md text-body-md text-on-surface-variant mb-6">Интеллектуальный мониторинг и безопасность.</p>
+      <a href="/product-details" className="flex justify-between items-center border-t border-white/10 pt-4 cursor-pointer">
+      <span className="font-label-sm text-label-sm text-outline tracking-widest uppercase">Aegis-Vision</span>
+      <span className="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform duration-300">arrow_forward</span>
+      </a>
+      </div>
+      </div>
+      <div className="glass-card group flex flex-col p-2 reveal-element">
+      <div className="overflow-hidden h-[320px] mb-4 bg-surface-container-high relative">
+      <img alt="Automation" loading="lazy" decoding="async" className="card-image w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP63A1T4qtx1dKk2aLoNzU85FmF6yvzA8pqWIZ-HzPyrqRWMiqgyejyBdo26w_oTN1HPcScMtVmCbl-nh1Vu8fgIQEmnu-IzV_Z235UcjY4ofxgPMGnoF-ZlmdDphK3PIfDzIvyIvLmu3NHrtgcTkGVslCzTJPcBlggfV8xuzSQCznjV3FOheKUpQGiUueIIdu_47iWfVe7D0ppJ6I-mJ1AvYNyQPNxQTW-KwI9RDlzIMGI87QM6i7tAfLlWjeUUWwjlpNKAvOdTY" />
+      </div>
+      <div className="px-4 pb-6 pt-2">
+      <h3 className="font-headline-md text-headline-md mb-2 text-primary">Промышленная автоматика</h3>
+      <p className="font-body-md text-body-md text-on-surface-variant mb-6">Роботизированные линии нового поколения.</p>
+      <a href="/product-details" className="flex justify-between items-center border-t border-white/10 pt-4 cursor-pointer">
+      <span className="font-label-sm text-label-sm text-outline tracking-widest uppercase">Forge-OS</span>
+      <span className="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform duration-300">arrow_forward</span>
+      </a>
+      </div>
+      </div>
+      <div className="glass-card group flex flex-col p-2 reveal-element">
+      <div className="overflow-hidden h-[320px] mb-4 bg-surface-container-high relative">
+      <img alt="Research" loading="lazy" decoding="async" className="card-image w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJWeZ_JJT762hk6gyiSHGWsFWvabwJdKtUP_lcCf9aT941MWqjzPbhfXqGx8lFClAsrrPpmY28fqaG0H2EAjh1frowtKwv7bftd8V9Loe6layNvjRHChDL2jp-_natTkb8LP7IPz1B3zLDZR7fR9xfz5dfA5GG0-5VuVVR1Pz7p1FRUNUp-2hIAICV5OrKmNapaclps5XGB8L44vSbqVY4qP_eYoCBYRtHE4tkeuGnuY-3bmg_0Pv9PnxgGPZNbnMV0dwf4zOMHyo" />
+      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      </div>
+      <div className="px-4 pb-6 pt-2">
+      <h3 className="font-headline-md text-headline-md mb-2 text-primary text-scanning">Перспективные разработки</h3>
+      <p className="font-body-md text-body-md text-on-surface-variant mb-6">Экспериментальные технологии и прототипы будущего.</p>
+      <a href="/product-details" className="flex justify-between items-center border-t border-white/10 pt-4 cursor-pointer">
+      <span className="font-label-sm text-label-sm text-outline tracking-widest uppercase">Vanguard-Lab</span>
+      <span className="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform duration-300">arrow_forward</span>
+      </a>
+      </div>
+      </div>
+      </section>
+      <section className="mt-stack-xl flex flex-col items-center text-center reveal-element">
+      <h2 className="font-display-lg text-headline-lg-mobile md:text-[120px] font-black text-outline/10 tracking-tighter select-none mb-stack-lg leading-none">READY FOR TOMORROW</h2>
+      <div className="glass-card max-w-3xl w-full p-stack-lg border border-primary/20 bg-primary/5">
+      <h3 className="font-headline-lg text-headline-md md:text-headline-lg mb-6">Готовы к реализации вашего проекта?</h3>
+      <p className="font-body-lg text-body-md md:text-body-lg text-on-surface-variant mb-8 px-4">Свяжитесь с нашими инженерами для обсуждения спецификаций и возможностей масштабирования.</p>
+      <button className="bg-primary-container text-on-primary-container font-headline-md px-12 py-5 rounded-lg glow-button text-headline-md w-full md:w-auto">
+                          Оставить заявку
+                      </button>
+      </div>
+      </section>
+      </main>
+      <footer className="relative z-10 w-full py-stack-lg bg-surface-container-lowest border-t border-outline-variant mt-stack-xl reveal-element">
+      <div className="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop gap-stack-md max-w-container-max mx-auto">
+      <div className="flex flex-col items-center md:items-start gap-2">
+      <div className="font-headline-md text-3xl md:text-4xl font-black tracking-tighter"><span className="text-[#a4e6ff]">K</span><span className="text-white">AE</span> Engineering</div>
+      <p className="font-label-sm text-label-sm text-on-surface-variant">© 2024 KAE Engineering. READY FOR TOMORROW.</p>
+      </div>
+      <div className="flex gap-8">
+      <a className="text-on-surface-variant font-label-md hover:text-secondary transition-opacity hover:opacity-80" href="#">LinkedIn</a>
+      <a className="text-on-surface-variant font-label-md hover:text-secondary transition-opacity hover:opacity-80" href="#">Twitter</a>
+      <a className="text-on-surface-variant font-label-md hover:text-secondary transition-opacity hover:opacity-80" href="#">GitHub</a>
+      </div>
+      </div>
+      </footer>
+    </>
+  );
+}

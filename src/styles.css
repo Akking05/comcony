@@ -1,3 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --color-secondary: #adc6ff;
+  --color-primary: #a4e6ff;
+  --color-on-surface-variant: #bbc9cf;
+  --color-surface-container-lowest: #090f12;
+  --color-on-background: #dde3e7;
+  --color-surface-container-high: #242b2e;
+  --color-primary-container: #00d1ff;
+  --color-on-primary: #003543;
+  --color-surface: #0e1417;
+  --color-background: #0e1417;
+  --color-outline-variant: #3c494e;
+  --color-on-surface: #dde3e7;
+  --color-on-primary-container: #00566a;
+  --color-outline: #859399;
+
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
+
+  --spacing-unit: 8px;
+  --spacing-margin-desktop: 64px;
+  --spacing-container-max: 1440px;
+  --spacing-margin-mobile: 20px;
+  --spacing-stack-xs: 4px;
+  --spacing-stack-sm: 12px;
+  --spacing-gutter: 24px;
+  --spacing-stack-md: 24px;
+  --spacing-stack-xl: 80px;
+  --spacing-stack-lg: 48px;
+
+  --container-container-max: 1440px;
+
+  --font-headline-md: Sora, "Plus Jakarta Sans", sans-serif;
+  --font-body-lg: Inter, Outfit, sans-serif;
+  --font-headline-lg: Sora, "Plus Jakarta Sans", sans-serif;
+  --font-display-lg: Sora, "Plus Jakarta Sans", sans-serif;
+  --font-label-sm: Geist, sans-serif;
+  --font-headline-lg-mobile: Sora, "Plus Jakarta Sans", sans-serif;
+  --font-body-md: Inter, Outfit, sans-serif;
+  --font-label-md: Geist, sans-serif;
+
+  --text-headline-md: 24px;
+  --text-body-lg: 18px;
+  --text-headline-lg: 40px;
+  --text-display-lg: 64px;
+  --text-label-sm: 12px;
+  --text-headline-lg-mobile: 32px;
+  --text-body-md: 16px;
+  --text-label-md: 14px;
+}
+
 body {
   background-color: #0e1417;
   color: #dde3e7;
