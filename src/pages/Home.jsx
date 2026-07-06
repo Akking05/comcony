@@ -1,6 +1,9 @@
+import { ReactLenis } from "lenis/dist/lenis-react";
+import { ParallaxHero } from "../components/ParallaxSchedule.jsx";
+
 export default function Home() {
   return (
-    <>
+    <ReactLenis root options={{ lerp: 0.05 }}>
       <div className="fixed inset-0 tech-grid pointer-events-none z-0"></div>
           <div className="scanline pointer-events-none z-1"></div>
           <header className="fixed top-0 w-full z-50 bg-surface/30 backdrop-blur-xl border-b border-white/10">
@@ -202,6 +205,7 @@ export default function Home() {
                       </div>
                   </div>
               </section>
+              <ParallaxHero />
               <section className="py-stack-xl relative overflow-hidden">
                   <div
                       className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -282,6 +286,6 @@ export default function Home() {
                   </div>
               </div>
           </footer>
-    </>
+    </ReactLenis>
   );
 }
