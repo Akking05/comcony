@@ -1,8 +1,7 @@
-import { Header } from '../components/layout/Header.jsx';
-import { MobileDrawer } from '../components/layout/MobileDrawer.jsx';
-import { Footer } from '../components/layout/Footer.jsx';
+import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api } from '../lib/api.js';
+import { EASE, fadeOnScroll, rise, riseOnScroll, stagger, staggerItem } from '../lib/motion.js';
 
 const MISSION_CARDS = [
   { number: '01', icon: 'architecture', accent: 'primary-fixed' },
@@ -10,40 +9,43 @@ const MISSION_CARDS = [
   { number: '03', icon: 'verified_user', accent: 'primary-fixed' },
 ];
 
-function MissionCard({ card, index, title, description }) {
+function MissionCard({ card, title, description }) {
   const isSecondary = card.accent === 'secondary';
 
   return (
-    <div
-      className={`glass-panel p-8 relative group transition-all duration-500 reveal stagger-${index + 1} ${
+    <motion.div
+      {...staggerItem}
+      className={`glass-panel group relative p-8 transition-all duration-500 ${
         isSecondary ? 'hover:border-secondary/50' : 'hover:border-primary-fixed/50'
       }`}
     >
-      <div className="absolute -top-4 -right-4 font-label-mono text-outline-variant/20 text-6xl font-bold italic">
+      <div className="absolute -right-4 -top-4 font-label-mono text-6xl font-bold italic text-outline-variant/20 transition-colors group-hover:text-outline-variant/30">
         {card.number}
       </div>
+
       <div
-        className={`w-12 h-12 flex items-center justify-center mb-6 border ${
+        className={`mb-6 flex h-12 w-12 items-center justify-center border transition-transform group-hover:scale-110 ${
           isSecondary
-            ? 'bg-secondary/10 border-secondary/30 text-secondary'
-            : 'bg-primary-fixed/10 border-primary-fixed/30 text-primary-fixed'
+            ? 'border-secondary/30 bg-secondary/10 text-secondary'
+            : 'border-primary-fixed/30 bg-primary-fixed/10 text-primary-fixed'
         }`}
       >
         <span className="material-symbols-outlined">{card.icon}</span>
       </div>
-      <h3 className="font-headline-md text-[24px] text-white mb-4">{title}</h3>
+
+      <h3 className="mb-4 font-headline-md text-[24px] text-white">{title}</h3>
       <p className="font-body-md text-on-surface-variant">{description}</p>
-    </div>
+    </motion.div>
   );
 }
 
-function TeamMember({ member, index }) {
+function TeamMember({ member }) {
   return (
-    <div className={`group reveal stagger-${Math.min(index + 1, 4)}`}>
-      <div className="relative mb-6 overflow-hidden aspect-[3/4] rounded-sm bg-surface-container-high">
+    <motion.div {...staggerItem} className="group">
+      <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-sm bg-surface-container-high">
         {member.photo ? (
           <div
-            className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+            className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
             style={{ backgroundImage: `url('${member.photo}')` }}
           ></div>
         ) : (
@@ -51,15 +53,16 @@ function TeamMember({ member, index }) {
             <span className="material-symbols-outlined text-5xl">person</span>
           </div>
         )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+
         {member.tags.length > 0 && (
           <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
             {member.tags.map((tag, tagIndex) => (
               <span
                 key={tag}
-                className={`bg-surface/80 backdrop-blur px-2 py-1 font-label-mono text-[10px] uppercase border ${
-                  tagIndex === 0
-                    ? 'text-primary-fixed border-primary-fixed/30'
-                    : 'text-secondary border-secondary/30'
+                className={`border bg-surface/80 px-2 py-1 font-label-mono text-[10px] uppercase backdrop-blur ${
+                  tagIndex === 0 ? 'border-primary-fixed/30 text-primary-fixed' : 'border-secondary/30 text-secondary'
                 }`}
               >
                 {tag}
@@ -68,9 +71,28 @@ function TeamMember({ member, index }) {
           </div>
         )}
       </div>
+
       <h4 className="font-headline-md text-[18px] text-white">{member.name}</h4>
-      <p className="font-label-mono text-outline uppercase text-[12px] mt-1">{member.position}</p>
-    </div>
+      <p className="mt-1 font-label-mono text-[12px] uppercase text-outline">{member.position}</p>
+    </motion.div>
+  );
+}
+
+function Stat({ value, label, accent }) {
+  return (
+    <motion.div
+      {...staggerItem}
+      className={`glass-panel border-l-4 p-6 ${accent === 'secondary' ? 'border-l-secondary' : 'border-l-primary-fixed'}`}
+    >
+      <div
+        className={`mb-1 font-label-mono text-[32px] font-bold ${
+          accent === 'secondary' ? 'text-secondary' : 'text-primary-fixed'
+        }`}
+      >
+        {value}
+      </div>
+      <div className="font-label-mono text-[10px] uppercase text-outline">{label}</div>
+    </motion.div>
   );
 }
 
@@ -81,109 +103,107 @@ export default function About() {
   const text = (key, fallback = '') => texts?.[key] ?? fallback;
 
   return (
-    <>
-      <div className="fixed inset-0 tech-grid pointer-events-none z-0 opacity-20"></div>
-      <div className="scanline pointer-events-none z-1"></div>
-      <Header active="/about" />
-      <MobileDrawer active="/about" />
+    <main className="pt-20 md:pt-24">
+      {/* Вступление */}
+      <section className="relative z-10 mx-auto max-w-container-max px-margin-mobile py-16 md:px-margin-desktop md:py-24">
+        <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-12">
+          <motion.div {...rise(0.05)} className="text-center md:col-span-5 md:text-left">
+            <span className="mb-4 block font-label-mono text-label-mono uppercase tracking-widest text-primary-fixed">
+              {text('about.eyebrow')}
+            </span>
+            <h1 className="mb-6 font-headline-lg-mobile text-headline-lg-mobile uppercase text-white md:font-display-md md:text-display-md">
+              {text('about.title', 'О компании')}
+            </h1>
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
+              className="mx-auto mb-8 h-[2px] w-16 origin-left bg-primary-fixed md:mx-0"
+            ></motion.div>
+          </motion.div>
 
-      <main className="pt-24">
-        {/* Вступление */}
-        <section className="py-16 md:py-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-            <div className="md:col-span-5 text-center md:text-left reveal stagger-1">
-              <span className="font-label-mono text-label-mono text-primary-fixed uppercase tracking-widest block mb-4">
-                {text('about.eyebrow')}
-              </span>
-              <h1 className="font-headline-lg-mobile md:font-display-md text-white mb-6 uppercase">
-                {text('about.title', 'О компании')}
-              </h1>
-              <div className="w-16 h-[2px] bg-primary-fixed mx-auto md:mx-0 mb-8"></div>
-            </div>
-            <div className="md:col-span-7 space-y-6 reveal stagger-2">
-              <p className="font-body-lg text-body-lg text-on-surface">{text('about.intro_1')}</p>
-              <p className="font-body-md text-body-md text-on-surface-variant">{text('about.intro_2')}</p>
-              <div className="grid grid-cols-2 gap-4 mt-12">
-                <div className="glass-panel p-6 border-l-4 border-l-primary-fixed">
-                  <div className="font-label-mono text-[32px] text-primary-fixed font-bold mb-1">
-                    {text('about.stat_1_value')}
-                  </div>
-                  <div className="font-label-mono text-[10px] text-outline uppercase">{text('about.stat_1_label')}</div>
-                </div>
-                <div className="glass-panel p-6 border-l-4 border-l-secondary">
-                  <div className="font-label-mono text-[32px] text-secondary font-bold mb-1">
-                    {text('about.stat_2_value')}
-                  </div>
-                  <div className="font-label-mono text-[10px] text-outline uppercase">{text('about.stat_2_label')}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+          <motion.div {...rise(0.2)} className="space-y-6 md:col-span-7">
+            <p className="font-body-lg text-body-lg text-on-surface">{text('about.intro_1')}</p>
+            <p className="font-body-md text-body-md text-on-surface-variant">{text('about.intro_2')}</p>
 
-        {/* Миссия */}
-        <section className="py-16 md:py-24 bg-surface-container-lowest relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full scanline opacity-20 pointer-events-none"></div>
-          <div className="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto relative z-10">
-            <div className="text-center mb-16 reveal">
-              <span className="font-label-mono text-label-mono text-primary-fixed uppercase tracking-widest">
-                {text('about.mission_eyebrow')}
-              </span>
-              <h2 className="font-headline-md text-headline-md text-white mt-4 uppercase">
-                {text('about.mission_title')}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {MISSION_CARDS.map((card, index) => (
-                <MissionCard
-                  key={card.number}
-                  card={card}
-                  index={index}
-                  title={text(`about.mission_${index + 1}_title`)}
-                  description={text(`about.mission_${index + 1}_text`)}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
+            <motion.div {...stagger(0.12, 0.1)} className="mt-12 grid grid-cols-1 gap-4 xs:grid-cols-2">
+              <Stat value={text('about.stat_1_value')} label={text('about.stat_1_label')} />
+              <Stat value={text('about.stat_2_value')} label={text('about.stat_2_label')} accent="secondary" />
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
 
-        {/* Команда */}
-        <section className="py-16 md:py-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 reveal">
-            <div>
-              <span className="font-label-mono text-label-mono text-secondary uppercase block mb-4">
-                {text('about.team_eyebrow')}
-              </span>
-              <h2 className="font-headline-md text-headline-md text-white uppercase">{text('about.team_title')}</h2>
-            </div>
-            <p className="font-body-md text-on-surface-variant max-w-sm">{text('about.team_intro')}</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {team?.map((member, index) => (
-              <TeamMember key={member.name} member={member} index={index} />
-            ))}
-          </div>
-        </section>
-
-        {/* Призыв */}
-        <section className="py-16 md:py-24 px-margin-mobile md:px-margin-desktop">
-          <div className="max-w-container-max mx-auto glass-panel p-8 md:p-12 text-center relative overflow-hidden reveal">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary-fixed to-transparent"></div>
-            <h2 className="font-headline-md text-headline-md text-white mb-6 uppercase tracking-tight">
-              {text('about.cta_title')}
+      {/* Миссия */}
+      <section className="relative overflow-hidden bg-surface-container-lowest/60 py-16 backdrop-blur-sm md:py-24">
+        <div className="relative z-10 mx-auto max-w-container-max px-margin-mobile md:px-margin-desktop">
+          <motion.div {...riseOnScroll()} className="mb-16 text-center">
+            <span className="font-label-mono text-label-mono uppercase tracking-widest text-primary-fixed">
+              {text('about.mission_eyebrow')}
+            </span>
+            <h2 className="mt-4 font-headline-md text-headline-md uppercase text-white">
+              {text('about.mission_title')}
             </h2>
-            <p className="font-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">{text('about.cta_text')}</p>
-            <a
-              href="/contacts"
-              className="inline-block bg-primary-container text-on-primary-container px-10 py-5 font-button-text uppercase tracking-widest hover:scale-95 transition-transform duration-300 rounded-sm"
-            >
-              Связаться с нами
-            </a>
-          </div>
-        </section>
-      </main>
+          </motion.div>
 
-      <Footer />
-    </>
+          <motion.div {...stagger(0.12)} className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            {MISSION_CARDS.map((card, index) => (
+              <MissionCard
+                key={card.number}
+                card={card}
+                title={text(`about.mission_${index + 1}_title`)}
+                description={text(`about.mission_${index + 1}_text`)}
+              />
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Команда */}
+      <section className="mx-auto max-w-container-max px-margin-mobile py-16 md:px-margin-desktop md:py-24">
+        <motion.div {...riseOnScroll()} className="mb-16 flex flex-col items-end justify-between gap-8 md:flex-row">
+          <div>
+            <span className="mb-4 block font-label-mono text-label-mono uppercase text-secondary">
+              {text('about.team_eyebrow')}
+            </span>
+            <h2 className="font-headline-md text-headline-md uppercase text-white">{text('about.team_title')}</h2>
+          </div>
+          <p className="max-w-sm font-body-md text-on-surface-variant">{text('about.team_intro')}</p>
+        </motion.div>
+
+        {/* Контейнер каскада создаётся только вместе с данными: если он
+            смонтируется пустым и попадёт в кадр, viewport.once отработает
+            вхолостую, а приехавшие позже карточки останутся невидимыми. */}
+        {team && (
+          <motion.div {...stagger(0.1)} className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
+            {team.map((member) => (
+              <TeamMember key={member.name} member={member} />
+            ))}
+          </motion.div>
+        )}
+      </section>
+
+      {/* Призыв */}
+      <section className="px-margin-mobile py-16 md:px-margin-desktop md:py-24">
+        <motion.div
+          {...fadeOnScroll()}
+          className="glass-panel relative mx-auto max-w-container-max overflow-hidden p-8 text-center md:p-12"
+        >
+          <div className="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-transparent via-primary-fixed to-transparent"></div>
+
+          <h2 className="mb-6 font-headline-md text-headline-md uppercase tracking-tight text-white">
+            {text('about.cta_title')}
+          </h2>
+          <p className="mx-auto mb-10 max-w-2xl font-body-lg text-on-surface-variant">{text('about.cta_text')}</p>
+
+          <a
+            href="/contacts"
+            className="inline-block rounded-sm bg-primary-container px-10 py-5 font-button-text uppercase tracking-widest text-on-primary-container transition-transform duration-300 hover:scale-95"
+          >
+            Связаться с нами
+          </a>
+        </motion.div>
+      </section>
+    </main>
   );
 }

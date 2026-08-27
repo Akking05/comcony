@@ -17,7 +17,7 @@ export function Footer() {
             <div className="flex items-center gap-4">
               <img src="/kae-logo.svg" alt="KAE Logo" className="h-9 md:h-10 object-contain" />
               <span aria-hidden="true" className="h-6 w-px bg-white/10" />
-              <img src="/aselsan-yeni-logo.svg" alt="Aselsan" className="h-5 md:h-6 object-contain" />
+              <img src="/aselsan-yeni-logo.svg" alt="Aselsan" className="h-9 md:h-12 object-contain" />
             </div>
             <p className="font-body-md text-body-md text-on-surface-variant">
               Инженерные решения нового поколения для промышленности, безопасности и будущих проектов.

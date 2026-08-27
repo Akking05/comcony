@@ -127,12 +127,12 @@ const TEXTS = [
     type: 'textarea',
     group_name: 'contacts',
   },
-  { key: 'contacts.map_title', label: 'Заголовок блока карты', value: 'Интерактивная карта', type: 'text', group_name: 'contacts' },
+  { key: 'contacts.map_title', label: 'Заголовок блока адреса', value: 'Как добраться', type: 'text', group_name: 'contacts' },
   {
     key: 'contacts.map_text',
-    label: 'Текст блока карты',
+    label: 'Как добраться — пояснение',
     value:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut vulputate arcu. Donec sit amet accumsan est, ut imperdiet nunc. Vivamus varius ex ac dolor ultrices euismod. Suspendisse pulvinar nisi eget erat bibendum. Fusce lacinia id dolor congue ullamcorper. Pellentesque varius augue purus, quis congue mi porta a.',
+      'Офис расположен в инновационном кластере столицы. Приём посетителей — по предварительной договорённости, напишите или позвоните, чтобы согласовать время.',
     type: 'textarea',
     group_name: 'contacts',
   },

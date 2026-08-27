@@ -1,19 +1,21 @@
-import { Header } from '../components/layout/Header.jsx';
-import { MobileDrawer } from '../components/layout/MobileDrawer.jsx';
-import { Footer } from '../components/layout/Footer.jsx';
+import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api } from '../lib/api.js';
+import { rise, riseOnScroll, stagger, staggerItem } from '../lib/motion.js';
 
 function ProductCard({ product }) {
   return (
-    <div className="glass-card group flex flex-col p-2 reveal-element">
-      <div className="overflow-hidden h-[320px] mb-4 bg-surface-container-high relative">
+    <motion.div
+      {...staggerItem}
+      className="glass-card group flex flex-col p-2 transition-colors hover:border-primary/30"
+    >
+      <div className="relative mb-4 h-[320px] overflow-hidden bg-surface-container-high">
         {product.main_image ? (
           <img
             alt={product.name}
             loading="lazy"
             decoding="async"
-            className="card-image w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+            className="card-image h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0"
             src={product.main_image}
           />
         ) : (
@@ -21,42 +23,43 @@ function ProductCard({ product }) {
             <span className="material-symbols-outlined text-6xl">image</span>
           </div>
         )}
+
         {product.badge && (
-          <div className="absolute top-4 right-4 bg-surface/80 backdrop-blur-md px-3 py-1 border border-white/10 rounded flex items-center gap-2">
+          <div className="absolute right-4 top-4 flex items-center gap-2 rounded border border-white/10 bg-surface/80 px-3 py-1 backdrop-blur-md">
             <div className="active-glow"></div>
             <span className="font-label-sm text-label-sm text-white">{product.badge}</span>
           </div>
         )}
-        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+        <div className="absolute inset-0 bg-primary/5 opacity-0 transition-opacity group-hover:opacity-100"></div>
       </div>
 
       <div className="px-4 pb-6 pt-2">
-        <h3 className="font-headline-md text-headline-md mb-2 text-primary">
-          {product.category || product.name}
-        </h3>
-        <p className="font-body-md text-body-md text-on-surface-variant mb-6">{product.short_description}</p>
+        <h3 className="mb-2 font-headline-md text-headline-md text-primary">{product.category || product.name}</h3>
+        <p className="mb-6 font-body-md text-body-md text-on-surface-variant">{product.short_description}</p>
+
         <a
           href={`/products/${product.slug}`}
-          className="flex justify-between items-center border-t border-white/10 pt-4 cursor-pointer"
+          className="flex cursor-pointer items-center justify-between border-t border-white/10 pt-4"
         >
-          <span className="font-label-sm text-label-sm text-outline tracking-widest uppercase">{product.name}</span>
-          <span className="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform duration-300">
+          <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">{product.name}</span>
+          <span className="material-symbols-outlined text-primary transition-transform duration-300 group-hover:translate-x-2">
             arrow_forward
           </span>
         </a>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function CardSkeleton() {
   return (
     <div className="glass-card flex flex-col p-2">
-      <div className="h-[320px] mb-4 bg-surface-container-high animate-pulse"></div>
-      <div className="px-4 pb-6 pt-2 space-y-3">
-        <div className="h-6 w-2/3 bg-white/5 animate-pulse rounded"></div>
-        <div className="h-4 w-full bg-white/5 animate-pulse rounded"></div>
-        <div className="h-px w-full bg-white/10 mt-6"></div>
+      <div className="mb-4 h-[320px] animate-pulse bg-surface-container-high"></div>
+      <div className="space-y-3 px-4 pb-6 pt-2">
+        <div className="h-6 w-2/3 animate-pulse rounded bg-white/5"></div>
+        <div className="h-4 w-full animate-pulse rounded bg-white/5"></div>
+        <div className="mt-6 h-px w-full bg-white/10"></div>
       </div>
     </div>
   );
@@ -66,87 +69,99 @@ export default function Products() {
   const { data: products, loading, error } = useApi((signal) => api.products(signal));
 
   return (
-    <>
-      <div className="fixed inset-0 technical-grid z-0 pointer-events-none"></div>
-      <div className="fixed inset-0 bg-gradient-to-b from-transparent via-surface/50 to-background z-0 pointer-events-none"></div>
-      <Header active="/products" />
-      <MobileDrawer active="/products" />
-
-      <main className="relative z-10 pt-[120px] pb-stack-xl max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-        <header className="mb-stack-lg md:mb-stack-xl relative reveal-element">
-          <div className="absolute top-0 right-0 hidden lg:flex flex-col items-end gap-2 p-4 border border-white/10 bg-surface/30 backdrop-blur-md rounded-lg">
-            <div className="flex items-center gap-4">
-              <div className="flex flex-col items-end">
-                <span className="text-[10px] text-outline uppercase tracking-tighter">Core Status</span>
-                <span className="text-label-sm text-primary font-bold">OPERATIONAL</span>
-              </div>
-              <div className="w-12 h-12 rounded-full border-2 border-primary/20 flex items-center justify-center relative">
-                <div className="absolute inset-0 border-t-2 border-primary rounded-full animate-spin"></div>
-                <span className="material-symbols-outlined text-primary text-sm">memory</span>
-              </div>
+    <main className="relative z-10 mx-auto max-w-container-max px-margin-mobile pb-stack-xl pt-24 md:px-margin-desktop md:pt-[120px]">
+      <header className="relative mb-stack-lg md:mb-stack-xl">
+        <motion.div
+          {...rise(0.5)}
+          className="absolute right-0 top-0 hidden flex-col items-end gap-2 rounded-lg border border-white/10 bg-surface/30 p-4 backdrop-blur-md lg:flex"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] uppercase tracking-tighter text-outline">Core Status</span>
+              <span className="text-label-sm font-bold text-primary">OPERATIONAL</span>
             </div>
-            <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full bg-primary w-3/4 animate-pulse"></div>
+            <div className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary/20">
+              <div className="absolute inset-0 animate-spin rounded-full border-t-2 border-primary"></div>
+              <span className="material-symbols-outlined text-sm text-primary">memory</span>
             </div>
           </div>
-
-          <div className="flex items-center gap-3 mb-stack-sm">
-            <div className="active-glow"></div>
-            <span className="font-label-md text-label-md text-primary tracking-[0.2em] uppercase px-3 py-1 border border-primary/30 rounded-full bg-primary/5">
-              Enterprise Portfolio
-            </span>
+          <div className="h-1 w-full overflow-hidden rounded-full bg-white/10">
+            <div className="h-full w-3/4 animate-pulse bg-primary"></div>
           </div>
-          <div className="font-label-sm text-label-sm text-outline/60 mb-2 tracking-widest">SYSTEM ID: KAE-PRD-024</div>
-          <h1 className="font-display-lg text-headline-lg-mobile md:text-display-lg mb-4 max-w-3xl">Наша продукция</h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-            Технологии, созданные для сложных задач. Мы проектируем будущее через призму инженерного совершенства и
-            абсолютной надежности.
+        </motion.div>
+
+        <motion.div {...rise(0.05)} className="mb-stack-sm flex items-center gap-3">
+          <div className="active-glow"></div>
+          <span className="rounded-full border border-primary/30 bg-primary/5 px-3 py-1 font-label-md text-label-md uppercase tracking-[0.2em] text-primary">
+            Enterprise Portfolio
+          </span>
+        </motion.div>
+
+        <motion.div {...rise(0.12)} className="mb-2 font-label-sm text-label-sm tracking-widest text-outline/60">
+          SYSTEM ID: KAE-PRD-024
+        </motion.div>
+
+        <motion.h1 {...rise(0.2)} className="mb-4 max-w-3xl font-display-lg text-headline-lg-mobile md:text-display-lg">
+          Наша продукция
+        </motion.h1>
+
+        <motion.p {...rise(0.3)} className="max-w-2xl font-body-lg text-body-lg text-on-surface-variant">
+          Технологии, созданные для сложных задач. Мы проектируем будущее через призму инженерного совершенства и
+          абсолютной надежности.
+        </motion.p>
+      </header>
+
+      {loading && (
+        <section className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }, (_, index) => (
+            <CardSkeleton key={index} />
+          ))}
+        </section>
+      )}
+
+      {!loading && products?.length > 0 && (
+        <motion.section {...stagger(0.09, 0.1)} className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3">
+          {products.map((product) => (
+            <ProductCard key={product.slug} product={product} />
+          ))}
+        </motion.section>
+      )}
+
+      {error && (
+        <div className="glass-card border border-primary/20 p-8 text-center">
+          <span className="material-symbols-outlined mb-3 text-4xl text-primary/60">cloud_off</span>
+          <p className="font-body-md text-on-surface-variant">
+            Не удалось загрузить каталог. Обновите страницу или попробуйте позже.
           </p>
-        </header>
+        </div>
+      )}
 
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-          {loading && Array.from({ length: 6 }, (_, index) => <CardSkeleton key={index} />)}
+      {!loading && !error && products?.length === 0 && (
+        <div className="glass-card border border-white/10 p-8 text-center">
+          <p className="font-body-md text-on-surface-variant">Каталог пока пуст.</p>
+        </div>
+      )}
 
-          {!loading && products?.map((product) => <ProductCard key={product.slug} product={product} />)}
-        </section>
+      <motion.section {...riseOnScroll()} className="mt-stack-xl flex flex-col items-center text-center">
+        <h2 className="mb-stack-lg select-none font-display-lg text-headline-lg-mobile font-black leading-none tracking-tighter text-outline/10 md:text-[120px]">
+          READY FOR TOMORROW
+        </h2>
 
-        {error && (
-          <div className="glass-card p-8 text-center border border-primary/20">
-            <span className="material-symbols-outlined text-primary/60 text-4xl mb-3">cloud_off</span>
-            <p className="font-body-md text-on-surface-variant">
-              Не удалось загрузить каталог. Обновите страницу или попробуйте позже.
-            </p>
-          </div>
-        )}
-
-        {!loading && !error && products?.length === 0 && (
-          <div className="glass-card p-8 text-center border border-white/10">
-            <p className="font-body-md text-on-surface-variant">Каталог пока пуст.</p>
-          </div>
-        )}
-
-        <section className="mt-stack-xl flex flex-col items-center text-center reveal-element">
-          <h2 className="font-display-lg text-headline-lg-mobile md:text-[120px] font-black text-outline/10 tracking-tighter select-none mb-stack-lg leading-none">
-            READY FOR TOMORROW
-          </h2>
-          <div className="glass-card max-w-3xl w-full p-stack-lg border border-primary/20 bg-primary/5">
-            <h3 className="font-headline-lg text-headline-md md:text-headline-lg mb-6">
-              Готовы к реализации вашего проекта?
-            </h3>
-            <p className="font-body-lg text-body-md md:text-body-lg text-on-surface-variant mb-8 px-4">
-              Свяжитесь с нашими инженерами для обсуждения спецификаций и возможностей масштабирования.
-            </p>
-            <a
-              href="/contacts"
-              className="inline-block bg-primary-container text-on-primary-container font-headline-md px-12 py-5 rounded-lg glow-button text-headline-md w-full md:w-auto"
-            >
-              Оставить заявку
-            </a>
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-    </>
+        <div className="glass-card w-full max-w-3xl border border-primary/20 bg-primary/5 p-stack-lg">
+          <h3 className="mb-6 font-headline-lg text-headline-md md:text-headline-lg">
+            Готовы к реализации вашего проекта?
+          </h3>
+          <p className="mb-8 px-4 font-body-lg text-body-md text-on-surface-variant md:text-body-lg">
+            Свяжитесь с нашими инженерами для обсуждения спецификаций и возможностей масштабирования.
+          </p>
+          <a
+            href="/contacts"
+            className="glow-button inline-block w-full rounded-lg bg-primary-container px-12 py-5 font-headline-md text-headline-md text-on-primary-container md:w-auto"
+          >
+            Оставить заявку
+          </a>
+        </div>
+      </motion.section>
+    </main>
   );
 }

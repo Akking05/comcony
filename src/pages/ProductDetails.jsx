@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Header } from '../components/layout/Header.jsx';
-import { MobileDrawer } from '../components/layout/MobileDrawer.jsx';
-import { Footer } from '../components/layout/Footer.jsx';
+import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api, track } from '../lib/api.js';
+import { rise, riseOnScroll, stagger, staggerItem } from '../lib/motion.js';
 
 const formatSize = (bytes) => {
   if (!bytes) return '';
@@ -14,13 +13,7 @@ const formatSize = (bytes) => {
 
 function Shell({ children }) {
   return (
-    <>
-      <div className="fixed inset-0 tech-grid pointer-events-none z-0"></div>
-      <div className="scanline pointer-events-none z-1"></div>
-      <Header active="/products" />
-      <MobileDrawer active="/products" />
-
-      <main className="pt-[120px] pb-stack-xl max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10 min-h-[60vh]">
+      <main className="pt-24 md:pt-[120px] pb-stack-xl max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10 min-h-[60vh]">
         <a
           href="/products"
           className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-8 group"
@@ -30,10 +23,7 @@ function Shell({ children }) {
         </a>
 
         {children}
-      </main>
-
-      <Footer />
-    </>
+    </main>
   );
 }
 
@@ -103,7 +93,7 @@ export default function ProductDetails({ slug }) {
     <Shell>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
         {/* Изображение и галерея */}
-        <div className="reveal-element">
+        <motion.div {...rise(0.05)}>
           <div className="glass-card p-2 rounded-lg">
             <div className="aspect-[4/3] w-full overflow-hidden rounded relative bg-surface-container-high">
               {activeImage ? (
@@ -135,10 +125,10 @@ export default function ProductDetails({ slug }) {
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Информация */}
-        <div className="flex flex-col justify-center h-full reveal-element stagger-1">
+        <motion.div {...rise(0.18)} className="flex flex-col justify-center h-full">
           {product.category && (
             <div className="flex items-center gap-3 mb-6">
               <div className="active-glow"></div>
@@ -159,7 +149,7 @@ export default function ProductDetails({ slug }) {
           </p>
 
           {product.key_specs.length > 0 && (
-            <div className="grid grid-cols-2 gap-6 mb-12">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 mb-12">
               {product.key_specs.map((spec) => (
                 <div key={spec.name} className="border-l border-white/10 pl-4">
                   <div className="text-[10px] text-outline tracking-widest uppercase mb-1">{spec.name}</div>
@@ -185,12 +175,12 @@ export default function ProductDetails({ slug }) {
               </a>
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Технические характеристики */}
       {product.spec_groups.length > 0 && (
-        <section className="mt-stack-xl reveal-element">
+        <motion.section {...riseOnScroll()} className="mt-stack-xl">
           <h2 className="font-headline-lg text-headline-md md:text-headline-lg text-white mb-8 uppercase tracking-tight">
             Технические характеристики
           </h2>
@@ -216,12 +206,12 @@ export default function ProductDetails({ slug }) {
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
       )}
 
       {/* Области применения */}
       {product.applications.length > 0 && (
-        <section className="mt-stack-xl reveal-element">
+        <motion.section {...riseOnScroll()} className="mt-stack-xl">
           <h2 className="font-headline-lg text-headline-md md:text-headline-lg text-white mb-8 uppercase tracking-tight">
             Области применения
           </h2>
@@ -238,12 +228,12 @@ export default function ProductDetails({ slug }) {
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
       )}
 
       {/* Документация */}
       {product.documents.length > 0 && (
-        <section id="documentation" className="mt-stack-xl scroll-mt-32 reveal-element">
+        <motion.section {...riseOnScroll()} id="documentation" className="mt-stack-xl scroll-mt-32">
           <h2 className="font-headline-lg text-headline-md md:text-headline-lg text-white mb-8 uppercase tracking-tight">
             Документация
           </h2>
@@ -271,7 +261,7 @@ export default function ProductDetails({ slug }) {
               </a>
             ))}
           </div>
-        </section>
+        </motion.section>
       )}
     </Shell>
   );

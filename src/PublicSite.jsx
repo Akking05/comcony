@@ -1,10 +1,18 @@
 import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { ReactLenis } from 'lenis/dist/lenis-react';
 
 import About from './pages/About.jsx';
 import Contacts from './pages/Contacts.jsx';
 import Home from './pages/Home.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
 import Products from './pages/Products.jsx';
+
+import { Header } from './components/layout/Header.jsx';
+import { MobileDrawer } from './components/layout/MobileDrawer.jsx';
+import { Footer } from './components/layout/Footer.jsx';
+import { PageBackground } from './components/layout/PageBackground.jsx';
+
 import { usePageEffects } from './hooks/usePageEffects.js';
 import { track } from './lib/api.js';
 
@@ -14,27 +22,27 @@ const routes = {
   '/': {
     component: Home,
     title: 'KAE Engineering | Инженерные решения нового поколения',
-    bodyClass: 'bg-background text-on-background font-body-md overflow-x-hidden',
+    nav: '/',
   },
   '/products': {
     component: Products,
     title: 'KAE Engineering | Наша продукция',
-    bodyClass: 'font-body-md overflow-x-hidden',
+    nav: '/products',
   },
   [PRODUCT_ROUTE]: {
     component: ProductDetails,
     title: 'KAE Engineering | Детали товара',
-    bodyClass: 'bg-background text-on-background font-body-md overflow-x-hidden',
+    nav: '/products',
   },
   '/about': {
     component: About,
     title: 'KAE Engineering | О компании',
-    bodyClass: 'bg-background text-on-background font-body-md overflow-x-hidden',
+    nav: '/about',
   },
   '/contacts': {
     component: Contacts,
     title: 'Контакты | KAE Engineering',
-    bodyClass: 'bg-background text-on-background font-body-md overflow-x-hidden',
+    nav: '/contacts',
   },
 };
 
@@ -65,31 +73,36 @@ function resolveRoute(pathname) {
   return { path: routes[aliased] ? aliased : '/', params: {} };
 }
 
+/** Плавность на грани заметности: содержимое подменяется, обвязка стоит. */
+const TRANSITION = {
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
+  transition: { duration: 0.32, ease: [0.23, 1, 0.32, 1] },
+};
+
 export default function PublicSite() {
   const [location, setLocation] = useState(() => resolveRoute(window.location.pathname));
   const route = routes[location.path] ?? routes['/'];
   const Page = route.component;
 
-  usePageEffects(location.path + (location.params.slug ?? ''));
+  const routeKey = location.path + (location.params.slug ?? '');
+
+  usePageEffects(routeKey);
 
   useEffect(() => {
     document.documentElement.classList.add('dark');
     document.documentElement.lang = 'ru';
-    document.body.className = route.bodyClass;
+    document.body.className = 'bg-background text-on-background font-body-md overflow-x-hidden';
     document.title = route.title;
   }, [route]);
 
-  // Страница товара уточняет заголовок сама, когда загрузит данные,
-  // поэтому визиты считаем по адресу.
   useEffect(() => {
     track({ type: 'visit', path: window.location.pathname, referrer: document.referrer });
-  }, [location.path, location.params.slug]);
+  }, [routeKey]);
 
   useEffect(() => {
-    const handlePopState = () => {
-      setLocation(resolveRoute(window.location.pathname));
-      window.scrollTo({ top: 0 });
-    };
+    const handlePopState = () => setLocation(resolveRoute(window.location.pathname));
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -117,14 +130,38 @@ export default function PublicSite() {
     if (next.path === '/' && target !== '/' && !routeAliases[target]) return;
 
     event.preventDefault();
-    window.history.pushState({}, '', url.pathname);
+
+    // Якорь на текущей странице — просто прокрутка, без смены маршрута.
+    if (url.pathname === window.location.pathname && url.hash) {
+      document.querySelector(url.hash)?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    window.history.pushState({}, '', url.pathname + url.search);
     setLocation(next);
-    window.scrollTo({ top: 0 });
   };
 
   return (
-    <div onClick={handleClick}>
-      <Page {...location.params} />
-    </div>
+    <ReactLenis root options={{ lerp: 0.08 }}>
+      {/* Фон вне анимируемого контейнера: transform на нём сделал бы его
+          системой отсчёта для position: fixed, и фон поехал бы вместе со
+          страницей. */}
+      <PageBackground />
+
+      <div onClick={handleClick}>
+        <Header active={route.nav} />
+        <MobileDrawer active={route.nav} />
+
+        {/* Прокрутка наверх — после того как прежняя страница исчезла,
+            иначе перемотка видна во время затухания. */}
+        <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo({ top: 0 })}>
+          <motion.div key={routeKey} {...TRANSITION}>
+            <Page {...location.params} />
+          </motion.div>
+        </AnimatePresence>
+
+        <Footer />
+      </div>
+    </ReactLenis>
   );
 }

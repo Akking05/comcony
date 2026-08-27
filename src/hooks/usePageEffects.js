@@ -1,60 +1,12 @@
 import { useEffect } from 'react';
 
+/**
+ * Императивные эффекты страниц: мобильное меню и подсветка панелей курсором.
+ *
+ * Появление элементов при прокрутке раньше жило здесь на IntersectionObserver,
+ * теперь этим занимается motion прямо в разметке — см. src/lib/motion.js.
+ */
 export function usePageEffects(path) {
-  useEffect(() => {
-    const revealElements = () => document.querySelectorAll('.reveal, .reveal-element');
-
-    if (!('IntersectionObserver' in window)) {
-      revealElements().forEach((element) => element.classList.add('active'));
-      return undefined;
-    }
-
-    const revealObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-
-          entry.target.classList.add('active');
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px',
-      },
-    );
-
-    const observed = new WeakSet();
-
-    const registerNewElements = () => {
-      revealElements().forEach((element) => {
-        if (observed.has(element)) return;
-
-        observed.add(element);
-        revealObserver.observe(element);
-      });
-    };
-
-    registerNewElements();
-
-    // Карточки товаров и тексты приходят из API уже после монтирования.
-    // Без этого наблюдателя они остались бы с opacity: 0, то есть невидимыми.
-    const contentObserver = new MutationObserver(registerNewElements);
-    contentObserver.observe(document.body, { childList: true, subtree: true });
-
-    const firstScreenTimer = window.setTimeout(() => {
-      document.querySelectorAll('section:first-of-type .reveal').forEach((element) => {
-        element.classList.add('active');
-      });
-    }, 100);
-
-    return () => {
-      window.clearTimeout(firstScreenTimer);
-      contentObserver.disconnect();
-      revealObserver.disconnect();
-    };
-  }, [path]);
-
   useEffect(() => {
     const menuToggle = document.getElementById('menu-toggle');
     const menuClose = document.getElementById('menu-close');
@@ -77,12 +29,26 @@ export function usePageEffects(path) {
       document.body.style.overflow = '';
     };
 
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') closeMenu();
+    };
+
+    // Переход по пункту меню должен его закрывать: маршрут меняется
+    // без перезагрузки, само оно не свернётся.
+    const onDrawerClick = (event) => {
+      if (event.target.closest('a')) closeMenu();
+    };
+
     menuToggle?.addEventListener('click', openMenu);
+    mobileDrawer?.addEventListener('click', onDrawerClick);
+    document.addEventListener('keydown', onKeyDown);
     menuClose?.addEventListener('click', closeMenu);
     drawerOverlay?.addEventListener('click', closeMenu);
 
     return () => {
       closeMenu();
+      document.removeEventListener('keydown', onKeyDown);
+      mobileDrawer?.removeEventListener('click', onDrawerClick);
       menuToggle?.removeEventListener('click', openMenu);
       menuClose?.removeEventListener('click', closeMenu);
       drawerOverlay?.removeEventListener('click', closeMenu);
@@ -95,11 +61,9 @@ export function usePageEffects(path) {
     // Список панелей пересобирается при изменениях DOM — часть из них
     // появляется вместе с данными из API.
     let glassPanels = Array.from(document.querySelectorAll('.glass-panel'));
-    let technicalGrid = document.querySelector('.technical-grid');
 
     const refreshTargets = () => {
       glassPanels = Array.from(document.querySelectorAll('.glass-panel'));
-      technicalGrid = document.querySelector('.technical-grid');
     };
 
     const targetsObserver = new MutationObserver(refreshTargets);
@@ -123,12 +87,6 @@ export function usePageEffects(path) {
         panel.style.boxShadow =
           distance < 400 ? `0 0 25px rgba(0, 209, 255, ${(1 - distance / 400) * 0.15})` : 'none';
       });
-
-      if (technicalGrid) {
-        const x = event.clientX / window.innerWidth - 0.5;
-        const y = event.clientY / window.innerHeight - 0.5;
-        technicalGrid.style.transform = `translate(${x * 30}px, ${y * 30}px)`;
-      }
     };
 
     const handleMouseMove = (event) => {
