@@ -1,117 +1,44 @@
-import { useEffect, useRef } from 'react';
-import Spline from '@splinetool/react-spline';
+const orbitItems = [
+  { label: 'AI', className: 'top-[12%] left-[18%] delay-0' },
+  { label: 'CAD', className: 'top-[22%] right-[12%] delay-150' },
+  { label: 'R&D', className: 'bottom-[20%] left-[12%] delay-300' },
+  { label: 'QC', className: 'bottom-[14%] right-[20%] delay-500' },
+];
 
 export function SplineWrapper() {
-  const containerRef = useRef(null);
-  const appRef = useRef(null);
-  
-  // Use a ref to store tracking state to avoid closure issues
-  const trackRef = useRef({
-    targetX: 0,
-    targetY: 0,
-    currentX: 0,
-    currentY: 0,
-    rAF: null
-  });
-
-  useEffect(() => {
-    // Hack to force transparent background in WebGL
-    const originalClearColor2 = WebGL2RenderingContext.prototype.clearColor;
-    WebGL2RenderingContext.prototype.clearColor = function (r, g, b, a) {
-      originalClearColor2.call(this, r, g, b, 0);
-    };
-    const originalClearColor1 = WebGLRenderingContext.prototype.clearColor;
-    WebGLRenderingContext.prototype.clearColor = function (r, g, b, a) {
-      originalClearColor1.call(this, r, g, b, 0);
-    };
-
-    const container = containerRef.current;
-    let handleWheel;
-    if (container) {
-      // Prevent zooming (wheel scroll)
-      handleWheel = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      };
-      container.addEventListener('wheel', handleWheel, { passive: false, capture: true });
-    }
-
-    const handleMouseMove = (e) => {
-      const container = containerRef.current;
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      
-      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2; // -1 to 1
-      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2; // -1 to 1
-      
-      // Target rotation offset (radians)
-      trackRef.current.targetX = Math.max(-1, Math.min(1, x)) * 0.3; 
-      trackRef.current.targetY = Math.max(-1, Math.min(1, y)) * 0.15;
-    };
-    
-    // We will use Spline's internal update event instead of rAF to avoid animation conflicts
-    const loop = () => {
-      trackRef.current.currentX += (trackRef.current.targetX - trackRef.current.currentX) * 0.1;
-      trackRef.current.currentY += (trackRef.current.targetY - trackRef.current.currentY) * 0.1;
-      trackRef.current.rAF = requestAnimationFrame(loop);
-    };
-    trackRef.current.rAF = requestAnimationFrame(loop);
-    
-    window.addEventListener('mousemove', handleMouseMove);
-
-    return () => {
-      cancelAnimationFrame(trackRef.current.rAF);
-      WebGL2RenderingContext.prototype.clearColor = originalClearColor2;
-      WebGLRenderingContext.prototype.clearColor = originalClearColor1;
-      window.removeEventListener('mousemove', handleMouseMove);
-      if (container && handleWheel) {
-        container.removeEventListener('wheel', handleWheel, { capture: true });
-      }
-    };
-  }, []);
-
   return (
-    <div 
-      ref={containerRef} 
-      className="w-full h-full relative pointer-events-auto overflow-visible cursor-crosshair"
-    >
-      <Spline 
-        scene="/scene.splinecode" 
-        onLoad={(app) => {
-          appRef.current = app;
-          try { if (app._scene) app._scene.background = null; } catch(e) {}
-          try { app.setBackgroundColor('transparent'); } catch(e) {}
-          
-          // Shrink the model inside the frame (user asked for slight shrink)
-          try {
-            app.setZoom(0.3); // decreased by another 30% from 0.45
-          } catch(e) {}
-          
-          // Hide the white floor/rectangle object
-          try {
-            const floor = app.findObjectByName('Floor');
-            if (floor) floor.visible = false;
-            
-            const rect = app.findObjectByName('Rectangle');
-            if (rect && rect.name.includes('Rectangle')) rect.visible = false;
-          } catch(e) {}
-          // Hook into Spline's update event to apply passive rotation AFTER animations
-          let robotRoot = null;
-          app.addEventListener('update', () => {
-             if (!robotRoot && app._scene && app._scene.children) {
-                 robotRoot = app._scene.children.find(c => {
-                     const n = (c.name || '').toLowerCase();
-                     return c.type !== 'Camera' && !n.includes('light') && n !== 'floor' && !n.includes('rectangle');
-                 });
-             }
-             if (robotRoot && robotRoot.rotation) {
-                 // Add our parallax offset to whatever rotation the animation set this frame
-                 robotRoot.rotation.y += trackRef.current.currentX;
-                 robotRoot.rotation.x += trackRef.current.currentY;
-             }
-          });
-        }}
-      />
+    <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-surface/40">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,209,255,0.18),transparent_58%)]" />
+      <div className="absolute inset-8 rounded-full border border-primary/10" />
+      <div className="absolute inset-16 rounded-full border border-primary/20 animate-spin [animation-duration:18s]" />
+      <div className="absolute inset-24 rounded-full border border-dashed border-primary/20 animate-spin [animation-duration:28s] [animation-direction:reverse]" />
+
+      <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/40 bg-background/80 shadow-[0_0_60px_rgba(0,209,255,0.18)]">
+        <div className="absolute inset-6 rounded-full border border-white/10 bg-primary/5" />
+        <div className="absolute inset-14 rounded-full bg-primary/20 blur-md" />
+        <span className="material-symbols-outlined absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-7xl text-primary">
+          precision_manufacturing
+        </span>
+      </div>
+
+      {orbitItems.map((item) => (
+        <div
+          key={item.label}
+          className={`absolute ${item.className} rounded-sm border border-primary/30 bg-surface/70 px-3 py-2 font-label-sm text-[10px] tracking-widest text-primary shadow-[0_0_24px_rgba(0,209,255,0.12)] animate-pulse`}
+        >
+          {item.label}
+        </div>
+      ))}
+
+      <div className="absolute bottom-6 left-6 right-6">
+        <div className="mb-2 flex items-center justify-between font-label-sm text-[10px] uppercase tracking-widest text-on-surface-variant">
+          <span>Engineering Core</span>
+          <span className="text-primary">Online</span>
+        </div>
+        <div className="h-1 overflow-hidden rounded-full bg-white/10">
+          <div className="h-full w-4/5 bg-primary-container shadow-[0_0_16px_#00d1ff]" />
+        </div>
+      </div>
     </div>
   );
 }

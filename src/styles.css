@@ -3,6 +3,7 @@
 @theme {
   --color-secondary: #adc6ff;
   --color-primary: #a4e6ff;
+  --color-primary-fixed: #00d1ff;
   --color-on-surface-variant: #bbc9cf;
   --color-surface-container-lowest: #090f12;
   --color-on-background: #dde3e7;
@@ -37,7 +38,11 @@
   --font-body-lg: Inter, Outfit, sans-serif;
   --font-headline-lg: Sora, "Plus Jakarta Sans", sans-serif;
   --font-display-lg: Sora, "Plus Jakarta Sans", sans-serif;
+  --font-display-md: Sora, "Plus Jakarta Sans", sans-serif;
   --font-label-sm: Geist, sans-serif;
+  --font-label-lg: Geist, sans-serif;
+  --font-label-mono: Geist, monospace;
+  --font-button-text: Geist, sans-serif;
   --font-headline-lg-mobile: Sora, "Plus Jakarta Sans", sans-serif;
   --font-body-md: Inter, Outfit, sans-serif;
   --font-label-md: Geist, sans-serif;
@@ -46,7 +51,10 @@
   --text-body-lg: 18px;
   --text-headline-lg: 40px;
   --text-display-lg: 64px;
+  --text-display-md: 56px;
   --text-label-sm: 12px;
+  --text-label-lg: 16px;
+  --text-label-mono: 12px;
   --text-headline-lg-mobile: 32px;
   --text-body-md: 16px;
   --text-label-md: 14px;
@@ -171,6 +179,10 @@ body {
 
 .stagger-3 {
   transition-delay: 0.3s;
+}
+
+.stagger-4 {
+  transition-delay: 0.4s;
 }
 
 @keyframes video-zest-anim {

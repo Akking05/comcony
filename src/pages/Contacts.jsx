@@ -1,54 +1,15 @@
+import { Header } from "../components/layout/Header.jsx";
+import { MobileDrawer } from "../components/layout/MobileDrawer.jsx";
+import { Footer } from "../components/layout/Footer.jsx";
+
 export default function Contacts() {
   return (
     <>
       <div className="fixed inset-0 tech-grid pointer-events-none z-0"></div>
           <div className="scanline pointer-events-none z-1"></div>
-          <header className="fixed top-0 w-full z-50 bg-surface/30 backdrop-blur-xl border-b border-white/10">
-              <div
-                  className="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-                  <div className="flex items-center gap-4">
-                      <span className="font-headline-md text-4xl md:text-5xl font-bold tracking-tighter"><span className="text-[#a4e6ff]">K</span><span className="text-white">AE</span></span>
-                  </div>
-                  <nav className="hidden lg:flex items-center gap-8">
-                      <a className="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300"
-                          href="/">Главная</a>
-                      <a className="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300"
-                          href="/products">Продукция</a>
-                      <a className="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300"
-                          href="/about">О компании</a>
-                      <a className="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md"
-                          href="/contacts">Контакты</a>
-                  </nav>
-                  <div className="flex items-center gap-4">
-                      <button
-                          className="bg-primary-container text-on-primary-container px-6 py-2 rounded-sm font-label-md text-label-md font-bold hover:scale-95 transition-transform duration-200 primary-glow">
-                          Get in Touch
-                      </button>
-                      <button id="menu-toggle" className="lg:hidden text-primary">
-                          <span className="material-symbols-outlined">menu</span>
-                      </button>
-                  </div>
-              </div>
-          </header>
-          {/* Mobile Menu Drawer */}
-          <div id="mobile-drawer" className="fixed inset-0 z-[100] closed pointer-events-none flex justify-end">
-              <div id="drawer-overlay" className="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-              <div className="relative w-64 md:w-80 bg-surface border-l border-white/10 p-6 flex flex-col gap-8 h-full drawer-content bg-surface/90 backdrop-blur-xl">
-                  <div className="flex justify-between items-center">
-                      <span className="font-headline-md text-3xl md:text-4xl font-bold tracking-tighter"><span className="text-[#a4e6ff]">K</span><span className="text-white">AE</span></span>
-                      <button id="menu-close" className="text-primary hover:text-white transition-colors">
-                          <span className="material-symbols-outlined text-2xl">close</span>
-                      </button>
-                  </div>
-                  <nav className="flex flex-col gap-6 mt-8">
-                      <a className="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="/">Главная</a>
-                      <a className="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="/products">Продукция</a>
-                      <a className="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="/about">О компании</a>
-                      <a className="text-on-surface-variant font-label-lg hover:text-primary transition-colors duration-300 uppercase tracking-widest border-b border-white/5 pb-4" href="/contacts">Контакты</a>
-                  </nav>
-              </div>
-          </div>
-      
+          <Header active="/contacts" />
+          <MobileDrawer active="/contacts" />
+
           <main className="pt-32 pb-stack-xl min-h-screen relative z-10 flex flex-col justify-center">
               <section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop w-full">
                   <div className="mb-12 text-center md:text-left reveal">
@@ -148,37 +109,8 @@ export default function Contacts() {
                   </div>
               </section>
           </main>
-      
-          <footer className="bg-surface-container-lowest py-stack-lg border-t border-outline-variant relative z-10">
-              <div
-                  className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col lg:flex-row justify-between items-center gap-stack-md">
-                  <div className="flex flex-col items-center lg:items-start gap-4">
-                      <div className="flex items-center gap-2">
-                          <span className="font-headline-md text-3xl md:text-4xl font-black tracking-tighter"><span className="text-[#a4e6ff]">K</span><span className="text-white">AE</span></span>
-                      </div>
-                      <p className="font-body-md text-body-md text-on-surface-variant text-center lg:text-left">© 2024 KAE
-                          Engineering. READY FOR TOMORROW.</p>
-                  </div>
-                  <div className="flex flex-wrap justify-center gap-8">
-                      <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-opacity"
-                          href="#">LinkedIn</a>
-                      <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-opacity"
-                          href="#">Twitter</a>
-                      <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-opacity"
-                          href="#">GitHub</a>
-                  </div>
-                  <div className="flex gap-4">
-                      <div
-                          className="w-10 h-10 rounded-sm glass-panel flex items-center justify-center hover:opacity-80 cursor-pointer">
-                          <span className="material-symbols-outlined text-primary text-xl">language</span>
-                      </div>
-                      <div
-                          className="w-10 h-10 rounded-sm glass-panel flex items-center justify-center hover:opacity-80 cursor-pointer">
-                          <span className="material-symbols-outlined text-primary text-xl">terminal</span>
-                      </div>
-                  </div>
-              </div>
-          </footer>
+
+          <Footer />
     </>
   );
 }

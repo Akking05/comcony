@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   viewBox="0 0 109.01442 90.474876"
+   id="svg11"
+   sodipodi:docname="aselsan-emblemsvg.svg"
+   width="109.01442"
+   height="90.474876"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview11"
+     pagecolor="#131313"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="2.8582827"
+     inkscape:cx="214.8143"
+     inkscape:cy="67.348131"
+     inkscape:window-width="1920"
+     inkscape:window-height="1111"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg11" />
+  <defs
+     id="defs1">
+    <style
+       id="style1">
+      .cls-1, .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236)  -->
+  <g
+     id="g12"
+     transform="translate(-6.4863349,-14.575419)">
+    <path
+       class="cls-1"
+       d="m 113.25042,86.850419 c 1.9,-2.4 2.7,-5.6 2,-8.6 l -8.8,-38.5 c -0.7,-3 -2.7,-5.6 -5.5,-6.9 l -31.300001,-15.1 4.7,12.1 22.8,11 c 0.4,0.2 0.6,0.5 0.7,0.9 l 8.800001,38.5 c 0,0.4 0,0.8 -0.3,1.1 l -8.400001,10.5 c 2.600001,1.5 5.000001,3.2 7.400001,5 l 8,-10 z"
+       id="path7" />
+    <g
+       id="g11">
+      <path
+         class="cls-1"
+         d="m 52.450419,17.650419 -31.4,15.1 c -2.8,1.4 -4.8,3.9 -5.5,6.9 l -8.8000003,38.5 c -0.7,3 0,6.2 2,8.6 l 8.0000003,10 c 2.3,-1.8 4.8,-3.5 7.4,-5 l -8.4,-10.5 c -0.3,-0.3 -0.4,-0.7 -0.3,-1.1 l 8.8,-38.5 c 0,-0.4 0.4,-0.7 0.7,-0.9 l 22.9,-11 4.7,-12.1 z"
+         id="path8" />
+    </g>
+    <path
+       class="cls-1"
+       d="m 20.250419,101.35042 c 3,3.7 8.2,4.8 12.3,2.5 8.4,-4.700001 18.1,-7.400001 28.4,-7.400001 10.3,0 20,2.7 28.4,7.400001 4.1,2.3 9.3,1.2 12.300001,-2.5 C 90.350419,92.650419 76.250419,87.550419 60.950419,87.550419 c -15.3,0 -29.4,5.2 -40.7,13.800001"
+       id="path9" />
+    <path
+       class="cls-1"
+       d="m 53.450419,82.050419 7.5,-42.3 7.5,42.3 c 8.7,0.9 15.5,2.6 23.1,6.3 l -27.7,-71.9 c 0,0 0,0 0,0 -1.1,-2.5 -4.6,-2.5 -5.6,0 0,0 0,0 0,0 l -27.7,71.8 c 7.6,-3.7 14.3,-5.4 23,-6.3"
+       id="path10" />
+  </g>
+</svg>
