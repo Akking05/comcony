@@ -6,7 +6,9 @@
     "preview": "vite preview",
     "server": "node server/index.js",
     "db:seed": "node server/db/seed.js",
-    "db:reset": "node server/db/seed.js --reset"
+    "db:reset": "node server/db/seed.js --reset",
+    "demo:snapshot": "node scripts/demo-snapshot.js",
+    "build:demo": "node scripts/demo-snapshot.js && vite build"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.2",

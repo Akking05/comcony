@@ -1,4 +1,6 @@
 {
+  "buildCommand": "VITE_STATIC_DEMO=1 npx vite build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",

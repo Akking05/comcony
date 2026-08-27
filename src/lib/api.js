@@ -4,6 +4,27 @@
  */
 const BASE = '/api';
 
+/**
+ * Витринный режим для статического хостинга без бэкенда (Vercel).
+ * Включается только сборкой с VITE_STATIC_DEMO=1 — на VPS этот код
+ * вырезается целиком, и запросы всегда идут в настоящий API.
+ */
+export const DEMO_MODE = import.meta.env.VITE_STATIC_DEMO === '1';
+
+let demoData = null;
+
+async function loadDemoData() {
+  if (!demoData) {
+    const response = await fetch('/demo-data.json');
+
+    if (!response.ok) throw new Error('Не удалось загрузить демонстрационные данные');
+
+    demoData = await response.json();
+  }
+
+  return demoData;
+}
+
 async function request(path, { method = 'GET', body, signal } = {}) {
   const response = await fetch(BASE + path, {
     method,
@@ -39,11 +60,47 @@ async function request(path, { method = 'GET', body, signal } = {}) {
 }
 
 export const api = {
-  products: (signal) => request('/products', { signal }),
-  product: (slug, signal) => request(`/products/${encodeURIComponent(slug)}`, { signal }),
-  texts: (signal) => request('/texts', { signal }),
-  team: (signal) => request('/team', { signal }),
-  submitRequest: (body) => request('/requests', { method: 'POST', body }),
+  async products(signal) {
+    if (DEMO_MODE) return (await loadDemoData()).products;
+
+    return request('/products', { signal });
+  },
+
+  async product(slug, signal) {
+    if (DEMO_MODE) {
+      const found = (await loadDemoData()).details[slug];
+
+      if (!found) {
+        const error = new Error('Товар не найден');
+        error.status = 404;
+        throw error;
+      }
+
+      return found;
+    }
+
+    return request(`/products/${encodeURIComponent(slug)}`, { signal });
+  },
+
+  async texts(signal) {
+    if (DEMO_MODE) return (await loadDemoData()).texts;
+
+    return request('/texts', { signal });
+  },
+
+  async team(signal) {
+    if (DEMO_MODE) return (await loadDemoData()).team;
+
+    return request('/team', { signal });
+  },
+
+  async submitRequest(body) {
+    if (DEMO_MODE) {
+      throw new Error('Это демонстрационная версия — заявки не отправляются.');
+    }
+
+    return request('/requests', { method: 'POST', body });
+  },
 };
 
 /**
@@ -51,5 +108,7 @@ export const api = {
  * не должен ломать страницу.
  */
 export function track(event) {
+  if (DEMO_MODE) return;
+
   request('/track', { method: 'POST', body: event }).catch(() => {});
 }

@@ -1,0 +1,275 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "slug": "series-x",
+      "name": "Series-X",
+      "short_description": "Автономные решения для разведки и логистики.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDD6x6uTf6vNd4PCzVVmnY_29gRbXsolGYsuBQ1T8csAICDEYj7zaW0lonjfDgPbKdxNmfdOd_x-YrWsIS_dbw8JqxqNazeBr_wBWc1iMGNy3D033Rble_99l1JjNV6DEjv7BtkC4oKWlg3HtKsyb6nll9_JhYw8wbFqXaP13ICPSaoHsJdGCu57PlxjFDRyhYV8uiXdA4ESTKKHaEDOkXMHGagiGPs2s_BY3LUueevZi1eskS6dbKAhDxcIzLtTLVj71FcXN2IGI4",
+      "badge": "SYSTEM ACTIVE",
+      "category": "Беспилотные системы",
+      "category_slug": "drones"
+    },
+    {
+      "id": 2,
+      "slug": "precision-core",
+      "name": "Precision-Core",
+      "short_description": "Высокоточная электроника для критически важных систем.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAS_63Kua_g7zgZvD35_9I8lrQKbPZnLCZYBjuaTCTh90zpFgZLVmcrhr7HF7Y0jyLEZI7RtWo1aNgV9joWFU3oT6_ygo5I_d-tZQ0cBm7Rf3Coi01NBbg_8E2Og1zIMPUbkQD8BMJql9-YUYXRPWTMj6gPgExPDhZTmoXXELKke8_z6uUq-gn4eSoOyJkt1sSEfzeCmq7mPOpkDxPlTnG8kuSo3O3bEwbPalWkVFlD2zz5QLCwWaz479Dnbtvl2jFIsEe4LlVM_rY",
+      "badge": "HI-RES DATA",
+      "category": "Электронное оборудование",
+      "category_slug": "electronics"
+    },
+    {
+      "id": 3,
+      "slug": "modular-x",
+      "name": "Modular-X",
+      "short_description": "Масштабные модульные системы для индустрии.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuB1Nm2DU0btOBWgFXfjwTDYEVrkQbR3dWj5uUzRj8k7mnYN_Ezs1y86aCCAGFS2lb9R3OpkMFbMGkIJzQxjAi9m2Zn9QgSnvR1cpecJCDMIcKO4xNwabX97SDbyv7S02k0nb_cZgqJsHg4EkpwRvxYicc-RMHxqGG9lO-NRkonqcXXIcz3UdtdwCZx1Q92cFRSpHAhicbvnQfnSwu6LFs-CKIBSUilk3S9qzizG_aKQTDews41T8kRXwU3Olff86w1buk_YTFCWGGU",
+      "badge": "",
+      "category": "Инженерные комплексы",
+      "category_slug": "engineering-systems"
+    },
+    {
+      "id": 16,
+      "slug": "mobile-station",
+      "name": "Мобильная радиостанция",
+      "short_description": "",
+      "main_image": "/uploads/mobile-station-01.webp",
+      "badge": "",
+      "category": "Мобильные радиостанции",
+      "category_slug": "mobile-stations"
+    },
+    {
+      "id": 5,
+      "slug": "forge-os",
+      "name": "Forge-OS",
+      "short_description": "Роботизированные линии нового поколения.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAP63A1T4qtx1dKk2aLoNzU85FmF6yvzA8pqWIZ-HzPyrqRWMiqgyejyBdo26w_oTN1HPcScMtVmCbl-nh1Vu8fgIQEmnu-IzV_Z235UcjY4ofxgPMGnoF-ZlmdDphK3PIfDzIvyIvLmu3NHrtgcTkGVslCzTJPcBlggfV8xuzSQCznjV3FOheKUpQGiUueIIdu_47iWfVe7D0ppJ6I-mJ1AvYNyQPNxQTW-KwI9RDlzIMGI87QM6i7tAfLlWjeUUWwjlpNKAvOdTY",
+      "badge": "",
+      "category": "Промышленная автоматика",
+      "category_slug": "automation"
+    },
+    {
+      "id": 6,
+      "slug": "vanguard-lab",
+      "name": "Vanguard-Lab",
+      "short_description": "Экспериментальные технологии и прототипы будущего.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCJWeZ_JJT762hk6gyiSHGWsFWvabwJdKtUP_lcCf9aT941MWqjzPbhfXqGx8lFClAsrrPpmY28fqaG0H2EAjh1frowtKwv7bftd8V9Loe6layNvjRHChDL2jp-_natTkb8LP7IPz1B3zLDZR7fR9xfz5dfA5GG0-5VuVVR1Pz7p1FRUNUp-2hIAICV5OrKmNapaclps5XGB8L44vSbqVY4qP_eYoCBYRtHE4tkeuGnuY-3bmg_0Pv9PnxgGPZNbnMV0dwf4zOMHyo",
+      "badge": "",
+      "category": "Перспективные разработки",
+      "category_slug": "research"
+    },
+    {
+      "id": 17,
+      "slug": "mobile-repeater",
+      "name": "Мобильный ретранслятор",
+      "short_description": "",
+      "main_image": "/uploads/mobile-repeater-01.webp",
+      "badge": "",
+      "category": "Ретрансляторы",
+      "category_slug": "repeaters"
+    }
+  ],
+  "details": {
+    "series-x": {
+      "id": 1,
+      "slug": "series-x",
+      "name": "Series-X",
+      "short_description": "Автономные решения для разведки и логистики.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDD6x6uTf6vNd4PCzVVmnY_29gRbXsolGYsuBQ1T8csAICDEYj7zaW0lonjfDgPbKdxNmfdOd_x-YrWsIS_dbw8JqxqNazeBr_wBWc1iMGNy3D033Rble_99l1JjNV6DEjv7BtkC4oKWlg3HtKsyb6nll9_JhYw8wbFqXaP13ICPSaoHsJdGCu57PlxjFDRyhYV8uiXdA4ESTKKHaEDOkXMHGagiGPs2s_BY3LUueevZi1eskS6dbKAhDxcIzLtTLVj71FcXN2IGI4",
+      "badge": "SYSTEM ACTIVE",
+      "category": "Беспилотные системы",
+      "category_slug": "drones",
+      "full_description": "Автономные решения для разведки и логистики. Designed for high-intensity reconnaissance and rapid deployment. The Series-X represents the pinnacle of autonomous flight research, engineered for complex industrial and tactical applications.",
+      "key_specs": [
+        {
+          "name": "Max Altitude",
+          "value": "5000 m"
+        },
+        {
+          "name": "Payload",
+          "value": "15 kg"
+        }
+      ],
+      "spec_groups": [],
+      "gallery": [],
+      "applications": [],
+      "documents": []
+    },
+    "precision-core": {
+      "id": 2,
+      "slug": "precision-core",
+      "name": "Precision-Core",
+      "short_description": "Высокоточная электроника для критически важных систем.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAS_63Kua_g7zgZvD35_9I8lrQKbPZnLCZYBjuaTCTh90zpFgZLVmcrhr7HF7Y0jyLEZI7RtWo1aNgV9joWFU3oT6_ygo5I_d-tZQ0cBm7Rf3Coi01NBbg_8E2Og1zIMPUbkQD8BMJql9-YUYXRPWTMj6gPgExPDhZTmoXXELKke8_z6uUq-gn4eSoOyJkt1sSEfzeCmq7mPOpkDxPlTnG8kuSo3O3bEwbPalWkVFlD2zz5QLCwWaz479Dnbtvl2jFIsEe4LlVM_rY",
+      "badge": "HI-RES DATA",
+      "category": "Электронное оборудование",
+      "category_slug": "electronics",
+      "full_description": "Высокоточная электроника для критически важных систем.",
+      "key_specs": [],
+      "spec_groups": [],
+      "gallery": [],
+      "applications": [],
+      "documents": []
+    },
+    "modular-x": {
+      "id": 3,
+      "slug": "modular-x",
+      "name": "Modular-X",
+      "short_description": "Масштабные модульные системы для индустрии.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuB1Nm2DU0btOBWgFXfjwTDYEVrkQbR3dWj5uUzRj8k7mnYN_Ezs1y86aCCAGFS2lb9R3OpkMFbMGkIJzQxjAi9m2Zn9QgSnvR1cpecJCDMIcKO4xNwabX97SDbyv7S02k0nb_cZgqJsHg4EkpwRvxYicc-RMHxqGG9lO-NRkonqcXXIcz3UdtdwCZx1Q92cFRSpHAhicbvnQfnSwu6LFs-CKIBSUilk3S9qzizG_aKQTDews41T8kRXwU3Olff86w1buk_YTFCWGGU",
+      "badge": "",
+      "category": "Инженерные комплексы",
+      "category_slug": "engineering-systems",
+      "full_description": "Масштабные модульные системы для индустрии.",
+      "key_specs": [],
+      "spec_groups": [],
+      "gallery": [],
+      "applications": [],
+      "documents": []
+    },
+    "mobile-station": {
+      "id": 16,
+      "slug": "mobile-station",
+      "name": "Мобильная радиостанция",
+      "short_description": "",
+      "main_image": "/uploads/mobile-station-01.webp",
+      "badge": "",
+      "category": "Мобильные радиостанции",
+      "category_slug": "mobile-stations",
+      "full_description": "",
+      "key_specs": [],
+      "spec_groups": [],
+      "gallery": [
+        {
+          "path": "/uploads/mobile-station-02.webp",
+          "alt": "Мобильная радиостанция"
+        }
+      ],
+      "applications": [],
+      "documents": []
+    },
+    "forge-os": {
+      "id": 5,
+      "slug": "forge-os",
+      "name": "Forge-OS",
+      "short_description": "Роботизированные линии нового поколения.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAP63A1T4qtx1dKk2aLoNzU85FmF6yvzA8pqWIZ-HzPyrqRWMiqgyejyBdo26w_oTN1HPcScMtVmCbl-nh1Vu8fgIQEmnu-IzV_Z235UcjY4ofxgPMGnoF-ZlmdDphK3PIfDzIvyIvLmu3NHrtgcTkGVslCzTJPcBlggfV8xuzSQCznjV3FOheKUpQGiUueIIdu_47iWfVe7D0ppJ6I-mJ1AvYNyQPNxQTW-KwI9RDlzIMGI87QM6i7tAfLlWjeUUWwjlpNKAvOdTY",
+      "badge": "",
+      "category": "Промышленная автоматика",
+      "category_slug": "automation",
+      "full_description": "Роботизированные линии нового поколения.",
+      "key_specs": [],
+      "spec_groups": [],
+      "gallery": [],
+      "applications": [],
+      "documents": []
+    },
+    "vanguard-lab": {
+      "id": 6,
+      "slug": "vanguard-lab",
+      "name": "Vanguard-Lab",
+      "short_description": "Экспериментальные технологии и прототипы будущего.",
+      "main_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCJWeZ_JJT762hk6gyiSHGWsFWvabwJdKtUP_lcCf9aT941MWqjzPbhfXqGx8lFClAsrrPpmY28fqaG0H2EAjh1frowtKwv7bftd8V9Loe6layNvjRHChDL2jp-_natTkb8LP7IPz1B3zLDZR7fR9xfz5dfA5GG0-5VuVVR1Pz7p1FRUNUp-2hIAICV5OrKmNapaclps5XGB8L44vSbqVY4qP_eYoCBYRtHE4tkeuGnuY-3bmg_0Pv9PnxgGPZNbnMV0dwf4zOMHyo",
+      "badge": "",
+      "category": "Перспективные разработки",
+      "category_slug": "research",
+      "full_description": "Экспериментальные технологии и прототипы будущего.",
+      "key_specs": [],
+      "spec_groups": [],
+      "gallery": [],
+      "applications": [],
+      "documents": []
+    },
+    "mobile-repeater": {
+      "id": 17,
+      "slug": "mobile-repeater",
+      "name": "Мобильный ретранслятор",
+      "short_description": "",
+      "main_image": "/uploads/mobile-repeater-01.webp",
+      "badge": "",
+      "category": "Ретрансляторы",
+      "category_slug": "repeaters",
+      "full_description": "",
+      "key_specs": [],
+      "spec_groups": [],
+      "gallery": [
+        {
+          "path": "/uploads/mobile-repeater-02.webp",
+          "alt": "Мобильный ретранслятор"
+        }
+      ],
+      "applications": [],
+      "documents": []
+    }
+  },
+  "texts": {
+    "contacts.title": "Контакты",
+    "contacts.intro": "Свяжитесь с нами для обсуждения вашего следующего проекта. Наша команда инженеров готова к новым вызовам.",
+    "contacts.address": "пр. Мәңгілік Ел, 55\nИнновационный центр\nг. Астана, 010000",
+    "contacts.email": "info@kae-engineering.ru\nsupport@kae-engineering.ru",
+    "contacts.phone": "+7 (7172) 123-456\nПн-Пт: 09:00 - 18:00",
+    "contacts.map_title": "Интерактивная карта",
+    "contacts.map_text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut vulputate arcu. Donec sit amet accumsan est, ut imperdiet nunc. Vivamus varius ex ac dolor ultrices euismod. Suspendisse pulvinar nisi eget erat bibendum. Fusce lacinia id dolor congue ullamcorper. Pellentesque varius augue purus, quis congue mi porta a.",
+    "about.eyebrow": "Инженерное будущее Казахстана",
+    "about.title": "О компании",
+    "about.intro_1": "KAE Engineering занимает центральное место в технологической модернизации Казахстана. Наша деятельность охватывает проектирование сложных систем, разработку программно-аппаратных комплексов и интеграцию интеллектуальных решений для индустриального сектора.",
+    "about.intro_2": "Будучи резидентом инновационного кластера столицы, мы не просто производим оборудование — мы формируем стандарты инженерии нового поколения. Наша лаборатория в Астане является колыбелью для решений в области автоматизации, систем безопасности и высокоточного приборостроения.",
+    "about.stat_1_value": "250+",
+    "about.stat_1_label": "Инженеров высшей категории",
+    "about.stat_2_value": "15+",
+    "about.stat_2_label": "Запатентованных технологий",
+    "about.mission_eyebrow": "Стратегия",
+    "about.mission_title": "Миссия и Видение",
+    "about.mission_1_title": "Инновации",
+    "about.mission_1_text": "Внедрение передовых инженерных решений, которые определяют конкурентоспособность отечественной промышленности на мировом рынке.",
+    "about.mission_2_title": "Развитие талантов",
+    "about.mission_2_text": "Создание уникальной среды для роста инженерных кадров Казахстана через трансфер технологий и практический опыт.",
+    "about.mission_3_title": "Надежность",
+    "about.mission_3_text": "Гарантия безупречного качества и безопасности каждого узла, разработанного в стенах KAE Engineering.",
+    "about.team_eyebrow": "Экспертиза",
+    "about.team_title": "Наша команда",
+    "about.team_intro": "Сообщество профессионалов, вдохновленных идеей создания технологий, которые работают на благо прогресса.",
+    "about.cta_title": "Готовы к сотрудничеству?",
+    "about.cta_text": "Присоединяйтесь к числу лидеров индустрии, выбирающих KAE Engineering для реализации самых сложных технологических задач."
+  },
+  "team": [
+    {
+      "name": "Арман Искаков",
+      "position": "Главный архитектор систем",
+      "photo": "https://lh3.googleusercontent.com/aida-public/AB6AXuBB18ZXo0sXjVg4sqToVZtIa-MVgF0GJWHkiJ-OBNFl4ZUd3iIA_2cSoMjeIqoMt79rqwUbX7upADsA5-nYXMNZPYfITMgKWNqisRtRoMw1LcZknqi8zJwuQVWxE-EEWZMGAkEff1nih0UsbfhcwujWgymusu99UCcv7ZYNXSGBgEgrzSzRCArREwd0-NMWW7OKl-X44s1g4O3c7ZQwrVakavHro6m1l2MV3Fr8xSoSdWlJLaihv90gstG4pIhhb2QuXW21aXDvm38",
+      "tags": [
+        "Senior Eng",
+        "PhD"
+      ]
+    },
+    {
+      "name": "Динара Султан",
+      "position": "Руководитель отдела робототехники",
+      "photo": "https://lh3.googleusercontent.com/aida-public/AB6AXuC3TG56giZZ_NQVACNerzwPObmT_BELn8nrIUupBDy0z1A80R7inLQbLepei34CscJ3vMJQPOaUvzWatzz3Yr5ShIp1eukvKi7W9DuVw_tyO9YELbWsNePyTclmOzfTfDM0ARqHxTga6741gOd4CvSfKB0u_U5oamlk6zAgAaXBLHCWZnB6w2A6p8Ai5ZO047dloPAjXFpXNAa39Ou-7CrSkB7BHPTMAzfwHzPI3-5g1w1lbQJhy35dJQQaGO7dzLHFK2Zs35N4Vrg",
+      "tags": [
+        "Robotics",
+        "Lead"
+      ]
+    },
+    {
+      "name": "Виктор Пак",
+      "position": "Ведущий разработчик плат",
+      "photo": "https://lh3.googleusercontent.com/aida-public/AB6AXuCObsC_IXwroikR-Dwhl-E2tIHHC1v5fOZgCNTA4zRx0RLoC18T8CAufGPyB118c13cqOx9s4mtP3KkbFR6Prcoc0iHmFHzScFJxypKYV8yOtICqov9xTMOYC4eGfegm5h62sG-Tql_57AxstOa1oqaXdnUS9HDv_mppfV8D_-NYsCmje9EpnFjmF9c4VwZZ-_RUHIdenp34YXskYYRm2_qu_sPqP4Xf1YQM_zo1i_blAcXDV5UmjsU3kHUJccQ-YHQTtbcwLu1oss",
+      "tags": [
+        "Hardware",
+        "Dev"
+      ]
+    },
+    {
+      "name": "Данияр Омаров",
+      "position": "Директор по операциям",
+      "photo": "https://lh3.googleusercontent.com/aida-public/AB6AXuDQBLO-UTZA2w2nzTIxGmgEVOKb19P_aGDx89hJeRm2sRk9AuYLoDxZfuRLqQohK5snyQpFQu8zCBAcN60-JQK97GBmN93wE2qgouPh1oUU1GxXCLRoBgPjEItHDS4Y-h5K9nHLgBG_6IjDphTkFnxnD0207My11p7Ccxk24ZrY-f5C3DxDr1mwuZ_G5btY4l8ZzMz3fV0YZO4yFVmLTuQjJApFU904t7vRnQS_aGM0QPX40dXtvVCl7Xav2uZFyl5m5J2VpgQ_7IY",
+      "tags": [
+        "Ops",
+        "Director"
+      ]
+    }
+  ]
+}
