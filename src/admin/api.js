@@ -21,7 +21,18 @@ async function request(path, { method = 'GET', body, form } = {}) {
 
   if (response.status === 204) return null;
 
-  const data = await response.json().catch(() => null);
+  const raw = await response.text();
+  let data = null;
+
+  try {
+    data = raw ? JSON.parse(raw) : null;
+  } catch {
+    // Не JSON при успешном статусе означает, что до API запрос не дошёл
+    // и сервер отдал страницу SPA.
+    if (response.ok) {
+      throw new ApiError('Сервер вернул не JSON. Проверьте, что /api проксируется на бэкенд.', response.status);
+    }
+  }
 
   if (!response.ok) {
     throw new ApiError(data?.error || `Ошибка ${response.status}`, response.status);

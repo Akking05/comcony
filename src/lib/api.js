@@ -15,7 +15,19 @@ async function request(path, { method = 'GET', body, signal } = {}) {
 
   if (response.status === 204) return null;
 
-  const data = await response.json().catch(() => null);
+  const raw = await response.text();
+  let data = null;
+
+  try {
+    data = raw ? JSON.parse(raw) : null;
+  } catch {
+    // Тело пришло не в JSON. Обычно это index.html: сервер отдал SPA вместо
+    // API — значит /api/* не проксируется на бэкенд. Молча вернуть null нельзя,
+    // иначе страница отрисуется пустой без единого признака поломки.
+    if (response.ok) {
+      throw new Error('Сервер вернул не JSON. Проверьте, что /api проксируется на бэкенд.');
+    }
+  }
 
   if (!response.ok) {
     const error = new Error(data?.error || `Ошибка ${response.status}`);
