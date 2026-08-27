@@ -1,2 +1,11 @@
 node_modules/
 dist/
+
+# База данных и загруженные файлы — не в репозиторий
+server/data/
+server/uploads/
+.env
+.env.local
+
+# Исходные фото и сканы — не публикуются и не попадают в сборку
+_source-photos/

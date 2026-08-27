@@ -2,36 +2,57 @@ import { useEffect } from 'react';
 
 export function usePageEffects(path) {
   useEffect(() => {
-    const revealElements = document.querySelectorAll('.reveal, .reveal-element');
+    const revealElements = () => document.querySelectorAll('.reveal, .reveal-element');
 
-    if ('IntersectionObserver' in window) {
-      const revealObserver = new IntersectionObserver(
-        (entries, observer) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-
-            entry.target.classList.add('active');
-            observer.unobserve(entry.target);
-          });
-        },
-        {
-          threshold: 0.1,
-          rootMargin: '0px 0px -50px 0px',
-        },
-      );
-
-      revealElements.forEach((element) => revealObserver.observe(element));
-
-      window.setTimeout(() => {
-        document.querySelectorAll('section:first-of-type .reveal').forEach((element) => {
-          element.classList.add('active');
-        });
-      }, 100);
-
-      return () => revealObserver.disconnect();
+    if (!('IntersectionObserver' in window)) {
+      revealElements().forEach((element) => element.classList.add('active'));
+      return undefined;
     }
 
-    revealElements.forEach((element) => element.classList.add('active'));
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px',
+      },
+    );
+
+    const observed = new WeakSet();
+
+    const registerNewElements = () => {
+      revealElements().forEach((element) => {
+        if (observed.has(element)) return;
+
+        observed.add(element);
+        revealObserver.observe(element);
+      });
+    };
+
+    registerNewElements();
+
+    // Карточки товаров и тексты приходят из API уже после монтирования.
+    // Без этого наблюдателя они остались бы с opacity: 0, то есть невидимыми.
+    const contentObserver = new MutationObserver(registerNewElements);
+    contentObserver.observe(document.body, { childList: true, subtree: true });
+
+    const firstScreenTimer = window.setTimeout(() => {
+      document.querySelectorAll('section:first-of-type .reveal').forEach((element) => {
+        element.classList.add('active');
+      });
+    }, 100);
+
+    return () => {
+      window.clearTimeout(firstScreenTimer);
+      contentObserver.disconnect();
+      revealObserver.disconnect();
+    };
   }, [path]);
 
   useEffect(() => {
@@ -69,11 +90,20 @@ export function usePageEffects(path) {
   }, [path]);
 
   useEffect(() => {
-    const glassPanels = Array.from(document.querySelectorAll('.glass-panel'));
-    const technicalGrid = document.querySelector('.technical-grid');
-    const canUsePointerEffects = window.matchMedia('(pointer: fine)').matches && (glassPanels.length || technicalGrid);
+    if (!window.matchMedia('(pointer: fine)').matches) return undefined;
 
-    if (!canUsePointerEffects) return undefined;
+    // Список панелей пересобирается при изменениях DOM — часть из них
+    // появляется вместе с данными из API.
+    let glassPanels = Array.from(document.querySelectorAll('.glass-panel'));
+    let technicalGrid = document.querySelector('.technical-grid');
+
+    const refreshTargets = () => {
+      glassPanels = Array.from(document.querySelectorAll('.glass-panel'));
+      technicalGrid = document.querySelector('.technical-grid');
+    };
+
+    const targetsObserver = new MutationObserver(refreshTargets);
+    targetsObserver.observe(document.body, { childList: true, subtree: true });
 
     let pointerFrame = 0;
     let lastPointerEvent = null;
@@ -112,6 +142,7 @@ export function usePageEffects(path) {
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
+      targetsObserver.disconnect();
       if (pointerFrame) window.cancelAnimationFrame(pointerFrame);
       glassPanels.forEach((panel) => {
         panel.style.boxShadow = '';
