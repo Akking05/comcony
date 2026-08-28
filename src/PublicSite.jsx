@@ -5,6 +5,7 @@ import { ReactLenis } from 'lenis/dist/lenis-react';
 import About from './pages/About.jsx';
 import Contacts from './pages/Contacts.jsx';
 import Home from './pages/Home.jsx';
+import NotFound from './pages/NotFound.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
 import Products from './pages/Products.jsx';
 
@@ -15,34 +16,53 @@ import { PageBackground } from './components/layout/PageBackground.jsx';
 
 import { usePageEffects } from './hooks/usePageEffects.js';
 import { track } from './lib/api.js';
+import { applyMeta } from './lib/seo.js';
 
 const PRODUCT_ROUTE = '/products/:slug';
+const NOT_FOUND_ROUTE = '/404';
 
 const routes = {
   '/': {
     component: Home,
     title: 'KAE Engineering | Инженерные решения нового поколения',
+    description:
+      'Инженерные решения и оборудование профессиональной радиосвязи для промышленности и инфраструктуры Казахстана.',
     nav: '/',
   },
   '/products': {
     component: Products,
     title: 'KAE Engineering | Наша продукция',
+    description:
+      'Каталог продукции KAE Engineering: радиостанции, ретрансляторы и инженерное оборудование с техническими характеристиками и документацией.',
     nav: '/products',
   },
   [PRODUCT_ROUTE]: {
     component: ProductDetails,
     title: 'KAE Engineering | Детали товара',
+    // Точные заголовок и описание страница ставит сама, когда загрузит товар.
+    description: 'Технические характеристики, применение и документация оборудования KAE Engineering.',
     nav: '/products',
   },
   '/about': {
     component: About,
     title: 'KAE Engineering | О компании',
+    description:
+      'О компании KAE Engineering: инженерная экспертиза, команда и подход к разработке технологических решений в Казахстане.',
     nav: '/about',
   },
   '/contacts': {
     component: Contacts,
     title: 'Контакты | KAE Engineering',
+    description:
+      'Контакты KAE Engineering: адрес офиса в Астане, телефон, почта и форма для запроса коммерческого предложения.',
     nav: '/contacts',
+  },
+  [NOT_FOUND_ROUTE]: {
+    component: NotFound,
+    title: 'Страница не найдена | KAE Engineering',
+    description: 'Такого адреса на сайте нет.',
+    nav: '',
+    noindex: true,
   },
 };
 
@@ -59,7 +79,8 @@ const routeAliases = {
 
 /**
  * Разбирает адрес в маршрут и его параметры.
- * Неизвестные адреса ведут на главную — поведение как было.
+ * Неизвестный адрес — это 404, а не главная: иначе посетитель не понимает,
+ * что ошибся, а поисковик индексирует опечатки как копии главной.
  */
 function resolveRoute(pathname) {
   const cleanPath = pathname.replace(/\/+$/, '') || '/';
@@ -67,10 +88,19 @@ function resolveRoute(pathname) {
 
   const productMatch = aliased.match(/^\/products\/([^/]+)$/);
   if (productMatch) {
-    return { path: PRODUCT_ROUTE, params: { slug: decodeURIComponent(productMatch[1]) } };
+    // Битая процентная кодировка не должна ронять роутер — такой slug
+    // просто не найдётся в базе, и страница товара покажет «не найдено».
+    let slug = productMatch[1];
+    try {
+      slug = decodeURIComponent(slug);
+    } catch {
+      /* оставляем как есть */
+    }
+
+    return { path: PRODUCT_ROUTE, params: { slug } };
   }
 
-  return { path: routes[aliased] ? aliased : '/', params: {} };
+  return { path: routes[aliased] ? aliased : NOT_FOUND_ROUTE, params: {} };
 }
 
 /** Плавность на грани заметности: содержимое подменяется, обвязка стоит. */
@@ -94,8 +124,16 @@ export default function PublicSite() {
     document.documentElement.classList.add('dark');
     document.documentElement.lang = 'ru';
     document.body.className = 'bg-background text-on-background font-body-md overflow-x-hidden';
-    document.title = route.title;
-  }, [route]);
+
+    // Страница товара уточнит заголовок и описание сама, когда загрузит
+    // данные. Здесь — значения маршрута, чтобы вкладка не оставалась
+    // от предыдущей страницы, пока идёт запрос.
+    applyMeta({
+      title: route.title,
+      description: route.description,
+      noindex: route.noindex,
+    });
+  }, [route, routeKey]);
 
   useEffect(() => {
     track({ type: 'visit', path: window.location.pathname, referrer: document.referrer });
@@ -123,11 +161,17 @@ export default function PublicSite() {
     // Загруженные файлы (PDF документации) отдаёт сервер, а не роутер.
     if (url.pathname.startsWith('/uploads/')) return;
 
-    const next = resolveRoute(url.pathname);
+    // Админка — отдельное приложение, её адреса роутер сайта не знает.
+    // Без этой проверки ссылка на /admin показала бы страницу 404.
+    if (url.pathname === '/admin' || url.pathname.startsWith('/admin/')) return;
+
     const target = url.pathname.replace(/\/+$/, '') || '/';
 
-    // Неизвестный адрес не перехватываем — пусть браузер покажет 404 сервера.
-    if (next.path === '/' && target !== '/' && !routeAliases[target]) return;
+    // Ссылка на файл (кроме старых .html-адресов из routeAliases) —
+    // тоже дело браузера, а не роутера.
+    if (!routeAliases[target] && /\.[a-z0-9]{1,8}$/i.test(target)) return;
+
+    const next = resolveRoute(url.pathname);
 
     event.preventDefault();
 

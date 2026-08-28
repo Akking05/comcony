@@ -3,11 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KAE Engineering</title>
+
+    <title>KAE Engineering | Инженерные решения нового поколения</title>
+    <meta
+      name="description"
+      content="KAE Engineering — инженерные решения и оборудование профессиональной радиосвязи: разработка, производство и поставка систем для промышленности и инфраструктуры Казахстана."
+    />
+    <meta name="theme-color" content="#0e1417" />
+    <link rel="icon" href="/kae-logo.svg" type="image/svg+xml" />
+
+    <!-- Значения по умолчанию для превью ссылки. Дальше их перезаписывает
+         src/lib/seo.js под конкретную страницу — краулер, выполняющий JS,
+         увидит уже уточнённые. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="KAE Engineering" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content="KAE Engineering | Инженерные решения нового поколения" />
+    <meta
+      property="og:description"
+      content="Инженерные решения и оборудование профессиональной радиосвязи для промышленности и инфраструктуры Казахстана."
+    />
+    <meta property="og:image" content="/kae-logo.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Шрифт заголовков задан в @theme (src/styles.css) и грузится отсюда —
+         эти два места обязаны совпадать, иначе заголовки молча падают на
+         запасной шрифт. Ровно так и было с Orbitron.
+
+         Ещё важнее кириллица: у Orbitron и Sora её нет, поэтому русский текст
+         рисовался бы запасным шрифтом, что бы ни стояло в теме. Проверка
+         нового шрифта: в ответе fonts.googleapis.com должен быть диапазон
+         U+0400-045F. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500&family=Outfit:wght@400;500&family=Geist:wght@400;500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500&family=Outfit:wght@400;500&family=Geist:wght@400;500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
       rel="stylesheet"
     />
   </head>

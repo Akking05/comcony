@@ -37,16 +37,16 @@
 
   --container-container-max: 1440px;
 
-  --font-headline-md: Sora, "Plus Jakarta Sans", sans-serif;
+  --font-headline-md: "Exo 2", "Plus Jakarta Sans", sans-serif;
   --font-body-lg: Inter, Outfit, sans-serif;
-  --font-headline-lg: Sora, "Plus Jakarta Sans", sans-serif;
-  --font-display-lg: Sora, "Plus Jakarta Sans", sans-serif;
-  --font-display-md: Sora, "Plus Jakarta Sans", sans-serif;
+  --font-headline-lg: "Exo 2", "Plus Jakarta Sans", sans-serif;
+  --font-display-lg: "Exo 2", "Plus Jakarta Sans", sans-serif;
+  --font-display-md: "Exo 2", "Plus Jakarta Sans", sans-serif;
   --font-label-sm: Geist, sans-serif;
   --font-label-lg: Geist, sans-serif;
   --font-label-mono: Geist, monospace;
   --font-button-text: Geist, sans-serif;
-  --font-headline-lg-mobile: Sora, "Plus Jakarta Sans", sans-serif;
+  --font-headline-lg-mobile: "Exo 2", "Plus Jakarta Sans", sans-serif;
   --font-body-md: Inter, Outfit, sans-serif;
   --font-label-md: Geist, sans-serif;
 

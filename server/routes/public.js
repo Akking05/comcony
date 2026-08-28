@@ -4,10 +4,28 @@
  */
 import { Router } from 'express';
 import { getDb } from '../db/index.js';
+import { rateLimit } from '../lib/rate-limit.js';
 
 export const publicRouter = Router();
 
 const MAX_FIELD = 2000;
+
+// Форма обратной связи пишет в базу без аутентификации: без лимита её
+// заливает мусором любой скрипт в цикле. Пять заявок в час — заметно
+// больше, чем нужно живому человеку.
+const requestLimit = rateLimit({
+  limit: 5,
+  windowMs: 60 * 60 * 1000,
+  message: 'Слишком много заявок с этого адреса. Попробуйте через некоторое время или позвоните нам.',
+});
+
+// Аналитика уходит на каждый переход по сайту, поэтому порог здесь высокий:
+// он защищает от накрутки счётчиков, а не от обычного посетителя.
+const trackLimit = rateLimit({
+  limit: 120,
+  windowMs: 60 * 1000,
+  message: 'Слишком много событий',
+});
 
 /** Обрезает и чистит пользовательский ввод. */
 const clean = (value, limit = 200) => String(value ?? '').trim().slice(0, limit);
@@ -109,7 +127,7 @@ publicRouter.get('/team', (req, res) => {
 // Заявки
 // ---------------------------------------------------------------------------
 
-publicRouter.post('/requests', (req, res) => {
+publicRouter.post('/requests', requestLimit, (req, res) => {
   const name = clean(req.body?.name, 120);
   const email = clean(req.body?.email, 160);
   const phone = clean(req.body?.phone, 60);
@@ -145,7 +163,7 @@ publicRouter.post('/requests', (req, res) => {
 // Аналитика
 // ---------------------------------------------------------------------------
 
-publicRouter.post('/track', (req, res) => {
+publicRouter.post('/track', trackLimit, (req, res) => {
   const type = clean(req.body?.type, 20);
 
   if (!['visit', 'product_view'].includes(type)) {

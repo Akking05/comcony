@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api, track } from '../lib/api.js';
-import { rise, riseOnScroll, stagger, staggerItem } from '../lib/motion.js';
+import { rise, riseOnScroll } from '../lib/motion.js';
+import { applyMeta } from '../lib/seo.js';
 
 const formatSize = (bytes) => {
   if (!bytes) return '';
@@ -32,12 +33,29 @@ export default function ProductDetails({ slug }) {
   const [activeImage, setActiveImage] = useState(null);
 
   useEffect(() => {
+    // Снятый с публикации товар — тоже 404: индексировать его не нужно.
+    if (error?.status === 404) {
+      applyMeta({
+        title: 'Товар не найден | KAE Engineering',
+        description: 'Такого товара нет в каталоге.',
+        noindex: true,
+      });
+      return;
+    }
+
     if (!product) return;
 
-    document.title = `${product.name} | KAE Engineering`;
+    // Свои заголовок, описание и картинку превью — общие теги маршрута
+    // ставятся раньше, пока товар ещё грузится.
+    applyMeta({
+      title: `${product.name} | KAE Engineering`,
+      description: product.short_description || product.full_description?.slice(0, 200),
+      image: product.main_image,
+    });
+
     track({ type: 'product_view', path: window.location.pathname, product_slug: product.slug });
     setActiveImage(product.main_image || product.gallery[0]?.path || null);
-  }, [product]);
+  }, [product, error]);
 
   if (loading) {
     return (

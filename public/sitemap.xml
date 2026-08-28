@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Запасной статический sitemap: он попадает в сборку и работает на витринном
+  хостинге, где бэкенда нет. На VPS этот файл перекрывается динамическим
+  /sitemap.xml из server/index.js, который знает список товаров из базы.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://kae-engineering.kz/</loc></url>
+  <url><loc>https://kae-engineering.kz/products</loc></url>
+  <url><loc>https://kae-engineering.kz/about</loc></url>
+  <url><loc>https://kae-engineering.kz/contacts</loc></url>
+</urlset>

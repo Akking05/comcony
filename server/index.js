@@ -36,15 +36,83 @@ app.use(
   express.static(UPLOAD_DIR, { maxAge: '30d', index: false, fallthrough: true }),
 );
 
+// --- robots.txt и sitemap.xml ----------------------------------------------
+// Отдаются динамически и стоят до express.static, поэтому перекрывают
+// одноимённые файлы из public/. Те нужны только витринному хостингу,
+// где бэкенда нет и список товаров взять неоткуда.
+
+/** Статические страницы сайта — те же, что в routes из src/PublicSite.jsx. */
+const SITE_PAGES = ['/', '/products', '/about', '/contacts'];
+
+// Домен берём из запроса, чтобы не зашивать его в код: за nginx с
+// `trust proxy` req.protocol и Host уже соответствуют внешнему адресу.
+// SITE_URL нужен, только если сайт доступен по нескольким именам.
+const siteOrigin = (req) =>
+  (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
+
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send(
+    ['User-agent: *', 'Allow: /', 'Disallow: /admin', 'Disallow: /api/', '', `Sitemap: ${siteOrigin(req)}/sitemap.xml`, ''].join('\n'),
+  );
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const origin = siteOrigin(req);
+  const slugs = getDb()
+    .prepare("SELECT slug FROM products WHERE status = 'published' ORDER BY sort, id")
+    .all();
+
+  const paths = [...SITE_PAGES, ...slugs.map((row) => `/products/${row.slug}`)];
+
+  res.type('application/xml').send(
+    [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+      ...paths.map((path) => `  <url><loc>${origin}${encodeURI(path)}</loc></url>`),
+      '</urlset>',
+      '',
+    ].join('\n'),
+  );
+});
+
 // --- Статика собранного фронтенда ------------------------------------------
 // Работает после `npm run build`. В разработке фронтенд отдаёт Vite на :5173,
 // а сюда ходит только за /api.
+
+/**
+ * Существует ли такая страница. Нужно только для кода ответа: тело в любом
+ * случае одно и то же — index.html, дальше разбирается роутер в браузере.
+ */
+function isKnownPage(pathname) {
+  const clean = pathname.replace(/\/+$/, '') || '/';
+
+  if (SITE_PAGES.includes(clean)) return true;
+  if (clean === '/admin' || clean.startsWith('/admin/')) return true;
+
+  const product = clean.match(/^\/products\/([^/]+)$/);
+  if (!product) return false;
+
+  let slug = product[1];
+  try {
+    slug = decodeURIComponent(slug);
+  } catch {
+    return false;
+  }
+
+  return Boolean(
+    getDb().prepare("SELECT 1 FROM products WHERE slug = ? AND status = 'published'").get(slug),
+  );
+}
+
 if (existsSync(DIST_DIR)) {
   app.use(express.static(DIST_DIR, { index: false }));
 
   // SPA: все не-API маршруты отдают index.html, включая /admin и /products/:slug.
   app.get(/^(?!\/api|\/uploads).*/, (req, res) => {
-    res.sendFile(join(DIST_DIR, 'index.html'));
+    // Несуществующий адрес отдаёт ту же страницу, но с кодом 404. Иначе
+    // поисковик считает /любую-опечатку полноценной страницей и индексирует
+    // её как копию главной.
+    res.status(isKnownPage(req.path) ? 200 : 404).sendFile(join(DIST_DIR, 'index.html'));
   });
 }
 
