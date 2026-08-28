@@ -1,7 +1,8 @@
 import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api } from '../lib/api.js';
-import { EASE, fadeOnScroll, rise, riseItem, riseOnScroll } from '../lib/motion.js';
+import { EASE, rise } from '../lib/motion.js';
+import { FADE, Reveal, STEP } from '../components/Reveal.jsx';
 
 const MISSION_CARDS = [
   { number: '01', icon: 'architecture', accent: 'primary-fixed' },
@@ -13,8 +14,8 @@ function MissionCard({ card, index, title, description }) {
   const isSecondary = card.accent === 'secondary';
 
   return (
-    <motion.div
-      {...riseItem(index)}
+    <Reveal
+      delay={index * STEP}
       className={`glass-panel group relative p-8 transition-all duration-500 ${
         isSecondary ? 'hover:border-secondary/50' : 'hover:border-primary-fixed/50'
       }`}
@@ -35,13 +36,13 @@ function MissionCard({ card, index, title, description }) {
 
       <h3 className="mb-4 font-headline-md text-[24px] text-white">{title}</h3>
       <p className="font-body-md text-on-surface-variant">{description}</p>
-    </motion.div>
+    </Reveal>
   );
 }
 
 function TeamMember({ member, index }) {
   return (
-    <motion.div {...riseItem(index)} className="group">
+    <Reveal delay={index * STEP} className="group">
       <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-sm bg-surface-container-high">
         {member.photo ? (
           <div
@@ -74,14 +75,14 @@ function TeamMember({ member, index }) {
 
       <h4 className="font-headline-md text-[18px] text-white">{member.name}</h4>
       <p className="mt-1 font-label-mono text-[12px] uppercase text-outline">{member.position}</p>
-    </motion.div>
+    </Reveal>
   );
 }
 
 function Stat({ value, label, accent, index = 0 }) {
   return (
-    <motion.div
-      {...riseItem(index)}
+    <Reveal
+      delay={index * STEP}
       className={`glass-panel border-l-4 p-6 ${accent === 'secondary' ? 'border-l-secondary' : 'border-l-primary-fixed'}`}
     >
       <div
@@ -92,7 +93,7 @@ function Stat({ value, label, accent, index = 0 }) {
         {value}
       </div>
       <div className="font-label-mono text-[10px] uppercase text-outline">{label}</div>
-    </motion.div>
+    </Reveal>
   );
 }
 
@@ -137,14 +138,14 @@ export default function About() {
       {/* Миссия */}
       <section className="relative overflow-hidden bg-surface-container-lowest/60 py-16 backdrop-blur-sm md:py-24">
         <div className="relative z-10 mx-auto max-w-container-max px-margin-mobile md:px-margin-desktop">
-          <motion.div {...riseOnScroll()} className="mb-16 text-center">
+          <Reveal className="mb-16 text-center">
             <span className="font-label-mono text-label-mono uppercase tracking-widest text-primary-fixed">
               {text('about.mission_eyebrow')}
             </span>
             <h2 className="mt-4 font-headline-md text-headline-md uppercase text-white">
               {text('about.mission_title')}
             </h2>
-          </motion.div>
+          </Reveal>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {MISSION_CARDS.map((card, index) => (
@@ -162,7 +163,7 @@ export default function About() {
 
       {/* Команда */}
       <section className="mx-auto max-w-container-max px-margin-mobile py-16 md:px-margin-desktop md:py-24">
-        <motion.div {...riseOnScroll()} className="mb-16 flex flex-col items-end justify-between gap-8 md:flex-row">
+        <Reveal className="mb-16 flex flex-col items-end justify-between gap-8 md:flex-row">
           <div>
             <span className="mb-4 block font-label-mono text-label-mono uppercase text-secondary">
               {text('about.team_eyebrow')}
@@ -170,7 +171,7 @@ export default function About() {
             <h2 className="font-headline-md text-headline-md uppercase text-white">{text('about.team_title')}</h2>
           </div>
           <p className="max-w-sm font-body-md text-on-surface-variant">{text('about.team_intro')}</p>
-        </motion.div>
+        </Reveal>
 
         {/* Контейнер каскада создаётся только вместе с данными: если он
             смонтируется пустым и попадёт в кадр, viewport.once отработает
@@ -186,8 +187,8 @@ export default function About() {
 
       {/* Призыв */}
       <section className="px-margin-mobile py-16 md:px-margin-desktop md:py-24">
-        <motion.div
-          {...fadeOnScroll()}
+        <Reveal
+          {...FADE}
           className="glass-panel relative mx-auto max-w-container-max overflow-hidden p-8 text-center md:p-12"
         >
           <div className="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-transparent via-primary-fixed to-transparent"></div>
@@ -203,7 +204,7 @@ export default function About() {
           >
             Связаться с нами
           </a>
-        </motion.div>
+        </Reveal>
       </section>
     </main>
   );

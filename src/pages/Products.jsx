@@ -1,12 +1,13 @@
 import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api } from '../lib/api.js';
-import { rise, riseItem, riseOnScroll } from '../lib/motion.js';
+import { rise } from '../lib/motion.js';
+import { Reveal, STEP } from '../components/Reveal.jsx';
 
 function ProductCard({ product, index }) {
   return (
-    <motion.div
-      {...riseItem(index)}
+    <Reveal
+      delay={index * STEP}
       className="glass-card group flex flex-col p-2 transition-colors hover:border-primary/30"
     >
       <div className="relative mb-4 h-[320px] overflow-hidden bg-surface-container-high">
@@ -48,7 +49,7 @@ function ProductCard({ product, index }) {
           </span>
         </a>
       </div>
-    </motion.div>
+    </Reveal>
   );
 }
 
@@ -142,7 +143,7 @@ export default function Products() {
         </div>
       )}
 
-      <motion.section {...riseOnScroll()} className="mt-stack-xl flex flex-col items-center text-center">
+      <Reveal as="section" className="mt-stack-xl flex flex-col items-center text-center">
         <h2 className="mb-stack-lg select-none font-display-lg text-headline-lg-mobile font-black leading-none tracking-tighter text-outline/10 md:text-[120px]">
           READY FOR TOMORROW
         </h2>
@@ -161,7 +162,7 @@ export default function Products() {
             Оставить заявку
           </a>
         </div>
-      </motion.section>
+      </Reveal>
     </main>
   );
 }

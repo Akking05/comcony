@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api, track } from '../lib/api.js';
-import { rise, riseOnScroll } from '../lib/motion.js';
+import { rise } from '../lib/motion.js';
+import { Reveal } from '../components/Reveal.jsx';
 import { applyMeta } from '../lib/seo.js';
 
 const formatSize = (bytes) => {
@@ -198,7 +199,7 @@ export default function ProductDetails({ slug }) {
 
       {/* Технические характеристики */}
       {product.spec_groups.length > 0 && (
-        <motion.section {...riseOnScroll()} className="mt-stack-xl">
+        <Reveal as="section" className="mt-stack-xl">
           <h2 className="font-headline-lg text-headline-md md:text-headline-lg text-white mb-8 uppercase tracking-tight">
             Технические характеристики
           </h2>
@@ -224,12 +225,12 @@ export default function ProductDetails({ slug }) {
               </div>
             ))}
           </div>
-        </motion.section>
+        </Reveal>
       )}
 
       {/* Области применения */}
       {product.applications.length > 0 && (
-        <motion.section {...riseOnScroll()} className="mt-stack-xl">
+        <Reveal as="section" className="mt-stack-xl">
           <h2 className="font-headline-lg text-headline-md md:text-headline-lg text-white mb-8 uppercase tracking-tight">
             Области применения
           </h2>
@@ -246,12 +247,12 @@ export default function ProductDetails({ slug }) {
               </div>
             ))}
           </div>
-        </motion.section>
+        </Reveal>
       )}
 
       {/* Документация */}
       {product.documents.length > 0 && (
-        <motion.section {...riseOnScroll()} id="documentation" className="mt-stack-xl scroll-mt-32">
+        <Reveal as="section" id="documentation" className="mt-stack-xl scroll-mt-32">
           <h2 className="font-headline-lg text-headline-md md:text-headline-lg text-white mb-8 uppercase tracking-tight">
             Документация
           </h2>
@@ -279,7 +280,7 @@ export default function ProductDetails({ slug }) {
               </a>
             ))}
           </div>
-        </motion.section>
+        </Reveal>
       )}
     </Shell>
   );

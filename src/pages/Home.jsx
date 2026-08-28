@@ -3,7 +3,8 @@ import { useRef } from 'react';
 import { ParallaxHero } from '../components/ParallaxSchedule.jsx';
 import { SplineWrapper } from '../components/SplineWrapper.jsx';
 
-import { fillBar, rise, riseItem, riseOnScroll } from '../lib/motion.js';
+import { rise } from '../lib/motion.js';
+import { Reveal, bar } from '../components/Reveal.jsx';
 
 const BENEFITS = [
   {
@@ -166,8 +167,8 @@ function Hero() {
 
 function BenefitCard({ benefit, index }) {
   return (
-    <motion.div
-      {...riseItem(index, 0.1)}
+    <Reveal
+      delay={index * 0.1}
       className="glass-panel group relative overflow-hidden p-8 transition-colors hover:border-primary/40"
     >
       <div className="absolute right-0 top-0 p-4 opacity-10 transition-opacity group-hover:opacity-30">
@@ -184,12 +185,13 @@ function BenefitCard({ benefit, index }) {
       <p className="font-body-md leading-relaxed text-on-surface-variant">{benefit.text}</p>
 
       <div className="mt-6 h-1 w-full overflow-hidden rounded-full bg-white/10">
-        <motion.div
-          {...fillBar(benefit.level, 0.2 + index * 0.1)}
+        <Reveal
+          {...bar(benefit.level)}
+          delay={0.2 + index * 0.1}
           className="h-full bg-primary-container shadow-[0_0_10px_#00d1ff]"
-        ></motion.div>
+        ></Reveal>
       </div>
-    </motion.div>
+    </Reveal>
   );
 }
 
@@ -212,7 +214,7 @@ export default function Home() {
 
       <section className="relative overflow-hidden py-stack-xl">
         <div className="mx-auto grid max-w-container-max grid-cols-1 items-center gap-16 px-margin-mobile md:px-margin-desktop lg:grid-cols-2">
-          <motion.div {...riseOnScroll()} className="space-y-stack-md">
+          <Reveal className="space-y-stack-md">
             <h2 className="font-headline-lg text-headline-lg text-white">Системный инжиниринг</h2>
             <p className="font-body-lg text-on-surface-variant">
               Мы специализируемся на проектировании сложных промышленных комплексов, обеспечивая полную интеграцию
@@ -221,21 +223,22 @@ export default function Home() {
 
             <ul className="flex flex-col gap-6">
               {DIRECTIONS.map((direction, index) => (
-                <motion.li
+                <Reveal
+                  as="li"
                   key={direction.label}
-                  {...riseItem(index + 1, 0.1)}
+                  delay={(index + 1) * 0.1}
                   className="group flex items-center gap-4 text-on-surface"
                 >
                   <div className="glass-panel flex h-10 w-10 shrink-0 items-center justify-center rounded text-primary transition-transform group-hover:scale-110">
                     <span className="material-symbols-outlined">{direction.icon}</span>
                   </div>
                   <span className="font-label-md leading-none">{direction.label}</span>
-                </motion.li>
+                </Reveal>
               ))}
             </ul>
-          </motion.div>
+          </Reveal>
 
-          <motion.div {...riseOnScroll(0.15)} className="group relative">
+          <Reveal delay={0.15} className="group relative">
             <div className="absolute -inset-4 bg-primary/20 opacity-20 blur-3xl transition-opacity group-hover:opacity-40"></div>
             <div className="glass-panel relative aspect-square overflow-hidden rounded-xl border border-white/10 md:aspect-video">
               <img
@@ -249,7 +252,7 @@ export default function Home() {
                 <span className="font-label-sm uppercase tracking-widest text-white">Live System Telemetry</span>
               </div>
             </div>
-          </motion.div>
+          </Reveal>
         </div>
       </section>
     </main>
