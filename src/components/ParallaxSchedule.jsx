@@ -108,6 +108,11 @@ const ParallaxImg = ({ className, alt, src, start, end }) => {
     <motion.img
       src={src}
       alt={alt}
+      // Секция начинается на второй-третьей высоте экрана, а снимки идут
+      // по 2670 пикселей в ширину: без отложенной загрузки они соревнуются
+      // за канал с первым экраном, который посетитель видит сразу.
+      loading="lazy"
+      decoding="async"
       className={`rounded-xl border border-white/10 ${className}`}
       ref={ref}
       style={{ transform, opacity }}

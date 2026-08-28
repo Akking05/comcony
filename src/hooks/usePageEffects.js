@@ -58,53 +58,93 @@ export function usePageEffects(path) {
   useEffect(() => {
     if (!window.matchMedia('(pointer: fine)').matches) return undefined;
 
-    // Список панелей пересобирается при изменениях DOM — часть из них
-    // появляется вместе с данными из API.
-    let glassPanels = Array.from(document.querySelectorAll('.glass-panel'));
+    const RADIUS = 400;
 
-    const refreshTargets = () => {
-      glassPanels = Array.from(document.querySelectorAll('.glass-panel'));
+    /**
+     * Подсветка панелей под курсором.
+     *
+     * Раньше на каждом кадре у каждой панели спрашивался
+     * getBoundingClientRect, а сразу следом ей писался boxShadow. Чередование
+     * чтения и записи заставляет браузер пересчитывать раскладку внутри
+     * кадра — на странице товара это два десятка пересчётов на движение мыши.
+     *
+     * Теперь координаты меряются пачкой и живут в кеше, а он сбрасывается
+     * только когда реально устарел: прокрутка, изменение размера окна,
+     * появление новых панелей вместе с данными из API.
+     */
+    let panels = [];
+    let stale = true;
+
+    const invalidate = () => {
+      stale = true;
     };
 
-    const targetsObserver = new MutationObserver(refreshTargets);
-    targetsObserver.observe(document.body, { childList: true, subtree: true });
+    const measure = () => {
+      panels = Array.from(document.querySelectorAll('.glass-panel')).map((element) => {
+        const rect = element.getBoundingClientRect();
+
+        return {
+          element,
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+          shadow: element.style.boxShadow,
+        };
+      });
+
+      stale = false;
+    };
 
     let pointerFrame = 0;
-    let lastPointerEvent = null;
+    let pointer = null;
 
     const updatePointerEffects = () => {
       pointerFrame = 0;
-      if (!lastPointerEvent) return;
+      if (!pointer) return;
 
-      const event = lastPointerEvent;
+      if (stale) measure();
 
-      glassPanels.forEach((panel) => {
-        const rect = panel.getBoundingClientRect();
-        const dx = event.clientX - (rect.left + rect.width / 2);
-        const dy = event.clientY - (rect.top + rect.height / 2);
+      for (const panel of panels) {
+        const dx = pointer.x - panel.x;
+        const dy = pointer.y - panel.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        panel.style.boxShadow =
-          distance < 400 ? `0 0 25px rgba(0, 209, 255, ${(1 - distance / 400) * 0.15})` : 'none';
-      });
-    };
+        const shadow =
+          distance < RADIUS ? `0 0 25px rgba(0, 209, 255, ${(1 - distance / RADIUS) * 0.15})` : 'none';
 
-    const handleMouseMove = (event) => {
-      lastPointerEvent = event;
-      if (!pointerFrame) {
-        pointerFrame = window.requestAnimationFrame(updatePointerEffects);
+        // Запись в style — это работа для браузера даже при том же значении.
+        // Панелей, у которых подсветка не изменилась, большинство.
+        if (shadow !== panel.shadow) {
+          panel.element.style.boxShadow = shadow;
+          panel.shadow = shadow;
+        }
       }
     };
 
+    const handleMouseMove = (event) => {
+      pointer = { x: event.clientX, y: event.clientY };
+
+      if (!pointerFrame) pointerFrame = window.requestAnimationFrame(updatePointerEffects);
+    };
+
+    // Наблюдатель только помечает кеш устаревшим: пересобирать список прямо
+    // в его обработчике значило бы делать это на каждое изменение DOM,
+    // а их во время анимаций много.
+    const targetsObserver = new MutationObserver(invalidate);
+    targetsObserver.observe(document.body, { childList: true, subtree: true });
+
     document.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('scroll', invalidate, { passive: true });
+    window.addEventListener('resize', invalidate);
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', invalidate);
+      window.removeEventListener('resize', invalidate);
       targetsObserver.disconnect();
+
       if (pointerFrame) window.cancelAnimationFrame(pointerFrame);
-      glassPanels.forEach((panel) => {
-        panel.style.boxShadow = '';
-      });
+
+      for (const panel of panels) panel.element.style.boxShadow = '';
     };
   }, [path]);
 }
