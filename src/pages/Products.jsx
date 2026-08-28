@@ -1,12 +1,12 @@
 import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api } from '../lib/api.js';
-import { rise, riseOnScroll, stagger, staggerItem } from '../lib/motion.js';
+import { rise, riseItem, riseOnScroll } from '../lib/motion.js';
 
-function ProductCard({ product }) {
+function ProductCard({ product, index }) {
   return (
     <motion.div
-      {...staggerItem}
+      {...riseItem(index)}
       className="glass-card group flex flex-col p-2 transition-colors hover:border-primary/30"
     >
       <div className="relative mb-4 h-[320px] overflow-hidden bg-surface-container-high">
@@ -120,11 +120,11 @@ export default function Products() {
       )}
 
       {!loading && products?.length > 0 && (
-        <motion.section {...stagger(0.09, 0.1)} className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+        <section className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3">
+          {products.map((product, index) => (
+            <ProductCard key={product.slug} product={product} index={index} />
           ))}
-        </motion.section>
+        </section>
       )}
 
       {error && (

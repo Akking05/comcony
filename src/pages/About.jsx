@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api } from '../lib/api.js';
-import { EASE, fadeOnScroll, rise, riseOnScroll, stagger, staggerItem } from '../lib/motion.js';
+import { EASE, fadeOnScroll, rise, riseItem, riseOnScroll } from '../lib/motion.js';
 
 const MISSION_CARDS = [
   { number: '01', icon: 'architecture', accent: 'primary-fixed' },
@@ -9,12 +9,12 @@ const MISSION_CARDS = [
   { number: '03', icon: 'verified_user', accent: 'primary-fixed' },
 ];
 
-function MissionCard({ card, title, description }) {
+function MissionCard({ card, index, title, description }) {
   const isSecondary = card.accent === 'secondary';
 
   return (
     <motion.div
-      {...staggerItem}
+      {...riseItem(index)}
       className={`glass-panel group relative p-8 transition-all duration-500 ${
         isSecondary ? 'hover:border-secondary/50' : 'hover:border-primary-fixed/50'
       }`}
@@ -39,9 +39,9 @@ function MissionCard({ card, title, description }) {
   );
 }
 
-function TeamMember({ member }) {
+function TeamMember({ member, index }) {
   return (
-    <motion.div {...staggerItem} className="group">
+    <motion.div {...riseItem(index)} className="group">
       <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-sm bg-surface-container-high">
         {member.photo ? (
           <div
@@ -78,10 +78,10 @@ function TeamMember({ member }) {
   );
 }
 
-function Stat({ value, label, accent }) {
+function Stat({ value, label, accent, index = 0 }) {
   return (
     <motion.div
-      {...staggerItem}
+      {...riseItem(index)}
       className={`glass-panel border-l-4 p-6 ${accent === 'secondary' ? 'border-l-secondary' : 'border-l-primary-fixed'}`}
     >
       <div
@@ -126,10 +126,10 @@ export default function About() {
             <p className="font-body-lg text-body-lg text-on-surface">{text('about.intro_1')}</p>
             <p className="font-body-md text-body-md text-on-surface-variant">{text('about.intro_2')}</p>
 
-            <motion.div {...stagger(0.12, 0.1)} className="mt-12 grid grid-cols-1 gap-4 xs:grid-cols-2">
+            <div className="mt-12 grid grid-cols-1 gap-4 xs:grid-cols-2">
               <Stat value={text('about.stat_1_value')} label={text('about.stat_1_label')} />
-              <Stat value={text('about.stat_2_value')} label={text('about.stat_2_label')} accent="secondary" />
-            </motion.div>
+              <Stat value={text('about.stat_2_value')} label={text('about.stat_2_label')} accent="secondary" index={1} />
+            </div>
           </motion.div>
         </div>
       </section>
@@ -146,16 +146,17 @@ export default function About() {
             </h2>
           </motion.div>
 
-          <motion.div {...stagger(0.12)} className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {MISSION_CARDS.map((card, index) => (
               <MissionCard
                 key={card.number}
                 card={card}
+                index={index}
                 title={text(`about.mission_${index + 1}_title`)}
                 description={text(`about.mission_${index + 1}_text`)}
               />
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -175,11 +176,11 @@ export default function About() {
             смонтируется пустым и попадёт в кадр, viewport.once отработает
             вхолостую, а приехавшие позже карточки останутся невидимыми. */}
         {team && (
-          <motion.div {...stagger(0.1)} className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
-            {team.map((member) => (
-              <TeamMember key={member.name} member={member} />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
+            {team.map((member, index) => (
+              <TeamMember key={member.name} member={member} index={index} />
             ))}
-          </motion.div>
+          </div>
         )}
       </section>
 

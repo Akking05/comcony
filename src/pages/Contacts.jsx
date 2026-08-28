@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { useApi } from '../hooks/useApi.js';
 import { api } from '../lib/api.js';
-import { rise, riseOnScroll, stagger, staggerItem } from '../lib/motion.js';
+import { rise } from '../lib/motion.js';
+import { Reveal } from '../components/Reveal.jsx';
 
 const EMPTY_FORM = { name: '', email: '', subject: '', message: '' };
 
@@ -54,13 +55,14 @@ function ChannelTile({ icon, label, value, href, index }) {
   // а каскад с viewport.once к тому моменту уже отработал — плитка так и
   // осталась бы невидимой. Ссылка просто появляется на том же элементе.
   return (
-    <motion.a
-      {...staggerItem}
+    <Reveal
+      as="a"
+      delay={(index - 1) * 0.07}
       href={href}
       className="glass-panel group relative block overflow-hidden p-6 transition-colors hover:border-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
     >
       {body}
-    </motion.a>
+    </Reveal>
   );
 }
 
@@ -184,7 +186,7 @@ export default function Contacts() {
           </motion.header>
 
           {/* Каналы связи */}
-          <motion.section {...stagger(0.1, 0.25)} className="mb-stack-xl grid grid-cols-1 gap-gutter md:grid-cols-3">
+          <section className="mb-stack-xl grid grid-cols-1 gap-gutter md:grid-cols-3">
             <ChannelTile index={1} icon="location_on" label="Главный офис" value={address} href={mapsLink} />
             <ChannelTile
               index={2}
@@ -200,11 +202,11 @@ export default function Contacts() {
               value={text('contacts.phone')}
               href={phoneNumber ? `tel:${phoneNumber.replace(/[^\d+]/g, '')}` : undefined}
             />
-          </motion.section>
+          </section>
 
           {/* Форма и врезка */}
           <section className="grid grid-cols-1 gap-gutter lg:grid-cols-12">
-            <motion.div {...riseOnScroll()} className="lg:col-span-7">
+            <Reveal className="lg:col-span-7">
               <div className="glass-panel relative h-full overflow-hidden">
                 <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-primary/10 blur-[100px]"></div>
 
@@ -329,10 +331,10 @@ export default function Contacts() {
                   </div>
                 )}
               </div>
-            </motion.div>
+            </Reveal>
 
             {/* Врезка */}
-            <motion.aside {...riseOnScroll(0.12)} className="flex flex-col gap-gutter lg:col-span-5">
+            <Reveal as="aside" delay={0.12} className="flex flex-col gap-gutter lg:col-span-5">
               <div className="glass-panel p-8">
                 <div className="mb-6 flex items-center gap-3">
                   <span className="material-symbols-outlined text-xl text-primary">schedule</span>
@@ -393,7 +395,7 @@ export default function Contacts() {
                   </a>
                 </div>
               </div>
-            </motion.aside>
+            </Reveal>
           </section>
         </div>
       </main>

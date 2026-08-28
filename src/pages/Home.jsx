@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { ParallaxHero } from '../components/ParallaxSchedule.jsx';
 import { SplineWrapper } from '../components/SplineWrapper.jsx';
 
-import { rise, riseOnScroll } from '../lib/motion.js';
+import { fillBar, rise, riseItem, riseOnScroll } from '../lib/motion.js';
 
 const BENEFITS = [
   {
@@ -167,7 +167,7 @@ function Hero() {
 function BenefitCard({ benefit, index }) {
   return (
     <motion.div
-      {...riseOnScroll(index * 0.1)}
+      {...riseItem(index, 0.1)}
       className="glass-panel group relative overflow-hidden p-8 transition-colors hover:border-primary/40"
     >
       <div className="absolute right-0 top-0 p-4 opacity-10 transition-opacity group-hover:opacity-30">
@@ -185,10 +185,7 @@ function BenefitCard({ benefit, index }) {
 
       <div className="mt-6 h-1 w-full overflow-hidden rounded-full bg-white/10">
         <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: benefit.level }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.1, delay: 0.2 + index * 0.1, ease: [0.23, 1, 0.32, 1] }}
+          {...fillBar(benefit.level, 0.2 + index * 0.1)}
           className="h-full bg-primary-container shadow-[0_0_10px_#00d1ff]"
         ></motion.div>
       </div>
@@ -226,7 +223,7 @@ export default function Home() {
               {DIRECTIONS.map((direction, index) => (
                 <motion.li
                   key={direction.label}
-                  {...riseOnScroll(0.1 + index * 0.1)}
+                  {...riseItem(index + 1, 0.1)}
                   className="group flex items-center gap-4 text-on-surface"
                 >
                   <div className="glass-panel flex h-10 w-10 shrink-0 items-center justify-center rounded text-primary transition-transform group-hover:scale-110">
