@@ -162,7 +162,10 @@ export default function About() {
       </section>
 
       {/* Команда */}
-      <section className="mx-auto max-w-container-max px-margin-mobile py-16 md:px-margin-desktop md:py-24">
+      {/* relative z-10 обязателен: .page-bg — фиксированный слой с z-index: 0,
+          а браузер рисует его позже, чем текст непозиционированных блоков.
+          Без этой пары имена и должности уходят под фон. */}
+      <section className="relative z-10 mx-auto max-w-container-max px-margin-mobile py-16 md:px-margin-desktop md:py-24">
         <Reveal className="mb-16 flex flex-col items-end justify-between gap-8 md:flex-row">
           <div>
             <span className="mb-4 block font-label-mono text-label-mono uppercase text-secondary">
@@ -186,7 +189,7 @@ export default function About() {
       </section>
 
       {/* Призыв */}
-      <section className="px-margin-mobile py-16 md:px-margin-desktop md:py-24">
+      <section className="relative z-10 px-margin-mobile py-16 md:px-margin-desktop md:py-24">
         <Reveal
           {...FADE}
           className="glass-panel relative mx-auto max-w-container-max overflow-hidden p-8 text-center md:p-12"
