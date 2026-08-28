@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ReactLenis } from 'lenis/dist/lenis-react';
 
@@ -115,8 +115,27 @@ export default function PublicSite() {
   const [location, setLocation] = useState(() => resolveRoute(window.location.pathname));
   const route = routes[location.path] ?? routes['/'];
   const Page = route.component;
+  const lenisRef = useRef(null);
 
   const routeKey = location.path + (location.params.slug ?? '');
+
+  /**
+   * Перемотка наверх при смене страницы.
+   *
+   * Просить нужно саму Lenis, а не window.scrollTo. Lenis ведёт собственную
+   * позицию прокрутки и на ближайшем кадре возвращает её на место — родная
+   * перемотка отменяется, и новая страница открывается там же, где посетитель
+   * закончил читать прежнюю, то есть снизу. Гонка кадров, поэтому «иногда».
+   *
+   * immediate — это скачок: без него Lenis промотает всю страницу вверх
+   * на глазах у посетителя.
+   */
+  const scrollToTop = useCallback(() => {
+    const lenis = lenisRef.current?.lenis;
+
+    if (lenis) lenis.scrollTo(0, { immediate: true });
+    else window.scrollTo({ top: 0 });
+  }, []);
 
   usePageEffects(routeKey);
 
@@ -186,7 +205,7 @@ export default function PublicSite() {
   };
 
   return (
-    <ReactLenis root options={{ lerp: 0.08 }}>
+    <ReactLenis root ref={lenisRef} options={{ lerp: 0.08 }}>
       {/* Фон вне анимируемого контейнера: transform на нём сделал бы его
           системой отсчёта для position: fixed, и фон поехал бы вместе со
           страницей. */}
@@ -198,7 +217,7 @@ export default function PublicSite() {
 
         {/* Прокрутка наверх — после того как прежняя страница исчезла,
             иначе перемотка видна во время затухания. */}
-        <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo({ top: 0 })}>
+        <AnimatePresence mode="wait" onExitComplete={scrollToTop}>
           <motion.div key={routeKey} {...TRANSITION}>
             <Page {...location.params} />
           </motion.div>
