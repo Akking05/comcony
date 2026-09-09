@@ -59,16 +59,30 @@ async function request(path, { method = 'GET', body, signal } = {}) {
   return data;
 }
 
-export const api = {
-  async products(signal) {
-    if (DEMO_MODE) return (await loadDemoData()).products;
+/**
+ * Язык в адресе запроса. Русский — значение по умолчанию на сервере,
+ * поэтому для него параметр не добавляется: так у главного языка остаётся
+ * один адрес, а не два одинаковых по смыслу.
+ */
+const withLang = (path, lang) => (lang && lang !== 'ru' ? `${path}${path.includes('?') ? '&' : '?'}lang=${encodeURIComponent(lang)}` : path);
 
-    return request('/products', { signal });
+/**
+ * Витринный набор на выбранном языке. Снимок хранит языки отдельными
+ * наборами (products, products_en); собранный до появления второго языка
+ * возвращает русский, а не пустоту.
+ */
+const demoSet = (demo, name, lang) => (lang === 'ru' ? demo[name] : demo[`${name}_${lang}`] ?? demo[name]);
+
+export const api = {
+  async products(lang = 'ru', signal) {
+    if (DEMO_MODE) return demoSet(await loadDemoData(), 'products', lang);
+
+    return request(withLang('/products', lang), { signal });
   },
 
-  async product(slug, signal) {
+  async product(slug, lang = 'ru', signal) {
     if (DEMO_MODE) {
-      const found = (await loadDemoData()).details[slug];
+      const found = demoSet(await loadDemoData(), 'details', lang)[slug];
 
       if (!found) {
         const error = new Error('Товар не найден');
@@ -79,19 +93,26 @@ export const api = {
       return found;
     }
 
-    return request(`/products/${encodeURIComponent(slug)}`, { signal });
+    return request(withLang(`/products/${encodeURIComponent(slug)}`, lang), { signal });
   },
 
-  async texts(signal) {
-    if (DEMO_MODE) return (await loadDemoData()).texts;
+  /**
+   * Тексты страниц на выбранном языке.
+   *
+   * Ключи одинаковы для обоих языков, значения — разные. Незаполненный
+   * английский вариант сервер подменяет русским, поэтому неполный перевод
+   * даёт смешанную страницу, а не дырки на месте абзацев.
+   */
+  async texts(lang = 'ru', signal) {
+    if (DEMO_MODE) return demoSet(await loadDemoData(), 'texts', lang);
 
-    return request('/texts', { signal });
+    return request(withLang('/texts', lang), { signal });
   },
 
-  async team(signal) {
-    if (DEMO_MODE) return (await loadDemoData()).team;
+  async team(lang = 'ru', signal) {
+    if (DEMO_MODE) return demoSet(await loadDemoData(), 'team', lang);
 
-    return request('/team', { signal });
+    return request(withLang('/team', lang), { signal });
   },
 
   async submitRequest(body) {

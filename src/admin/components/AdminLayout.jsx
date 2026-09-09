@@ -2,6 +2,18 @@ import { useState } from 'react';
 import { adminApi } from '../api.js';
 import { IconButton } from './ui.jsx';
 
+/*
+  Рама панели: боковое меню, верхняя строка и рабочее поле.
+
+  Раскладка привычная нарочно — слева разделы, сверху где я и кто я, справа
+  выход. Знакомая рама здесь ценнее выразительной: в панель приходят с
+  делом, и каждый её сюрприз оплачивается временем редактора.
+
+  Активный раздел помечен не заливкой акцентом, а хайрлайном слева и
+  плотностью краски. Так на экране, где уже есть кнопка действия, не
+  загорается вторая синяя точка.
+*/
+
 /** Разделы меню. minRole — минимальная роль, при которой пункт виден. */
 export const SECTIONS = [
   { path: '/admin', label: 'Дашборд', icon: 'dashboard', exact: true },
@@ -34,40 +46,45 @@ export function AdminLayout({ user, path, navigate, onLogout, children }) {
   };
 
   const navigation = (
-    <nav className="flex flex-col gap-0.5">
-      {visible.map((section) => (
-        <a
-          key={section.path}
-          href={section.path}
-          onClick={() => setMenuOpen(false)}
-          className={`flex items-center gap-3 rounded-sm px-3 py-2.5 font-label-md text-label-md transition-all ${
-            isActive(section)
-              ? 'bg-primary/10 text-primary'
-              : 'text-on-surface-variant hover:bg-white/5 hover:text-white'
-          }`}
-        >
-          <span className="material-symbols-outlined text-[20px]">{section.icon}</span>
-          {section.label}
-        </a>
-      ))}
+    <nav className="flex flex-col">
+      {visible.map((section) => {
+        const active = isActive(section);
+
+        return (
+          <a
+            key={section.path}
+            href={section.path}
+            aria-current={active ? 'page' : undefined}
+            onClick={() => setMenuOpen(false)}
+            className={`flex items-center gap-3 border-l-2 px-3 py-2.5 font-label-md text-label-md uppercase transition-colors duration-150 outline-none focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent ${
+              active
+                ? 'kns-roll border-l-stencil text-ink'
+                : 'border-l-transparent text-ink-dim hover:bg-stencil/6 hover:text-ink'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[20px]">{section.icon}</span>
+            {section.label}
+          </a>
+        );
+      })}
     </nav>
   );
 
   return (
-    <div className="min-h-screen bg-background text-on-background">
+    <div className="kae-admin min-h-screen">
       {/* Боковое меню — десктоп */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-outline-variant/60 bg-surface-container-lowest lg:flex">
-        <div className="flex h-16 items-center gap-3 border-b border-outline-variant/60 px-5">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-hairline bg-ground-deep lg:flex">
+        <div className="flex h-14 items-center gap-3 border-b border-hairline px-5">
           <img src="/kae-logo.svg" alt="KAE" className="h-7 object-contain" />
-          <span className="font-label-sm text-[10px] uppercase tracking-[0.2em] text-outline">Admin</span>
+          <span className="font-label-2xs text-label-2xs uppercase text-ink-quiet">Панель</span>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-3">{navigation}</div>
+        <div className="flex-1 overflow-y-auto py-3">{navigation}</div>
 
-        <div className="border-t border-outline-variant/60 p-3">
+        <div className="border-t border-hairline p-3">
           <a
             href="/"
-            className="flex items-center gap-3 rounded-sm px-3 py-2.5 font-label-md text-label-md text-on-surface-variant transition-all hover:bg-white/5 hover:text-primary"
+            className="flex items-center gap-3 px-3 py-2.5 font-label-md text-label-md uppercase text-ink-dim transition-colors duration-150 hover:text-ink"
           >
             <span className="material-symbols-outlined text-[20px]">open_in_new</span>
             Открыть сайт
@@ -78,31 +95,32 @@ export function AdminLayout({ user, path, navigate, onLogout, children }) {
       {/* Меню — мобильные */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setMenuOpen(false)}></div>
-          <div className="relative flex h-full w-64 flex-col border-r border-outline-variant bg-surface">
-            <div className="flex h-16 items-center justify-between border-b border-outline-variant/60 px-4">
+          <div className="absolute inset-0 bg-ground-deep/85" onClick={() => setMenuOpen(false)}></div>
+          <div className="relative flex h-full w-64 flex-col border-r border-hairline bg-ground-deep">
+            <div className="flex h-14 items-center justify-between border-b border-hairline px-4">
               <img src="/kae-logo.svg" alt="KAE" className="h-7 object-contain" />
               <IconButton icon="close" title="Закрыть" onClick={() => setMenuOpen(false)} />
             </div>
-            <div className="flex-1 overflow-y-auto p-3">{navigation}</div>
+            <div className="flex-1 overflow-y-auto py-3">{navigation}</div>
           </div>
         </div>
       )}
 
       <div className="lg:pl-60">
-        {/* Верхняя панель */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-outline-variant/60 bg-surface/80 px-4 backdrop-blur-xl md:px-6">
+        {/* Верхняя строка: где я и кто я. Непрозрачная — под ней прокручивается
+            таблица, и полупрозрачная полоса читалась бы поверх её строк. */}
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-hairline bg-ground px-4 md:px-6">
           <div className="flex items-center gap-2">
             <IconButton icon="menu" title="Меню" className="lg:hidden" onClick={() => setMenuOpen(true)} />
-            <span className="font-label-sm text-[11px] uppercase tracking-widest text-outline">
+            <span className="font-label-md text-label-md uppercase text-ink-quiet">
               {visible.find(isActive)?.label ?? 'Панель управления'}
             </span>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
-              <div className="font-label-md text-label-md leading-tight text-white">{user.name}</div>
-              <div className="font-label-sm text-[10px] uppercase tracking-wider text-outline">
+              <div className="font-body-md text-[15px] leading-tight text-ink">{user.name}</div>
+              <div className="font-label-2xs text-label-2xs uppercase text-ink-quiet">
                 {ROLE_LABEL[user.role]}
               </div>
             </div>
@@ -110,7 +128,7 @@ export function AdminLayout({ user, path, navigate, onLogout, children }) {
           </div>
         </header>
 
-        <main className="p-4 md:p-6 lg:p-8">{children}</main>
+        <main className="p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

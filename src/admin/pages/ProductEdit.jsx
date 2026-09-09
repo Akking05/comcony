@@ -14,15 +14,20 @@ import {
   Textarea,
   useToast,
 } from '../components/ui.jsx';
+import { LangTabs, translatable } from '../lib/translatable.jsx';
 
 const EMPTY = {
   name: '',
+  name_en: '',
   slug: '',
   category_id: '',
   short_description: '',
+  short_description_en: '',
   full_description: '',
+  full_description_en: '',
   main_image: '',
   badge: '',
+  badge_en: '',
   status: 'draft',
   specs: [],
   gallery: [],
@@ -55,11 +60,11 @@ function ImagePicker({ label, value, onChange, hint }) {
   return (
     <Field label={label} hint={hint}>
       <div className="flex items-start gap-3">
-        <div className="h-24 w-24 shrink-0 overflow-hidden rounded-sm border border-white/10 bg-surface-container-high">
+        <div className="h-24 w-24 shrink-0 overflow-hidden rounded-sm border border-white/10 bg-part-fill">
           {value ? (
             <img src={value} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-outline/40">
+            <div className="flex h-full w-full items-center justify-center text-stencil-dim">
               <span className="material-symbols-outlined">image</span>
             </div>
           )}
@@ -98,7 +103,7 @@ function ImagePicker({ label, value, onChange, hint }) {
  * Редактор характеристик. Строки полностью произвольные: группа, название,
  * значение. Ключевые попадают в верхний блок страницы товара.
  */
-function SpecsEditor({ specs, onChange }) {
+function SpecsEditor({ specs, lang, onChange }) {
   const update = (index, patch) =>
     onChange(specs.map((spec, position) => (position === index ? { ...spec, ...patch } : spec)));
 
@@ -119,39 +124,29 @@ function SpecsEditor({ specs, onChange }) {
   return (
     <div className="space-y-3">
       {specs.length === 0 && (
-        <p className="rounded-sm border border-dashed border-outline-variant/60 px-4 py-6 text-center font-body-md text-body-md text-on-surface-variant">
+        <p className="rounded-sm border border-dashed border-hairline-soft px-4 py-6 text-center font-body-md text-[15px] text-ink-dim">
           Характеристик пока нет. Группа и название — произвольные:
           <br />
-          <span className="text-outline">Optical → Detection Range → 12 km</span>
+          <span className="text-ink-quiet">Optical → Detection Range → 12 km</span>
         </p>
       )}
 
       {specs.map((spec, index) => (
         <div
           key={index}
-          className="grid grid-cols-1 gap-2 rounded-sm border border-outline-variant/40 bg-surface/30 p-3 md:grid-cols-[1fr_1fr_1fr_auto]"
+          className="grid grid-cols-1 gap-2 rounded-sm border border-hairline-soft bg-part-fill p-3 md:grid-cols-[1fr_1fr_1fr_auto]"
         >
+          <Input {...translatable(spec, 'spec_group', lang, (patch) => update(index, patch), 'Группа (Optical)')} />
           <Input
-            value={spec.spec_group ?? ''}
-            onChange={(event) => update(index, { spec_group: event.target.value })}
-            placeholder="Группа (Optical)"
+            {...translatable(spec, 'name', lang, (patch) => update(index, patch), 'Название (Detection Range)')}
           />
-          <Input
-            value={spec.name}
-            onChange={(event) => update(index, { name: event.target.value })}
-            placeholder="Название (Detection Range)"
-          />
-          <Input
-            value={spec.value}
-            onChange={(event) => update(index, { value: event.target.value })}
-            placeholder="Значение (12 km)"
-          />
+          <Input {...translatable(spec, 'value', lang, (patch) => update(index, patch), 'Значение (12 km)')} />
 
           <div className="flex items-center justify-end gap-1">
             <label
               title="Показать в блоке ключевых характеристик"
               className={`inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-sm px-2 transition-colors ${
-                spec.is_key ? 'bg-primary/15 text-primary' : 'text-outline hover:bg-white/5'
+                spec.is_key ? 'kns-roll text-ink' : 'text-ink-quiet hover:bg-stencil/6'
               }`}
             >
               <input
@@ -240,19 +235,23 @@ function GalleryEditor({ gallery, onChange }) {
   );
 }
 
-function ApplicationsEditor({ applications, onChange }) {
+function ApplicationsEditor({ applications, lang, onChange }) {
   const update = (index, patch) =>
     onChange(applications.map((item, position) => (position === index ? { ...item, ...patch } : item)));
 
   return (
     <div className="space-y-3">
       {applications.map((application, index) => (
-        <div key={index} className="space-y-2 rounded-sm border border-outline-variant/40 bg-surface/30 p-3">
+        <div key={index} className="space-y-2 rounded-sm border border-hairline-soft bg-part-fill p-3">
           <div className="flex gap-2">
             <Input
-              value={application.title}
-              onChange={(event) => update(index, { title: event.target.value })}
-              placeholder="Название области применения"
+              {...translatable(
+                application,
+                'title',
+                lang,
+                (patch) => update(index, patch),
+                'Название области применения',
+              )}
             />
             <IconButton
               icon="delete"
@@ -262,9 +261,13 @@ function ApplicationsEditor({ applications, onChange }) {
           </div>
           <Textarea
             rows={2}
-            value={application.description ?? ''}
-            onChange={(event) => update(index, { description: event.target.value })}
-            placeholder="Описание (необязательно)"
+            {...translatable(
+              application,
+              'description',
+              lang,
+              (patch) => update(index, patch),
+              'Описание (необязательно)',
+            )}
           />
         </div>
       ))}
@@ -278,6 +281,7 @@ function ApplicationsEditor({ applications, onChange }) {
 
 export default function ProductEdit({ id, user, navigate }) {
   const [form, setForm] = useState(id ? null : EMPTY);
+  const [lang, setLang] = useState('ru');
   const [categories, setCategories] = useState([]);
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -303,9 +307,15 @@ export default function ProductEdit({ id, user, navigate }) {
 
   const set = (patch) => setForm((current) => ({ ...current, ...patch }));
 
+  /** Поле, у которого есть перевод: привязывается к колонке выбранного языка. */
+  const t = (field, placeholder) => translatable(form, field, lang, set, placeholder);
+
   const save = async () => {
     if (!form.name.trim()) {
-      notify('Укажите название товара', 'error');
+      // Обязательно только русское название. Возвращаем на его вкладку —
+      // иначе сообщение указывает на поле, которого сейчас не видно.
+      setLang('ru');
+      notify('Укажите название товара по-русски', 'error');
       return;
     }
 
@@ -389,12 +399,17 @@ export default function ProductEdit({ id, user, navigate }) {
         </div>
       )}
 
+      {/* Вкладка переключает всю форму разом: название, описания, плашку,
+          характеристики и применения. Адрес страницы, картинки и категория
+          от языка не зависят и остаются на месте. */}
+      <LangTabs lang={lang} onChange={setLang} className="mb-5" />
+
       <fieldset disabled={readOnly} className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
           <Panel title="Основное">
             <div className="space-y-4">
-              <Field label="Название" required>
-                <Input value={form.name} onChange={(event) => set({ name: event.target.value })} placeholder="Носимая с экраном" />
+              <Field label="Название" required={lang === 'ru'}>
+                <Input {...t('name', 'Носимая с экраном')} />
               </Field>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -415,30 +430,23 @@ export default function ProductEdit({ id, user, navigate }) {
               </div>
 
               <Field label="Краткое описание" hint="Выводится на карточке в каталоге">
-                <Textarea
-                  rows={2}
-                  value={form.short_description}
-                  onChange={(event) => set({ short_description: event.target.value })}
-                />
+                <Textarea rows={2} {...t('short_description')} />
               </Field>
 
               <Field label="Полное описание" hint="Выводится на странице товара">
-                <Textarea
-                  rows={6}
-                  value={form.full_description}
-                  onChange={(event) => set({ full_description: event.target.value })}
-                />
+                <Textarea rows={6} {...t('full_description')} />
               </Field>
             </div>
           </Panel>
 
           <Panel title="Технические характеристики">
-            <SpecsEditor specs={form.specs} onChange={(specs) => set({ specs })} />
+            <SpecsEditor specs={form.specs} lang={lang} onChange={(specs) => set({ specs })} />
           </Panel>
 
           <Panel title="Области применения">
             <ApplicationsEditor
               applications={form.applications}
+              lang={lang}
               onChange={(applications) => set({ applications })}
             />
           </Panel>
@@ -453,7 +461,7 @@ export default function ProductEdit({ id, user, navigate }) {
                 onChange={(main_image) => set({ main_image })}
               />
               <div>
-                <span className="mb-2 block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
+                <span className="mb-2 block font-label-md text-label-md uppercase text-ink-dim">
                   Галерея
                 </span>
                 <GalleryEditor gallery={form.gallery} onChange={(gallery) => set({ gallery })} />
@@ -463,7 +471,7 @@ export default function ProductEdit({ id, user, navigate }) {
 
           <Panel title="Оформление">
             <Field label="Плашка на карточке" hint="Например SYSTEM ACTIVE. Пусто — плашки не будет">
-              <Input value={form.badge} onChange={(event) => set({ badge: event.target.value })} />
+              <Input {...t('badge')} />
             </Field>
           </Panel>
 
@@ -472,9 +480,9 @@ export default function ProductEdit({ id, user, navigate }) {
               {form.documents?.length ? (
                 <ul className="space-y-2">
                   {form.documents.map((document) => (
-                    <li key={document.id} className="flex items-center gap-2 font-body-md text-body-md">
-                      <span className="material-symbols-outlined text-[18px] text-primary">picture_as_pdf</span>
-                      <span className="min-w-0 flex-1 truncate text-on-surface">{document.title}</span>
+                    <li key={document.id} className="flex items-center gap-2 font-body-md text-[15px]">
+                      <span className="material-symbols-outlined text-[18px] text-stencil">picture_as_pdf</span>
+                      <span className="min-w-0 flex-1 truncate text-ink">{document.title}</span>
                       <Badge tone={document.status === 'published' ? 'success' : 'neutral'}>
                         {document.status === 'published' ? 'Опубл.' : 'Черновик'}
                       </Badge>
@@ -482,11 +490,11 @@ export default function ProductEdit({ id, user, navigate }) {
                   ))}
                 </ul>
               ) : (
-                <p className="font-body-md text-body-md text-on-surface-variant">Документов нет.</p>
+                <p className="font-body-md text-[15px] text-ink-dim">Документов нет.</p>
               )}
               <a
                 href="/admin/documents"
-                className="mt-4 inline-flex items-center gap-1.5 font-label-sm text-[11px] uppercase tracking-widest text-primary hover:underline"
+                className="mt-4 inline-flex items-center gap-1.5 font-label-md text-label-md uppercase text-stencil hover:text-ink"
               >
                 Управление документами
                 <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

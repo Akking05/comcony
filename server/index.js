@@ -4,7 +4,7 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getDb } from './db/index.js';
-import { publicRouter } from './routes/public.js';
+import { publicRouter, NOT_DEMO_SQL } from './routes/public.js';
 import { authRouter } from './routes/auth.js';
 import { adminRouter } from './routes/admin/index.js';
 import { UPLOAD_DIR } from './routes/admin/media.js';
@@ -59,7 +59,7 @@ app.get('/robots.txt', (req, res) => {
 app.get('/sitemap.xml', (req, res) => {
   const origin = siteOrigin(req);
   const slugs = getDb()
-    .prepare("SELECT slug FROM products WHERE status = 'published' ORDER BY sort, id")
+    .prepare(`SELECT slug FROM products WHERE status = 'published' AND ${NOT_DEMO_SQL} ORDER BY sort, id`)
     .all();
 
   const paths = [...SITE_PAGES, ...slugs.map((row) => `/products/${row.slug}`)];
@@ -100,7 +100,9 @@ function isKnownPage(pathname) {
   }
 
   return Boolean(
-    getDb().prepare("SELECT 1 FROM products WHERE slug = ? AND status = 'published'").get(slug),
+    getDb()
+      .prepare(`SELECT 1 FROM products WHERE slug = ? AND status = 'published' AND ${NOT_DEMO_SQL}`)
+      .get(slug),
   );
 }
 

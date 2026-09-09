@@ -101,8 +101,8 @@ export default function Media({ user }) {
         onChange={upload}
       />
 
-      <p className="mb-5 flex items-start gap-2 rounded-sm border border-outline-variant/40 bg-surface/30 px-4 py-3 font-body-md text-body-md text-on-surface-variant">
-        <span className="material-symbols-outlined text-[18px] text-primary">info</span>
+      <p className="mb-5 flex items-start gap-2 rounded-sm border border-hairline-soft bg-part-fill px-4 py-3 font-body-md text-[15px] text-ink-dim">
+        <span className="material-symbols-outlined text-[18px] text-stencil">info</span>
         Имя файла — отпечаток его содержимого, поэтому один и тот же файл не занимает место дважды. Файл, на который
         ссылается товар, документ или сотрудник, удалить нельзя.
       </p>
@@ -112,22 +112,22 @@ export default function Media({ user }) {
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {files.map((file) => (
-            <div key={file.path} className="overflow-hidden rounded-sm border border-outline-variant/60 bg-surface/40">
-              <div className="aspect-square bg-surface-container-high">
+            <div key={file.path} className="overflow-hidden rounded-sm border border-hairline-soft bg-part-fill">
+              <div className="aspect-square bg-part-fill">
                 {isImage(file.path) ? (
                   <img src={file.path} alt="" loading="lazy" className="h-full w-full object-cover" />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-primary/50">
+                  <div className="flex h-full w-full items-center justify-center text-stencil-dim">
                     <span className="material-symbols-outlined text-4xl">picture_as_pdf</span>
                   </div>
                 )}
               </div>
 
               <div className="p-2.5">
-                <div className="truncate font-label-sm text-[11px] text-on-surface-variant" title={file.path}>
+                <div className="truncate font-label-xs text-label-xs text-ink-dim" title={file.path}>
                   {file.path.replace('/uploads/', '')}
                 </div>
-                <div className="font-label-sm text-[10px] text-outline">
+                <div className="font-label-2xs text-label-2xs text-ink-quiet">
                   {formatSize(file.size)} · {formatDate(file.modified_at).split(',')[0]}
                 </div>
 

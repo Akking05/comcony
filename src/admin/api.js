@@ -68,7 +68,9 @@ export const adminApi = {
 
   // Тексты
   texts: () => request('/admin/texts'),
-  saveTexts: (values) => request('/admin/texts', { method: 'PUT', body: { values } }),
+  // Принимает { values, values_en } — русские и английские значения.
+  // Любое из полей можно опустить.
+  saveTexts: (body) => request('/admin/texts', { method: 'PUT', body }),
 
   // Команда
   team: () => request('/admin/team'),
@@ -102,10 +104,11 @@ export const adminApi = {
   },
 
   /** Загрузка PDF как документа с привязкой к товару. */
-  uploadDocument({ file, title, productId, type }) {
+  uploadDocument({ file, title, title_en, productId, type }) {
     const form = new FormData();
     form.append('file', file);
     if (title) form.append('title', title);
+    if (title_en) form.append('title_en', title_en);
     if (productId) form.append('product_id', String(productId));
     if (type) form.append('type', type);
     return request('/admin/media/documents', { method: 'POST', form });

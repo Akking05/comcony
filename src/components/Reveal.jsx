@@ -34,14 +34,6 @@ export const FADE = {
   margin: '-60px',
 };
 
-/** Полоса, заполняющаяся до указанной ширины. */
-export const bar = (width) => ({
-  hidden: { width: 0 },
-  shown: { width },
-  duration: 1.1,
-  margin: '-40px',
-});
-
 /** Шаг каскада для списков: i-й элемент ждёт i * step секунд. */
 export const STEP = 0.07;
 

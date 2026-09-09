@@ -30,7 +30,7 @@ function RequestCard({ request, readOnly, onStatus, onNote, onDelete }) {
   const meta = statusMeta(request.status);
 
   return (
-    <div className="rounded-sm border border-outline-variant/60 bg-surface/40">
+    <div className="rounded-sm border border-hairline-soft bg-part-fill">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
         <Badge tone={meta.tone}>{meta.label}</Badge>
 
@@ -39,8 +39,8 @@ function RequestCard({ request, readOnly, onStatus, onNote, onDelete }) {
           onClick={() => setOpen(!open)}
           className="flex min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <span className="font-label-md text-label-md text-white">{request.name}</span>
-          <span className="min-w-0 flex-1 truncate font-body-md text-body-md text-on-surface-variant">
+          <span className="font-body-md text-[15px] text-ink">{request.name}</span>
+          <span className="min-w-0 flex-1 truncate font-body-md text-[15px] text-ink-dim">
             {request.subject || '(без темы)'}
           </span>
         </button>
@@ -50,13 +50,13 @@ function RequestCard({ request, readOnly, onStatus, onNote, onDelete }) {
             href={`/products/${request.product_slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden font-label-sm text-[11px] uppercase tracking-wider text-primary hover:underline sm:inline"
+            className="hidden font-label-md text-label-md uppercase text-stencil hover:text-ink sm:inline"
           >
             {request.product_name}
           </a>
         )}
 
-        <span className="hidden font-label-sm text-[11px] text-outline md:inline">
+        <span className="hidden font-label-xs text-label-xs text-ink-quiet md:inline">
           {formatDate(request.created_at)}
         </span>
 
@@ -64,20 +64,20 @@ function RequestCard({ request, readOnly, onStatus, onNote, onDelete }) {
       </div>
 
       {open && (
-        <div className="space-y-4 border-t border-outline-variant/40 px-4 py-4">
+        <div className="space-y-4 border-t border-hairline-soft px-4 py-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {request.email && (
               <div>
-                <span className="block font-label-sm text-[10px] uppercase tracking-wider text-outline">Email</span>
-                <a href={`mailto:${request.email}`} className="font-body-md text-body-md text-primary hover:underline">
+                <span className="block font-label-2xs text-label-2xs uppercase text-ink-quiet">Email</span>
+                <a href={`mailto:${request.email}`} className="font-body-md text-[15px] text-ink underline decoration-hairline hover:decoration-stencil">
                   {request.email}
                 </a>
               </div>
             )}
             {request.phone && (
               <div>
-                <span className="block font-label-sm text-[10px] uppercase tracking-wider text-outline">Телефон</span>
-                <a href={`tel:${request.phone}`} className="font-body-md text-body-md text-primary hover:underline">
+                <span className="block font-label-2xs text-label-2xs uppercase text-ink-quiet">Телефон</span>
+                <a href={`tel:${request.phone}`} className="font-body-md text-[15px] text-ink underline decoration-hairline hover:decoration-stencil">
                   {request.phone}
                 </a>
               </div>
@@ -86,17 +86,17 @@ function RequestCard({ request, readOnly, onStatus, onNote, onDelete }) {
 
           {request.message && (
             <div>
-              <span className="mb-1 block font-label-sm text-[10px] uppercase tracking-wider text-outline">
+              <span className="mb-1 block font-label-2xs text-label-2xs uppercase text-ink-quiet">
                 Сообщение
               </span>
-              <p className="whitespace-pre-line font-body-md text-body-md text-on-surface">{request.message}</p>
+              <p className="whitespace-pre-line font-body-md text-[15px] text-ink">{request.message}</p>
             </div>
           )}
 
           {!readOnly && (
-            <div className="flex flex-wrap items-end gap-3 border-t border-outline-variant/40 pt-4">
+            <div className="flex flex-wrap items-end gap-3 border-t border-hairline-soft pt-4">
               <label className="flex-1 space-y-1.5">
-                <span className="block font-label-sm text-[10px] uppercase tracking-wider text-outline">
+                <span className="block font-label-2xs text-label-2xs uppercase text-ink-quiet">
                   Внутренняя заметка
                 </span>
                 <Textarea rows={2} value={note} onChange={(event) => setNote(event.target.value)} />
@@ -193,8 +193,9 @@ export default function Requests({ user }) {
         <button
           type="button"
           onClick={() => setFilter('')}
-          className={`rounded-full border px-3.5 py-1.5 font-label-sm text-[11px] uppercase tracking-wider transition-colors ${
-            filter === '' ? 'border-primary/50 bg-primary/10 text-primary' : 'border-outline-variant text-on-surface-variant hover:text-white'
+          aria-pressed={filter === ''}
+          className={`border px-3.5 py-2 font-label-md text-label-md uppercase transition-colors duration-150 outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+            filter === '' ? 'kns-roll border-hairline text-ink' : 'border-hairline-soft text-ink-dim hover:border-hairline hover:text-ink'
           }`}
         >
           Все ({total})
@@ -205,10 +206,11 @@ export default function Requests({ user }) {
             key={status.value}
             type="button"
             onClick={() => setFilter(status.value)}
-            className={`rounded-full border px-3.5 py-1.5 font-label-sm text-[11px] uppercase tracking-wider transition-colors ${
+            aria-pressed={filter === status.value}
+            className={`border px-3.5 py-2 font-label-md text-label-md uppercase transition-colors duration-150 outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
               filter === status.value
-                ? 'border-primary/50 bg-primary/10 text-primary'
-                : 'border-outline-variant text-on-surface-variant hover:text-white'
+                ? 'kns-roll border-hairline text-ink'
+                : 'border-hairline-soft text-ink-dim hover:border-hairline hover:text-ink'
             }`}
           >
             {status.label} ({data.counts[status.value] ?? 0})

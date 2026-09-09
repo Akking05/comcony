@@ -36,17 +36,28 @@ productsRouter.get('/:id', (req, res) => {
 
   res.json({
     ...product,
+    // Редактор правит оба языка, поэтому колонки _en отдаются как есть,
+    // без подстановки русского вместо пустого перевода.
     specs: db
-      .prepare('SELECT id, spec_group, name, value, is_key, sort FROM product_specs WHERE product_id = ? ORDER BY sort, id')
+      .prepare(`
+        SELECT id, spec_group, spec_group_en, name, name_en, value, value_en, is_key, sort
+        FROM product_specs WHERE product_id = ? ORDER BY sort, id
+      `)
       .all(product.id),
     gallery: db
-      .prepare('SELECT id, path, alt, sort FROM product_images WHERE product_id = ? ORDER BY sort, id')
+      .prepare('SELECT id, path, alt, alt_en, sort FROM product_images WHERE product_id = ? ORDER BY sort, id')
       .all(product.id),
     applications: db
-      .prepare('SELECT id, title, description, sort FROM product_applications WHERE product_id = ? ORDER BY sort, id')
+      .prepare(`
+        SELECT id, title, title_en, description, description_en, sort
+        FROM product_applications WHERE product_id = ? ORDER BY sort, id
+      `)
       .all(product.id),
     documents: db
-      .prepare('SELECT id, title, file_path, file_size, type, status, sort FROM documents WHERE product_id = ? ORDER BY sort, id')
+      .prepare(`
+        SELECT id, title, title_en, file_path, file_size, type, status, sort
+        FROM documents WHERE product_id = ? ORDER BY sort, id
+      `)
       .all(product.id),
   });
 });
@@ -66,17 +77,25 @@ productsRouter.post('/', editor, (req, res) => {
 
   const { lastInsertRowid } = db
     .prepare(`
-      INSERT INTO products (name, slug, category_id, short_description, full_description, main_image, badge, status, sort)
-      VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?)
+      INSERT INTO products (
+        name, name_en, slug, category_id,
+        short_description, short_description_en, full_description, full_description_en,
+        main_image, badge, badge_en, status, sort
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?)
     `)
     .run(
       name,
+      clean(req.body?.name_en, 200),
       uniqueSlug(db, 'products', req.body?.slug || name),
       req.body?.category_id ? Number(req.body.category_id) : null,
       clean(req.body?.short_description, 1000),
+      clean(req.body?.short_description_en, 1000),
       clean(req.body?.full_description, 20000),
+      clean(req.body?.full_description_en, 20000),
       clean(req.body?.main_image, 1000),
       clean(req.body?.badge, 60),
+      clean(req.body?.badge_en, 60),
       nextSort,
     );
 
@@ -99,25 +118,33 @@ productsRouter.put('/:id', editor, (req, res) => {
   try {
     db.prepare(`
       UPDATE products SET
-        name = ?, slug = ?, category_id = ?, short_description = ?, full_description = ?,
-        main_image = ?, badge = ?, updated_at = datetime('now')
+        name = ?, name_en = ?, slug = ?, category_id = ?,
+        short_description = ?, short_description_en = ?,
+        full_description = ?, full_description_en = ?,
+        main_image = ?, badge = ?, badge_en = ?, updated_at = datetime('now')
       WHERE id = ?
     `).run(
       name,
+      clean(req.body?.name_en, 200),
       uniqueSlug(db, 'products', req.body?.slug || name, id),
       req.body?.category_id ? Number(req.body.category_id) : null,
       clean(req.body?.short_description, 1000),
+      clean(req.body?.short_description_en, 1000),
       clean(req.body?.full_description, 20000),
+      clean(req.body?.full_description_en, 20000),
       clean(req.body?.main_image, 1000),
       clean(req.body?.badge, 60),
+      clean(req.body?.badge_en, 60),
       id,
     );
 
     if (Array.isArray(req.body?.specs)) {
       db.prepare('DELETE FROM product_specs WHERE product_id = ?').run(id);
-      const insert = db.prepare(
-        'INSERT INTO product_specs (product_id, spec_group, name, value, is_key, sort) VALUES (?, ?, ?, ?, ?, ?)',
-      );
+      const insert = db.prepare(`
+        INSERT INTO product_specs
+          (product_id, spec_group, spec_group_en, name, name_en, value, value_en, is_key, sort)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
 
       req.body.specs
         .filter((spec) => clean(spec?.name, 200))
@@ -125,8 +152,11 @@ productsRouter.put('/:id', editor, (req, res) => {
           insert.run(
             id,
             clean(spec.spec_group, 120),
+            clean(spec.spec_group_en, 120),
             clean(spec.name, 200),
+            clean(spec.name_en, 200),
             clean(spec.value, 500),
+            clean(spec.value_en, 500),
             spec.is_key ? 1 : 0,
             index,
           );
@@ -135,22 +165,37 @@ productsRouter.put('/:id', editor, (req, res) => {
 
     if (Array.isArray(req.body?.gallery)) {
       db.prepare('DELETE FROM product_images WHERE product_id = ?').run(id);
-      const insert = db.prepare('INSERT INTO product_images (product_id, path, alt, sort) VALUES (?, ?, ?, ?)');
+      const insert = db.prepare(
+        'INSERT INTO product_images (product_id, path, alt, alt_en, sort) VALUES (?, ?, ?, ?, ?)',
+      );
 
       req.body.gallery
         .filter((image) => clean(image?.path, 1000))
-        .forEach((image, index) => insert.run(id, clean(image.path, 1000), clean(image.alt, 300), index));
+        .forEach((image, index) =>
+          insert.run(id, clean(image.path, 1000), clean(image.alt, 300), clean(image.alt_en, 300), index),
+        );
     }
 
     if (Array.isArray(req.body?.applications)) {
       db.prepare('DELETE FROM product_applications WHERE product_id = ?').run(id);
-      const insert = db.prepare(
-        'INSERT INTO product_applications (product_id, title, description, sort) VALUES (?, ?, ?, ?)',
-      );
+      const insert = db.prepare(`
+        INSERT INTO product_applications
+          (product_id, title, title_en, description, description_en, sort)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `);
 
       req.body.applications
         .filter((item) => clean(item?.title, 200))
-        .forEach((item, index) => insert.run(id, clean(item.title, 200), clean(item.description, 1000), index));
+        .forEach((item, index) =>
+          insert.run(
+            id,
+            clean(item.title, 200),
+            clean(item.title_en, 200),
+            clean(item.description, 1000),
+            clean(item.description_en, 1000),
+            index,
+          ),
+        );
     }
 
     db.exec('COMMIT');

@@ -127,12 +127,13 @@ mediaRouter.post('/documents', editor, upload.single('file'), (req, res) => {
 
   const { lastInsertRowid } = db
     .prepare(`
-      INSERT INTO documents (product_id, title, file_path, file_size, type, status, sort)
-      VALUES (?, ?, ?, ?, ?, 'draft', ?)
+      INSERT INTO documents (product_id, title, title_en, file_path, file_size, type, status, sort)
+      VALUES (?, ?, ?, ?, ?, ?, 'draft', ?)
     `)
     .run(
       req.body?.product_id ? Number(req.body.product_id) : null,
       title,
+      String(req.body?.title_en ?? '').trim().slice(0, 300),
       stored.path,
       stored.size,
       String(req.body?.type ?? 'datasheet').slice(0, 60),
@@ -163,6 +164,13 @@ mediaRouter.patch('/documents/:id', editor, (req, res) => {
   if (req.body?.title !== undefined) {
     fields.push('title = ?');
     values.push(String(req.body.title).trim().slice(0, 300));
+  }
+
+  // Английское название можно очистить, прислав пустую строку, — поэтому
+  // проверяется наличие поля, а не его истинность.
+  if (req.body?.title_en !== undefined) {
+    fields.push('title_en = ?');
+    values.push(String(req.body.title_en).trim().slice(0, 300));
   }
 
   if (req.body?.status !== undefined) {

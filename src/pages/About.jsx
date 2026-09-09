@@ -1,213 +1,300 @@
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
+
 import { useApi } from '../hooks/useApi.js';
 import { api } from '../lib/api.js';
-import { EASE, rise } from '../lib/motion.js';
-import { FADE, Reveal, STEP } from '../components/Reveal.jsx';
+import { useLang } from '../lib/i18n.jsx';
+import { rise } from '../lib/motion.js';
+import { Reveal, STEP } from '../components/Reveal.jsx';
+import { Placeholder } from '../components/home/parts.jsx';
+import '../components/home/home.css';
+import { Button, StatusBlock } from '../components/ui/index.js';
 
-const MISSION_CARDS = [
-  { number: '01', icon: 'architecture', accent: 'primary-fixed' },
-  { number: '02', icon: 'diversity_3', accent: 'secondary' },
-  { number: '03', icon: 'verified_user', accent: 'primary-fixed' },
-];
+/*
+  «О компании» — сопроводительный лист поставщика, а не рассказ о себе.
 
-function MissionCard({ card, index, title, description }) {
-  const isSecondary = card.accent === 'secondary';
+  Три правила, из которых собрана страница:
 
+  · Фотографий нет ни одной. Портреты в базе — снимки с чужого хоста от
+    прежнего каркаса, и подставлять их значило бы выдать заглушку за
+    команду. Человек подаётся клеймом: инициалы трафаретом, номер по
+    порядку, должность моноширинной. Это графика мира, а не аватар.
+  · Ни одной цифры о компании. В базе остались `about.stat_1_value` = «250+»
+    и `about.stat_2_value` = «15+» — выдумка прежнего наполнения. Данные не
+    удалены, они по-прежнему правятся в админке; убран только показ, потому
+    что придуманная цифра в тендерной закупке дороже пропуска.
+  · Утверждения — только четыре подтверждённых (PRODUCT.md, «Positioning»).
+    Они лежат в локалях рядом с теми же строками главной, а не пишутся заново.
+
+  Что откуда: заголовок, вступление, миссия и призыв — тексты владельца
+  сайта из базы (группа «О компании»); перечень людей — таблица
+  `team_members`; подписи разделов и четыре утверждения — из локалей.
+  Пустое значение в базе даёт заглушку `[ … ]`, а не пустое место.
+
+  Структурные типы соседних разделов не повторяются: перечень утверждений →
+  таблица «графа → значение» → поле клейм → полоса действия.
+*/
+
+/**
+ * Конечное состояние появления. При `prefers-reduced-motion` оно же стоит
+ * и до срабатывания наблюдателя: страница отрисована целиком, переходов нет.
+ */
+const SHOWN = { opacity: 1, y: 0 };
+
+/** Ключи трёх граф миссии в таблице `texts`. */
+const MISSION_KEYS = [1, 2, 3];
+
+/** Порядковый номер по борту: 01, 02, 03… */
+const numeral = (index) => String(index + 1).padStart(2, '0');
+
+/**
+ * Инициалы вместо портрета. Берём первые буквы первых двух слов имени —
+ * этого хватает и кириллице, и латинице.
+ */
+function initialsOf(name) {
+  return String(name ?? '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join('');
+}
+
+/**
+ * Клеймо человека: рамка, инициалы трафаретом, номер и плотность краски.
+ * Ячейки стоят вплотную и делят один хайрлайн — это перечень на листе,
+ * а не карточки на подложке.
+ */
+function Mark({ member, index, still, positionLabel }) {
   return (
     <Reveal
-      delay={index * STEP}
-      className={`glass-panel group relative p-8 transition-all duration-500 ${
-        isSecondary ? 'hover:border-secondary/50' : 'hover:border-primary-fixed/50'
-      }`}
+      as="li"
+      hidden={still ? SHOWN : undefined}
+      delay={still ? 0 : Math.min(index, 8) * STEP}
+      className="flex min-w-0 flex-col border-b border-r border-hairline-soft p-5 md:p-6"
     >
-      <div className="absolute -right-4 -top-4 font-label-mono text-6xl font-bold italic text-outline-variant/20 transition-colors group-hover:text-outline-variant/30">
-        {card.number}
+      <div className="kns-roll relative flex aspect-4/3 w-full items-center justify-center border border-hairline">
+        <span aria-hidden="true" className="kns-display text-[clamp(34px,6vw,52px)] text-stencil">
+          {initialsOf(member.name)}
+        </span>
+
+        <span
+          aria-hidden="true"
+          className="font-label-2xs text-label-2xs absolute left-2 top-2 text-ink-quiet"
+        >
+          {numeral(index)}
+        </span>
       </div>
 
-      <div
-        className={`mb-6 flex h-12 w-12 items-center justify-center border transition-transform group-hover:scale-110 ${
-          isSecondary
-            ? 'border-secondary/30 bg-secondary/10 text-secondary'
-            : 'border-primary-fixed/30 bg-primary-fixed/10 text-primary-fixed'
-        }`}
-      >
-        <span className="material-symbols-outlined">{card.icon}</span>
-      </div>
+      <h3 className="mt-4 font-title-sm text-title-sm text-ink">{member.name}</h3>
 
-      <h3 className="mb-4 font-headline-md text-[24px] text-white">{title}</h3>
-      <p className="font-body-md text-on-surface-variant">{description}</p>
+      <p className="font-label-2xs text-label-2xs mt-2 uppercase text-ink-dim">
+        {member.position || <Placeholder label={positionLabel} />}
+      </p>
+
+      {member.tags.length > 0 && (
+        <ul className="mt-auto flex flex-wrap gap-2 pt-4">
+          {member.tags.map((tag) => (
+            <li
+              key={tag}
+              className="font-label-2xs text-label-2xs border border-hairline-soft px-2 py-1 uppercase text-ink-quiet"
+            >
+              {tag}
+            </li>
+          ))}
+        </ul>
+      )}
     </Reveal>
   );
 }
 
-function TeamMember({ member, index }) {
-  return (
-    <Reveal delay={index * STEP} className="group">
-      <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-sm bg-surface-container-high">
-        {member.photo ? (
-          <div
-            className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-            style={{ backgroundImage: `url('${member.photo}')` }}
-          ></div>
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-outline/30">
-            <span className="material-symbols-outlined text-5xl">person</span>
-          </div>
-        )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
-
-        {member.tags.length > 0 && (
-          <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
-            {member.tags.map((tag, tagIndex) => (
-              <span
-                key={tag}
-                className={`border bg-surface/80 px-2 py-1 font-label-mono text-[10px] uppercase backdrop-blur ${
-                  tagIndex === 0 ? 'border-primary-fixed/30 text-primary-fixed' : 'border-secondary/30 text-secondary'
-                }`}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <h4 className="font-headline-md text-[18px] text-white">{member.name}</h4>
-      <p className="mt-1 font-label-mono text-[12px] uppercase text-outline">{member.position}</p>
-    </Reveal>
-  );
-}
-
-function Stat({ value, label, accent, index = 0 }) {
-  return (
-    <Reveal
-      delay={index * STEP}
-      className={`glass-panel border-l-4 p-6 ${accent === 'secondary' ? 'border-l-secondary' : 'border-l-primary-fixed'}`}
-    >
-      <div
-        className={`mb-1 font-label-mono text-[32px] font-bold ${
-          accent === 'secondary' ? 'text-secondary' : 'text-primary-fixed'
-        }`}
-      >
-        {value}
-      </div>
-      <div className="font-label-mono text-[10px] uppercase text-outline">{label}</div>
-    </Reveal>
-  );
-}
+/**
+ * Поле клейм уходит в край экрана — так же, как поле номенклатуры в
+ * каталоге. Поля страницы одинаковы на всех ширинах, поэтому одного
+ * отрицательного отступа хватает.
+ */
+const FULL_BLEED = { marginInline: 'calc(var(--spacing-margin-mobile) * -1)' };
 
 export default function About() {
-  const { data: texts } = useApi((signal) => api.texts(signal));
-  const { data: team } = useApi((signal) => api.team(signal));
+  const { lang, t } = useLang();
+  const still = useReducedMotion();
+
+  /** Появление при монтировании. Выключенное движение — сразу конечный кадр. */
+  const enter = (delay) => (still ? {} : rise(delay));
+
+  // lang в зависимостях: смена языка — это новый запрос за текстами.
+  const { data: texts } = useApi((signal) => api.texts(lang, signal), [lang]);
+  const { data: team, error: teamError } = useApi((signal) => api.team(lang, signal), [lang]);
 
   const text = (key, fallback = '') => texts?.[key] ?? fallback;
 
+  // Четыре утверждения, подтверждённые заказчиком. Ровно те же строки, что
+  // на главной: расходиться им нельзя, поэтому и ключи те же.
+  const claims = [
+    t('home.partner_status'),
+    t('home.claim_2'),
+    t('home.claim_3'),
+    t('home.claim_4'),
+  ];
+
+  const mission = MISSION_KEYS.map((index) => ({
+    title: text(`about.mission_${index}_title`),
+    line: text(`about.mission_${index}_text`),
+  })).filter((row) => row.title);
+
+  const intro = text('about.intro_1');
+  const second = text('about.intro_2');
+
   return (
-    <main className="pt-20 md:pt-24">
-      {/* Вступление */}
-      <section className="relative z-10 mx-auto max-w-container-max px-margin-mobile py-16 md:px-margin-desktop md:py-24">
-        <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-12">
-          <motion.div {...rise(0.05)} className="text-center md:col-span-5 md:text-left">
-            <span className="mb-4 block font-label-mono text-label-mono uppercase tracking-widest text-primary-fixed">
-              {text('about.eyebrow')}
-            </span>
-            <h1 className="mb-6 font-headline-lg-mobile text-headline-lg-mobile uppercase text-white md:font-display-md md:text-display-md">
-              {text('about.title', 'О компании')}
-            </h1>
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
-              className="mx-auto mb-8 h-[2px] w-16 origin-left bg-primary-fixed md:mx-0"
-            ></motion.div>
-          </motion.div>
+    <main className="relative z-10 mx-auto max-w-container-max px-margin-mobile pb-stack-xl md:px-margin-desktop">
+      <header className="relative mb-stack-xl">
+        {/* Клеймо по левому борту: маркировка ящика, а не надзаголовок. */}
+        <span
+          aria-hidden="true"
+          className="font-label-sm text-label-sm absolute top-1 hidden uppercase text-ink-quiet xl:block"
+          style={{
+            writingMode: 'vertical-rl',
+            letterSpacing: '0.34em',
+            left: 'calc(var(--spacing-rail) * -1)',
+          }}
+        >
+          {t('about.rail')}
+        </span>
 
-          <motion.div {...rise(0.2)} className="space-y-6 md:col-span-7">
-            <p className="font-body-lg text-body-lg text-on-surface">{text('about.intro_1')}</p>
-            <p className="font-body-md text-body-md text-on-surface-variant">{text('about.intro_2')}</p>
+        <motion.h1
+          {...enter(0.05)}
+          className="max-w-3xl font-display-lg text-headline-lg-mobile text-ink md:text-display-lg"
+        >
+          {text('about.title', t('about.title'))}
+        </motion.h1>
 
-            <div className="mt-12 grid grid-cols-1 gap-4 xs:grid-cols-2">
-              <Stat value={text('about.stat_1_value')} label={text('about.stat_1_label')} />
-              <Stat value={text('about.stat_2_value')} label={text('about.stat_2_label')} accent="secondary" index={1} />
-            </div>
-          </motion.div>
-        </div>
+        <motion.p {...enter(0.16)} className="mt-stack-sm max-w-[62ch] font-body-lg text-body-md text-ink-dim">
+          {intro || <Placeholder label={t('about.intro_placeholder')} />}
+        </motion.p>
+      </header>
+
+      {/* 1. Основание: четыре подтверждённых утверждения, по одному в строке. */}
+      <section aria-labelledby="about-claims" className="mb-stack-xl">
+        <h2 id="about-claims" className="kns-display text-headline-md text-ink">
+          {t('about.claims_title')}
+        </h2>
+
+        <ol className="mt-stack-md grid gap-0 border-t border-hairline">
+          {claims.map((claim, index) => (
+            <Reveal
+              as="li"
+              key={claim}
+              hidden={still ? SHOWN : undefined}
+              delay={still ? 0 : index * STEP}
+              className="flex items-baseline gap-4 border-b border-hairline-soft py-4 md:gap-6"
+            >
+              <span aria-hidden="true" className="font-label-2xs text-label-2xs shrink-0 text-ink-quiet">
+                {numeral(index)}
+              </span>
+              <span className="font-body-lg text-body-md text-ink">{claim}</span>
+            </Reveal>
+          ))}
+        </ol>
+
+        <p className="mt-stack-sm max-w-[58ch] font-body-md text-body-sm text-ink-dim">
+          {t('home.status_statement')}
+        </p>
+
+        {second && (
+          <p className="mt-stack-md max-w-[62ch] font-body-md text-body-md text-ink-dim">{second}</p>
+        )}
       </section>
 
-      {/* Миссия */}
-      <section className="relative overflow-hidden bg-surface-container-lowest/60 py-16 backdrop-blur-sm md:py-24">
-        <div className="relative z-10 mx-auto max-w-container-max px-margin-mobile md:px-margin-desktop">
-          <Reveal className="mb-16 text-center">
-            <span className="font-label-mono text-label-mono uppercase tracking-widest text-primary-fixed">
-              {text('about.mission_eyebrow')}
-            </span>
-            <h2 className="mt-4 font-headline-md text-headline-md uppercase text-white">
-              {text('about.mission_title')}
-            </h2>
-          </Reveal>
+      {/* 2. Миссия: таблица «графа → значение». Тексты владельца сайта. */}
+      {mission.length > 0 && (
+        <section aria-labelledby="about-mission" className="mb-stack-xl">
+          <h2 id="about-mission" className="kns-display text-headline-md text-ink">
+            {text('about.mission_title', t('about.mission_title'))}
+          </h2>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {MISSION_CARDS.map((card, index) => (
-              <MissionCard
-                key={card.number}
-                card={card}
+          <dl className="mt-stack-md border-t border-hairline">
+            {mission.map((row, index) => (
+              <Reveal
+                key={row.title}
+                hidden={still ? SHOWN : undefined}
+                delay={still ? 0 : index * STEP}
+                className="grid gap-1 border-b border-hairline-soft py-5 md:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] md:gap-8"
+              >
+                <dt className="font-label-md text-label-md uppercase text-stencil">{row.title}</dt>
+                <dd className="max-w-[62ch] font-body-md text-body-md text-ink-dim">
+                  {row.line || <Placeholder label={t('about.value_placeholder')} />}
+                </dd>
+              </Reveal>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {/* 3. Перечень людей. Снимков нет — клеймо с инициалами. */}
+      <section aria-labelledby="about-team" className="mb-stack-xl">
+        <h2 id="about-team" className="kns-display text-headline-md text-ink">
+          {text('about.team_title', t('about.team_title'))}
+        </h2>
+
+        {text('about.team_intro') && (
+          <p className="mt-stack-sm max-w-[58ch] font-body-md text-body-md text-ink-dim">
+            {text('about.team_intro')}
+          </p>
+        )}
+
+        {/* Контейнер каскада создаётся только вместе с данными: пустой,
+            попавший в кадр, отработал бы вхолостую, и приехавшие позже
+            клейма остались бы невидимыми. */}
+        {team && team.length > 0 && (
+          <ul
+            style={FULL_BLEED}
+            className="mt-stack-md grid grid-cols-2 border-t border-b border-hairline md:grid-cols-3 lg:grid-cols-4"
+          >
+            {team.map((member, index) => (
+              <Mark
+                key={`${member.name}-${index}`}
+                member={member}
                 index={index}
-                title={text(`about.mission_${index + 1}_title`)}
-                description={text(`about.mission_${index + 1}_text`)}
+                still={still}
+                positionLabel={t('about.position_placeholder')}
               />
             ))}
-          </div>
-        </div>
-      </section>
+          </ul>
+        )}
 
-      {/* Команда */}
-      {/* relative z-10 обязателен: .page-bg — фиксированный слой с z-index: 0,
-          а браузер рисует его позже, чем текст непозиционированных блоков.
-          Без этой пары имена и должности уходят под фон. */}
-      <section className="relative z-10 mx-auto max-w-container-max px-margin-mobile py-16 md:px-margin-desktop md:py-24">
-        <Reveal className="mb-16 flex flex-col items-end justify-between gap-8 md:flex-row">
-          <div>
-            <span className="mb-4 block font-label-mono text-label-mono uppercase text-secondary">
-              {text('about.team_eyebrow')}
-            </span>
-            <h2 className="font-headline-md text-headline-md uppercase text-white">{text('about.team_title')}</h2>
+        {team && team.length === 0 && (
+          <div className="mt-stack-md">
+            <StatusBlock icon="person" title={t('about.team_empty_title')} text={t('about.team_empty_text')} />
           </div>
-          <p className="max-w-sm font-body-md text-on-surface-variant">{text('about.team_intro')}</p>
-        </Reveal>
+        )}
 
-        {/* Контейнер каскада создаётся только вместе с данными: если он
-            смонтируется пустым и попадёт в кадр, viewport.once отработает
-            вхолостую, а приехавшие позже карточки останутся невидимыми. */}
-        {team && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
-            {team.map((member, index) => (
-              <TeamMember key={member.name} member={member} index={index} />
-            ))}
+        {teamError && (
+          <div className="mt-stack-md">
+            <StatusBlock icon="cloud_off" title={t('products.error_title')} text={t('products.error_text')} />
           </div>
         )}
       </section>
 
-      {/* Призыв */}
-      <section className="relative z-10 px-margin-mobile py-16 md:px-margin-desktop md:py-24">
-        <Reveal
-          {...FADE}
-          className="glass-panel relative mx-auto max-w-container-max overflow-hidden p-8 text-center md:p-12"
-        >
-          <div className="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-transparent via-primary-fixed to-transparent"></div>
+      {/* 4. Единственное акцентное действие страницы. */}
+      <section aria-labelledby="about-cta" className="kns-roll border-t border-hairline pt-stack-lg">
+        <h2 id="about-cta" className="kns-display text-headline-md text-ink">
+          {text('about.cta_title', t('common.contact'))}
+        </h2>
 
-          <h2 className="mb-6 font-headline-md text-headline-md uppercase tracking-tight text-white">
-            {text('about.cta_title')}
-          </h2>
-          <p className="mx-auto mb-10 max-w-2xl font-body-lg text-on-surface-variant">{text('about.cta_text')}</p>
+        {text('about.cta_text') && (
+          <p className="mt-stack-sm max-w-[58ch] font-body-md text-body-md text-ink-dim">
+            {text('about.cta_text')}
+          </p>
+        )}
 
-          <a
-            href="/contacts"
-            className="inline-block rounded-sm bg-primary-container px-10 py-5 font-button-text uppercase tracking-widest text-on-primary-container transition-transform duration-300 hover:scale-95"
-          >
-            Связаться с нами
-          </a>
-        </Reveal>
+        <div className="mt-stack-md flex flex-wrap items-center gap-4">
+          <Button href="/contacts" size="lg">
+            {t('common.contact')}
+          </Button>
+
+          <Button href="/products" variant="ghost" iconEnd="arrow_forward">
+            {t('common.catalog')}
+          </Button>
+        </div>
       </section>
     </main>
   );

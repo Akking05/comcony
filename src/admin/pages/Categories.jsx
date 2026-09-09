@@ -12,11 +12,13 @@ import {
   Textarea,
   useToast,
 } from '../components/ui.jsx';
+import { LangTabs, translatable } from '../lib/translatable.jsx';
 
 export default function Categories({ user }) {
   const [categories, setCategories] = useState(null);
   const [error, setError] = useState(null);
   const [editing, setEditing] = useState(null);
+  const [lang, setLang] = useState('ru');
   const [confirming, setConfirming] = useState(null);
   const notify = useToast();
 
@@ -31,7 +33,9 @@ export default function Categories({ user }) {
 
   const save = async () => {
     if (!editing.name.trim()) {
-      notify('Укажите название', 'error');
+      // Обязательно только русское название — возвращаем на его вкладку.
+      setLang('ru');
+      notify('Укажите название по-русски', 'error');
       return;
     }
 
@@ -70,7 +74,14 @@ export default function Categories({ user }) {
     <>
       <PageHeader title="Категории" description={`${categories.length} категорий`}>
         {!readOnly && (
-          <Button variant="primary" icon="add" onClick={() => setEditing({ name: '', slug: '', description: '' })}>
+          <Button
+            variant="primary"
+            icon="add"
+            onClick={() => {
+              setLang('ru');
+              setEditing({ name: '', name_en: '', slug: '', description: '', description_en: '' });
+            }}
+          >
             Добавить
           </Button>
         )}
@@ -79,17 +90,17 @@ export default function Categories({ user }) {
       {categories.length === 0 ? (
         <EmptyState icon="category" title="Категорий нет" description="Категории группируют товары в каталоге." />
       ) : (
-        <div className="overflow-x-auto rounded-sm border border-outline-variant/60">
+        <div className="overflow-x-auto rounded-sm border border-hairline-soft">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-outline-variant/60 bg-surface/60">
-                <th className="px-4 py-3 text-left font-label-sm text-[10px] uppercase tracking-widest text-outline">
+              <tr className="border-b border-hairline-soft bg-part-fill">
+                <th className="px-4 py-3 text-left font-label-2xs text-label-2xs uppercase text-ink-quiet">
                   Название
                 </th>
-                <th className="hidden px-4 py-3 text-left font-label-sm text-[10px] uppercase tracking-widest text-outline md:table-cell">
+                <th className="hidden px-4 py-3 text-left font-label-2xs text-label-2xs uppercase text-ink-quiet md:table-cell">
                   Адрес
                 </th>
-                <th className="px-4 py-3 text-center font-label-sm text-[10px] uppercase tracking-widest text-outline">
+                <th className="px-4 py-3 text-center font-label-2xs text-label-2xs uppercase text-ink-quiet">
                   Товаров
                 </th>
                 <th className="w-24 px-4 py-3"></th>
@@ -97,25 +108,32 @@ export default function Categories({ user }) {
             </thead>
             <tbody>
               {categories.map((category) => (
-                <tr key={category.id} className="border-b border-outline-variant/30 last:border-0 hover:bg-white/[0.02]">
+                <tr key={category.id} className="border-b border-hairline-soft last:border-0">
                   <td className="px-4 py-3">
-                    <div className="font-label-md text-label-md text-white">{category.name}</div>
+                    <div className="font-body-md text-[15px] text-ink">{category.name}</div>
                     {category.description && (
-                      <div className="mt-0.5 font-body-md text-[13px] text-on-surface-variant">
+                      <div className="mt-0.5 font-body-md text-[13px] text-ink-dim">
                         {category.description}
                       </div>
                     )}
                   </td>
-                  <td className="hidden px-4 py-3 font-label-sm text-[11px] text-outline md:table-cell">
+                  <td className="hidden px-4 py-3 font-label-xs text-label-xs text-ink-quiet md:table-cell">
                     /{category.slug}
                   </td>
-                  <td className="px-4 py-3 text-center font-label-md text-label-md text-on-surface-variant">
+                  <td className="px-4 py-3 text-center font-label-md text-label-md text-ink-dim">
                     {category.products_count}
                   </td>
                   <td className="px-4 py-3">
                     {!readOnly && (
                       <div className="flex justify-end gap-1">
-                        <IconButton icon="edit" title="Изменить" onClick={() => setEditing({ ...category })} />
+                        <IconButton
+                          icon="edit"
+                          title="Изменить"
+                          onClick={() => {
+                            setLang('ru');
+                            setEditing({ ...category });
+                          }}
+                        />
                         <IconButton icon="delete" title="Удалить" onClick={() => setConfirming(category)} />
                       </div>
                     )}
@@ -129,27 +147,28 @@ export default function Categories({ user }) {
 
       {editing && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setEditing(null)}></div>
-          <div className="relative w-full max-w-lg rounded-sm border border-outline-variant bg-surface p-6">
-            <h2 className="mb-5 font-headline-md text-[18px] text-white">
+          <div className="absolute inset-0 bg-background/80" onClick={() => setEditing(null)}></div>
+          <div className="relative w-full max-w-lg rounded-sm border border-hairline bg-ground p-6">
+            <h2 className="mb-5 font-title-md text-[18px] uppercase text-ink">
               {editing.id ? 'Изменить категорию' : 'Новая категория'}
             </h2>
 
+            {/* Адрес от языка не зависит и остаётся общим для обеих вкладок. */}
+            <LangTabs lang={lang} onChange={setLang} className="mb-5" />
+
             <div className="space-y-4">
               <label className="block space-y-1.5">
-                <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
-                  Название <span className="text-primary">*</span>
+                <span className="block font-label-md text-label-md uppercase text-ink-dim">
+                  Название {lang === 'ru' && <span className="text-stencil">*</span>}
                 </span>
                 <Input
                   autoFocus
-                  value={editing.name}
-                  onChange={(event) => setEditing({ ...editing, name: event.target.value })}
-                  placeholder="Носимые радиостанции"
+                  {...translatable(editing, 'name', lang, (patch) => setEditing({ ...editing, ...patch }), 'Носимые радиостанции')}
                 />
               </label>
 
               <label className="block space-y-1.5">
-                <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
+                <span className="block font-label-md text-label-md uppercase text-ink-dim">
                   Адрес
                 </span>
                 <Input
@@ -160,13 +179,12 @@ export default function Categories({ user }) {
               </label>
 
               <label className="block space-y-1.5">
-                <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
+                <span className="block font-label-md text-label-md uppercase text-ink-dim">
                   Описание
                 </span>
                 <Textarea
                   rows={3}
-                  value={editing.description ?? ''}
-                  onChange={(event) => setEditing({ ...editing, description: event.target.value })}
+                  {...translatable(editing, 'description', lang, (patch) => setEditing({ ...editing, ...patch }))}
                 />
               </label>
             </div>

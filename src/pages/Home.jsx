@@ -1,260 +1,232 @@
-import { motion, useScroll, useTransform } from 'motion/react';
-import { useRef } from 'react';
-import { ParallaxHero } from '../components/ParallaxSchedule.jsx';
-import { SplineWrapper } from '../components/SplineWrapper.jsx';
+import { useMemo } from 'react';
 
-import { rise } from '../lib/motion.js';
-import { Reveal, bar } from '../components/Reveal.jsx';
+import { useApi } from '../hooks/useApi.js';
+import { api } from '../lib/api.js';
+import { useLang } from '../lib/i18n.jsx';
 
-const BENEFITS = [
-  {
-    icon: 'verified',
-    title: 'Надежность',
-    text: 'Бескомпромиссная стабильность систем в экстремальных условиях эксплуатации.',
-    level: '75%',
-  },
-  {
-    icon: 'memory',
-    title: 'Инновации',
-    text: 'Использование передовых достижений науки для создания продуктов завтрашнего дня.',
-    level: '100%',
-  },
-  {
-    icon: 'precision_manufacturing',
-    title: 'Качество',
-    text: 'Прецизионная точность в каждой детали и строгий контроль на всех этапах.',
-    level: '85%',
-  },
+import '../components/home/home.css';
+import { numeral } from '../components/home/motion.js';
+import { PART_ORDER } from '../components/home/heroLayout.js';
+import { Hero } from '../components/home/sections/Hero.jsx';
+import { Status } from '../components/home/sections/Status.jsx';
+import { Directions } from '../components/home/sections/Directions.jsx';
+import { Doing } from '../components/home/sections/Doing.jsx';
+import { Nomenclature } from '../components/home/sections/Nomenclature.jsx';
+import { Supply } from '../components/home/sections/Supply.jsx';
+import { Documents } from '../components/home/sections/Documents.jsx';
+import { Kromka } from '../components/home/sections/Kromka.jsx';
+
+/**
+ * Главная страница: восемь экранов упаковочного листа.
+ *
+ * Порядок и устройство экранов:
+ *   1 кофр — закрытый ящик раскрывается, рация расходится на шесть частей;
+ *   2 статус — полоса трафаретной маркировки в край экрана;
+ *   3 направления — клейма по борту, без рамок и общего габарита;
+ *   4 что делаем — асимметричный сплит 5/7 с разобранным узлом;
+ *   5 номенклатура — плотное поле позиций в край, единственная плотная секция;
+ *   6 поставка — ось маршрута с пятью отметками;
+ *   7 документы — таблица «графа → значение»;
+ *   8 нижняя кромка — знаки обращения с грузом и адрес назначения.
+ * Два соседних экрана нигде не повторяют структурный тип, и у каждого своё
+ * движение по скроллу.
+ *
+ * Фотографий здесь нет ни одной: вся графика — ручной SVG и CSS. Это прямое
+ * решение заказчика, фотографии живут только в каталоге и карточке позиции.
+ *
+ * Откуда берётся текст. Из базы (`texts`, группа «Главная») — всё, что правит
+ * владелец сайта, и каждая его строка стоит там, где встаёт в две строки:
+ *   · `hero_title_1` + `hero_title_2` — заголовок первого экрана;
+ *   · `hero_eyebrow` — строка под ним;
+ *   · `advantage_1…3` — три подписи под утверждением о статусе;
+ *   · `systems_title` + `hero_text` — заголовок и абзац «что делаем»;
+ *   · `systems_text` — строка под заголовком поставки;
+ *   · `contacts.address` — адрес назначения на нижней кромке.
+ * Из базы же (`products`, `categories`) — направления и позиции номенклатуры.
+ * Из локалей — то, что принадлежит самой странице: подписи экранов, названия
+ * частей на чертеже, узлы поставки и графы документов.
+ * Своих строк у страницы нет вовсе. Чего нет в базе — заглушка `[ … ]`, и она
+ * выглядит заглушкой: ни одной выдуманной цифры, цены или характеристики.
+ */
+
+/** Экраны с номером. Отсюда же строится указатель в рельсе первого экрана. */
+const SCREENS = [
+  { key: 'status', anchor: 'status', labelKey: 'home.screen_status' },
+  { key: 'directions', anchor: 'napravleniya', labelKey: 'home.screen_directions' },
+  { key: 'doing', anchor: 'chto-delaem', labelKey: 'home.screen_doing' },
+  { key: 'nomenclature', anchor: 'nomenklatura', labelKey: 'home.screen_nomenclature' },
+  { key: 'supply', anchor: 'postavka', labelKey: 'home.screen_supply' },
+  { key: 'documents', anchor: 'dokumenty', labelKey: 'home.screen_documents' },
 ];
 
-const DIRECTIONS = [
-  { icon: 'rocket_launch', label: 'Аэрокосмические разработки' },
-  { icon: 'security', label: 'Системы безопасности' },
-  { icon: 'robot_2', label: 'Автоматизация производств' },
+/** Пять узлов маршрута поставки: от проектирования до сервиса. */
+const SUPPLY_NODES = ['design', 'install', 'commissioning', 'training', 'service'];
+
+/** Графы упаковочного листа. Значений у заказчика ещё нет — справа заглушка. */
+const DOCUMENT_ROWS = [
+  'home.document_partner',
+  'home.document_conformity',
+  'home.document_permits',
+  'home.document_spec',
+  'home.document_warranty',
+  'home.document_delivery',
 ];
 
-const READOUTS = [
-  { label: 'System Status', value: 'NOMINAL', position: 'top-1/4 left-10 border-l pl-4' },
-  { label: 'Data Stream', value: '1.2 GB/S', position: 'bottom-1/4 right-10 border-r pr-4 text-right' },
-];
+/** Сколько клейм помещается на борту, не превращаясь в решётку карточек. */
+const MAX_DIRECTIONS = 4;
 
-function Hero() {
-  const ref = useRef(null);
+/** Сколько позиций держит поле номенклатуры: дальше читатель уходит в каталог. */
+const MAX_ITEMS = 12;
 
-  // Содержимое героя медленно уплывает при прокрутке — глубина без параллакс-хаков.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-
-  return (
-    <section ref={ref} className="relative flex min-h-[100svh] items-center justify-center overflow-hidden py-28 md:py-0">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 overflow-hidden">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            className="video-zest h-full w-full object-cover opacity-0"
-          >
-            <source src="https://cdn.pixabay.com/video/2020/04/23/36979-415518292_large.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0e1417_88%)]"></div>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-transparent to-background"></div>
-
-        <div className="pointer-events-none absolute inset-0 hidden md:block">
-          {READOUTS.map((readout, index) => (
-            <motion.div
-              key={readout.label}
-              {...rise(1.1 + index * 0.15)}
-              className={`absolute border-primary/30 py-2 ${readout.position}`}
-            >
-              <div className="text-[10px] uppercase tracking-widest text-primary/80">{readout.label}</div>
-              <div className="text-label-md font-bold text-primary">{readout.value}</div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      <motion.div
-        style={{ y, opacity }}
-        className="relative z-10 mx-auto grid w-full max-w-container-max grid-cols-1 items-center gap-gutter px-margin-mobile md:px-margin-desktop lg:grid-cols-12"
-      >
-        <div className="space-y-stack-md text-left lg:col-span-7">
-          <motion.div
-            {...rise(0.1)}
-            className="glass-panel mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 px-3 py-1"
-          >
-            <span className="h-2 w-2 animate-pulse rounded-full bg-primary-container"></span>
-            <span className="font-label-sm text-label-sm uppercase tracking-[0.2em] text-primary">
-              Future Technology
-            </span>
-          </motion.div>
-
-          <motion.h1
-            {...rise(0.2)}
-            className="font-headline-lg-mobile text-headline-lg-mobile leading-tight text-white md:font-display-lg md:text-display-lg"
-          >
-            <span className="mb-2 block uppercase tracking-widest">Инженерные решения</span>
-            <span className="text-primary">нового поколения</span>
-          </motion.h1>
-
-          <motion.div {...rise(0.35)} className="relative h-px w-24 overflow-hidden bg-primary/50">
-            <div className="absolute inset-0 animate-pulse bg-primary"></div>
-          </motion.div>
-
-          <motion.p {...rise(0.45)} className="max-w-xl font-body-lg text-body-lg text-on-surface-variant">
-            Создаем современные технологические продукты для промышленности, безопасности и будущих проектов.
-          </motion.p>
-
-          <motion.div
-            {...rise(0.6)}
-            className="mt-stack-lg flex flex-col items-stretch gap-stack-md sm:flex-row sm:items-start"
-          >
-            <div className="relative">
-              <span className="absolute -top-4 left-0 hidden font-label-sm text-[10px] uppercase tracking-widest text-primary/40 sm:block">
-                SYS_AUTH: 0x442
-              </span>
-              <a
-                href="/products"
-                className="primary-glow inline-block w-full rounded-sm bg-primary-container px-10 py-4 text-center font-label-md text-label-md font-black uppercase tracking-widest text-on-primary-container transition-all hover:opacity-90 sm:w-auto"
-              >
-                Каталог продукции
-              </a>
-            </div>
-
-            <div className="relative">
-              <span className="absolute -top-4 left-0 hidden font-label-sm text-[10px] uppercase tracking-widest text-primary/40 sm:block">
-                COORD: 51.1694° N
-              </span>
-              <a
-                href="/contacts"
-                className="glass-panel inline-block w-full rounded-sm border border-outline px-10 py-4 text-center font-label-md text-label-md font-black uppercase tracking-widest text-white transition-all hover:bg-white/5 sm:w-auto"
-              >
-                Связаться с нами
-              </a>
-            </div>
-          </motion.div>
-        </div>
-
-        <motion.div {...rise(0.5)} className="hidden flex-col items-end gap-8 lg:col-span-5 lg:flex">
-          <div className="relative ml-auto h-[500px] w-full max-w-[750px] overflow-visible rounded-xl">
-            <SplineWrapper />
-          </div>
-          <div className="text-right opacity-40">
-            <p className="font-label-sm text-[10px] uppercase tracking-widest text-on-surface-variant">
-              Neural Link Established
-            </p>
-            <p className="font-label-sm text-[10px] uppercase tracking-widest text-on-surface-variant">
-              Data Stream: 1.2 GB/s
-            </p>
-          </div>
-        </motion.div>
-      </motion.div>
-
-      <motion.div
-        {...rise(1.4)}
-        className="absolute bottom-10 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-4 text-on-surface-variant/40 lg:flex"
-      >
-        <span className="font-label-sm text-label-sm">Scroll to explore</span>
-        <div className="h-16 w-px bg-gradient-to-b from-primary-container to-transparent"></div>
-      </motion.div>
-    </section>
-  );
-}
-
-function BenefitCard({ benefit, index }) {
-  return (
-    <Reveal
-      delay={index * 0.1}
-      className="glass-panel group relative overflow-hidden p-8 transition-colors hover:border-primary/40"
-    >
-      <div className="absolute right-0 top-0 p-4 opacity-10 transition-opacity group-hover:opacity-30">
-        <span className="material-symbols-outlined text-6xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-          {benefit.icon}
-        </span>
-      </div>
-
-      <div className="mb-4 flex items-center gap-3">
-        <span className="material-symbols-outlined text-primary">{benefit.icon}</span>
-        <h3 className="font-headline-md text-headline-md text-white">{benefit.title}</h3>
-      </div>
-
-      <p className="font-body-md leading-relaxed text-on-surface-variant">{benefit.text}</p>
-
-      <div className="mt-6 h-1 w-full overflow-hidden rounded-full bg-white/10">
-        <Reveal
-          {...bar(benefit.level)}
-          delay={0.2 + index * 0.1}
-          className="h-full bg-primary-container shadow-[0_0_10px_#00d1ff]"
-        ></Reveal>
-      </div>
-    </Reveal>
-  );
-}
+/** Три подписи под утверждением о статусе — тексты владельца сайта из базы. */
+const SIGNATURE_KEYS = [1, 2, 3];
 
 export default function Home() {
+  const { lang, t } = useLang();
+  // lang в зависимостях: смена языка — это новый запрос за текстами.
+  const { data: texts } = useApi((signal) => api.texts(lang, signal), [lang]);
+  const { data: products, loading, error } = useApi((signal) => api.products(lang, signal), [lang]);
+
+  const text = (key, fallback = '') => texts?.[key] ?? fallback;
+
+  const screens = SCREENS.map((screen) => ({ ...screen, label: t(screen.labelKey) }));
+  const ghostOf = (key) => numeral(SCREENS.findIndex((screen) => screen.key === key));
+  const catalog = { label: t('common.catalog'), href: '/products' };
+
+  const parts = PART_ORDER.map((id) => ({
+    id,
+    name: t(`home.part_${id}`),
+    role: t(`home.part_${id}_role`),
+  }));
+
+  const signatures = SIGNATURE_KEYS.map((index) => ({
+    title: text(`home.advantage_${index}_title`),
+    line: text(`home.advantage_${index}_text`),
+  })).filter((signature) => signature.title);
+
+  const claims = [
+    t('home.partner_status'),
+    t('home.claim_2'),
+    t('home.claim_3'),
+    t('home.claim_4'),
+  ];
+
+  const items = useMemo(() => (products ?? []).slice(0, MAX_ITEMS), [products]);
+
+  // Направление — это категория, у которой есть опубликованные позиции.
+  // Пустая категория не набивается на борт: клеймо обещало бы номенклатуру,
+  // которой в каталоге нет.
+  const directions = useMemo(() => {
+    const seen = new Map();
+
+    for (const product of products ?? []) {
+      if (!product.category_slug || seen.has(product.category_slug)) continue;
+
+      seen.set(product.category_slug, {
+        slug: product.category_slug,
+        title: product.category,
+        line: '',
+      });
+    }
+
+    return Array.from(seen.values()).slice(0, MAX_DIRECTIONS);
+  }, [products]);
+
+  // Адрес назначения — из контактов в базе, строка в строку.
+  const address = String(text('contacts.address'))
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const title1 = text('home.hero_title_1', t('home.hero_title_1'));
+  const title2 = text('home.hero_title_2', t('home.hero_title_2'));
+
   return (
-    <main>
-      <Hero />
+    <main className="kns-home">
+      <Hero
+        t={t}
+        wordmark="KAE Engineering"
+        status={t('home.partner_status')}
+        title={
+          <>
+            <span className="block">{title1}</span>
+            <span className="block">{title2}</span>
+          </>
+        }
+        lead={text('home.hero_eyebrow', t('home.hero_eyebrow'))}
+        parts={parts}
+        caption={t('home.radio_caption')}
+        screens={screens}
+        catalog={catalog}
+      />
 
-      <section className="relative z-10 bg-surface/40 py-stack-lg backdrop-blur-sm md:py-stack-xl">
-        <div className="mx-auto max-w-container-max px-margin-mobile md:px-margin-desktop">
-          <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3">
-            {BENEFITS.map((benefit, index) => (
-              <BenefitCard key={benefit.title} benefit={benefit} index={index} />
-            ))}
-          </div>
-        </div>
-      </section>
+      <Status
+        anchor="status"
+        rail={t('home.screen_status')}
+        ghost={ghostOf('status')}
+        statement={t('home.status_statement')}
+        signatures={signatures}
+      />
 
-      <ParallaxHero />
+      <Directions
+        anchor="napravleniya"
+        rail={t('home.screen_directions')}
+        ghost={ghostOf('directions')}
+        title={t('home.directions_title')}
+        items={directions}
+        placeholderLabel={t('home.direction_application')}
+        emptyNote={error ? t('products.error_text') : t('products.empty_text')}
+      />
 
-      <section className="relative overflow-hidden py-stack-xl">
-        <div className="mx-auto grid max-w-container-max grid-cols-1 items-center gap-16 px-margin-mobile md:px-margin-desktop lg:grid-cols-2">
-          <Reveal className="space-y-stack-md">
-            <h2 className="font-headline-lg text-headline-lg text-white">Системный инжиниринг</h2>
-            <p className="font-body-lg text-on-surface-variant">
-              Мы специализируемся на проектировании сложных промышленных комплексов, обеспечивая полную интеграцию
-              аппаратного и программного обеспечения.
-            </p>
+      <Doing
+        anchor="chto-delaem"
+        rail={t('home.screen_doing')}
+        ghost={ghostOf('doing')}
+        title={text('home.systems_title', t('home.systems_title'))}
+        paragraph={text('home.hero_text')}
+        claims={claims}
+      />
 
-            <ul className="flex flex-col gap-6">
-              {DIRECTIONS.map((direction, index) => (
-                <Reveal
-                  as="li"
-                  key={direction.label}
-                  delay={(index + 1) * 0.1}
-                  className="group flex items-center gap-4 text-on-surface"
-                >
-                  <div className="glass-panel flex h-10 w-10 shrink-0 items-center justify-center rounded text-primary transition-transform group-hover:scale-110">
-                    <span className="material-symbols-outlined">{direction.icon}</span>
-                  </div>
-                  <span className="font-label-md leading-none">{direction.label}</span>
-                </Reveal>
-              ))}
-            </ul>
-          </Reveal>
+      <Nomenclature
+        anchor="nomenklatura"
+        rail={t('home.screen_nomenclature')}
+        ghost={ghostOf('nomenclature')}
+        title={t('home.nomenclature_title')}
+        note={t('home.nomenclature_note')}
+        items={items}
+        loading={loading}
+        failed={Boolean(error)}
+        empty={{ title: t('products.empty_title'), text: t('products.empty_text') }}
+        error={{ title: t('products.error_title'), text: t('products.error_text') }}
+        articleLabel={t('home.article')}
+        priceLabel={t('common.price_on_request')}
+        catalog={catalog}
+      />
 
-          <Reveal delay={0.15} className="group relative">
-            <div className="absolute -inset-4 bg-primary/20 opacity-20 blur-3xl transition-opacity group-hover:opacity-40"></div>
-            <div className="glass-panel relative aspect-square overflow-hidden rounded-xl border border-white/10 md:aspect-video">
-              <img
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                alt="Промышленная роботизированная лаборатория: манипуляторы работают с аэрокосмическими компонентами в неоновой синей подсветке."
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCFmyZ2RuE4W5GQoekpwJNaHl7CNmIXN4-CmTk_gc1rH7os8QYUMVUwaF3vl28gG3i6XpUCy1n1kpRLvc2Y_FyJ8y2S2t6LR-zIfeqoLid3DENMoC-NBmy-MG-N9sTX_UA49lR2MkW2au6B9wRSpmmHpdNdWl0et2fbbU9y8jBjwje-A1k2onf2fUuM0RN8C0fqTwwI0Apuws0ynFHt9b-3ttJap0VdR1hmeRIIsbPEA9dpTU5ffusbH3D_GJqdPN8-AqWSC3S4Io"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
-              <div className="absolute bottom-6 left-6 flex items-center gap-3">
-                <div className="h-3 w-3 animate-pulse rounded-full bg-green-400"></div>
-                <span className="font-label-sm uppercase tracking-widest text-white">Live System Telemetry</span>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      <Supply
+        anchor="postavka"
+        rail={t('home.screen_supply')}
+        ghost={ghostOf('supply')}
+        title={t('home.supply_title')}
+        lead={text('home.systems_text')}
+        nodes={SUPPLY_NODES.map((id) => ({
+          id,
+          title: t(`home.supply_${id}`),
+          line: t(`home.supply_${id}_line`),
+        }))}
+      />
+
+      <Documents
+        anchor="dokumenty"
+        rail={t('home.screen_documents')}
+        ghost={ghostOf('documents')}
+        title={t('home.documents_title')}
+        rows={DOCUMENT_ROWS.map((key) => t(key))}
+        note={t('home.documents_note')}
+        valueLabel={t('home.value')}
+      />
+
+      <Kromka t={t} destination={t('home.destination')} address={address} catalog={catalog} />
     </main>
   );
 }

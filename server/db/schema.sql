@@ -18,10 +18,12 @@ CREATE TABLE IF NOT EXISTS users (
 -- Категории продукции
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS categories (
-  id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  name        TEXT NOT NULL,
-  slug        TEXT NOT NULL UNIQUE,
-  description TEXT NOT NULL DEFAULT '',
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  name           TEXT NOT NULL,
+  name_en        TEXT NOT NULL DEFAULT '',
+  slug           TEXT NOT NULL UNIQUE,
+  description    TEXT NOT NULL DEFAULT '',
+  description_en TEXT NOT NULL DEFAULT '',
   sort        INTEGER NOT NULL DEFAULT 0,
   created_at  TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
@@ -38,6 +40,12 @@ CREATE TABLE IF NOT EXISTS products (
   short_description TEXT NOT NULL DEFAULT '',
   full_description  TEXT NOT NULL DEFAULT '',
   main_image        TEXT NOT NULL DEFAULT '',
+  -- Перевод: пустое поле означает «перевода нет», публичный API подставит
+  -- русское значение. Тот же приём, что и у texts.value_en.
+  name_en              TEXT NOT NULL DEFAULT '',
+  short_description_en TEXT NOT NULL DEFAULT '',
+  full_description_en  TEXT NOT NULL DEFAULT '',
+  badge_en             TEXT NOT NULL DEFAULT '',
   -- Плашка поверх картинки на карточке каталога ("SYSTEM ACTIVE", "HI-RES DATA").
   -- Пустая строка — плашка не выводится.
   badge             TEXT NOT NULL DEFAULT '',
@@ -59,11 +67,14 @@ CREATE INDEX IF NOT EXISTS idx_products_category    ON products(category_id);
 -- is_key = 1 — характеристика попадает в блок ключевых ТТХ на странице товара.
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS product_specs (
-  id         INTEGER PRIMARY KEY AUTOINCREMENT,
-  product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-  spec_group TEXT NOT NULL DEFAULT '',
-  name       TEXT NOT NULL,
-  value      TEXT NOT NULL DEFAULT '',
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  product_id    INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  spec_group    TEXT NOT NULL DEFAULT '',
+  spec_group_en TEXT NOT NULL DEFAULT '',
+  name          TEXT NOT NULL,
+  name_en       TEXT NOT NULL DEFAULT '',
+  value         TEXT NOT NULL DEFAULT '',
+  value_en      TEXT NOT NULL DEFAULT '',
   is_key     INTEGER NOT NULL DEFAULT 0 CHECK (is_key IN (0, 1)),
   sort       INTEGER NOT NULL DEFAULT 0
 );
@@ -78,6 +89,7 @@ CREATE TABLE IF NOT EXISTS product_images (
   product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   path       TEXT NOT NULL,
   alt        TEXT NOT NULL DEFAULT '',
+  alt_en     TEXT NOT NULL DEFAULT '',
   sort       INTEGER NOT NULL DEFAULT 0
 );
 
@@ -87,10 +99,12 @@ CREATE INDEX IF NOT EXISTS idx_images_product ON product_images(product_id, sort
 -- Области применения товара
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS product_applications (
-  id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-  title       TEXT NOT NULL,
-  description TEXT NOT NULL DEFAULT '',
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  product_id     INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  title          TEXT NOT NULL,
+  title_en       TEXT NOT NULL DEFAULT '',
+  description    TEXT NOT NULL DEFAULT '',
+  description_en TEXT NOT NULL DEFAULT '',
   sort        INTEGER NOT NULL DEFAULT 0
 );
 
@@ -103,6 +117,7 @@ CREATE TABLE IF NOT EXISTS documents (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,
   product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
   title      TEXT NOT NULL,
+  title_en   TEXT NOT NULL DEFAULT '',
   file_path  TEXT NOT NULL,
   file_size  INTEGER NOT NULL DEFAULT 0,
   type       TEXT NOT NULL DEFAULT 'datasheet',
@@ -114,13 +129,17 @@ CREATE TABLE IF NOT EXISTS documents (
 CREATE INDEX IF NOT EXISTS idx_documents_product ON documents(product_id, sort);
 
 -- ---------------------------------------------------------------------------
--- Редактируемые тексты сайта (контакты, «О компании»).
+-- Редактируемые тексты сайта (контакты, «О компании», главная).
 -- Ключ-значение, чтобы добавлять новые поля без миграций.
 -- ---------------------------------------------------------------------------
+-- value    — русский текст, value_en — английский.
+-- Пустой value_en означает «перевода нет»: публичный API подставит русский,
+-- поэтому неполный перевод даёт смешанную страницу, а не дырки в вёрстке.
 CREATE TABLE IF NOT EXISTS texts (
   key        TEXT PRIMARY KEY,
   label      TEXT NOT NULL,
   value      TEXT NOT NULL DEFAULT '',
+  value_en   TEXT NOT NULL DEFAULT '',
   type       TEXT NOT NULL DEFAULT 'text' CHECK (type IN ('text', 'textarea')),
   group_name TEXT NOT NULL DEFAULT 'general',
   sort       INTEGER NOT NULL DEFAULT 0,
@@ -133,9 +152,12 @@ CREATE INDEX IF NOT EXISTS idx_texts_group ON texts(group_name, sort);
 -- Команда («О компании»)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS team_members (
-  id       INTEGER PRIMARY KEY AUTOINCREMENT,
-  name     TEXT NOT NULL,
-  position TEXT NOT NULL DEFAULT '',
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name        TEXT NOT NULL,
+  -- Имя пишется латиницей: кириллица англоязычному посетителю нечитаема.
+  name_en     TEXT NOT NULL DEFAULT '',
+  position    TEXT NOT NULL DEFAULT '',
+  position_en TEXT NOT NULL DEFAULT '',
   photo    TEXT NOT NULL DEFAULT '',
   tags     TEXT NOT NULL DEFAULT '',
   sort     INTEGER NOT NULL DEFAULT 0

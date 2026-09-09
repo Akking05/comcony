@@ -16,51 +16,52 @@ import { PageBackground } from './components/layout/PageBackground.jsx';
 
 import { usePageEffects } from './hooks/usePageEffects.js';
 import { track } from './lib/api.js';
+import { localeOf, useLang } from './lib/i18n.jsx';
 import { applyMeta } from './lib/seo.js';
 
 const PRODUCT_ROUTE = '/products/:slug';
 const NOT_FOUND_ROUTE = '/404';
 
+/**
+ * Заголовок и описание вкладки хранятся ключами словаря: они меняются
+ * вместе с языком, а не только при переходе между страницами.
+ * Точные значения страницы товара ставит сама, когда загрузит товар.
+ */
 const routes = {
   '/': {
     component: Home,
-    title: 'KAE Engineering | Инженерные решения нового поколения',
-    description:
-      'Инженерные решения и оборудование профессиональной радиосвязи для промышленности и инфраструктуры Казахстана.',
+    titleKey: 'meta.home.title',
+    descriptionKey: 'meta.home.description',
     nav: '/',
   },
   '/products': {
     component: Products,
-    title: 'KAE Engineering | Наша продукция',
-    description:
-      'Каталог продукции KAE Engineering: радиостанции, ретрансляторы и инженерное оборудование с техническими характеристиками и документацией.',
+    titleKey: 'meta.products.title',
+    descriptionKey: 'meta.products.description',
     nav: '/products',
   },
   [PRODUCT_ROUTE]: {
     component: ProductDetails,
-    title: 'KAE Engineering | Детали товара',
-    // Точные заголовок и описание страница ставит сама, когда загрузит товар.
-    description: 'Технические характеристики, применение и документация оборудования KAE Engineering.',
+    titleKey: 'meta.product.title',
+    descriptionKey: 'meta.product.description',
     nav: '/products',
   },
   '/about': {
     component: About,
-    title: 'KAE Engineering | О компании',
-    description:
-      'О компании KAE Engineering: инженерная экспертиза, команда и подход к разработке технологических решений в Казахстане.',
+    titleKey: 'meta.about.title',
+    descriptionKey: 'meta.about.description',
     nav: '/about',
   },
   '/contacts': {
     component: Contacts,
-    title: 'Контакты | KAE Engineering',
-    description:
-      'Контакты KAE Engineering: адрес офиса в Астане, телефон, почта и форма для запроса коммерческого предложения.',
+    titleKey: 'meta.contacts.title',
+    descriptionKey: 'meta.contacts.description',
     nav: '/contacts',
   },
   [NOT_FOUND_ROUTE]: {
     component: NotFound,
-    title: 'Страница не найдена | KAE Engineering',
-    description: 'Такого адреса на сайте нет.',
+    titleKey: 'meta.404.title',
+    descriptionKey: 'meta.404.description',
     nav: '',
     noindex: true,
   },
@@ -112,6 +113,7 @@ const TRANSITION = {
 };
 
 export default function PublicSite() {
+  const { lang, t } = useLang();
   const [location, setLocation] = useState(() => resolveRoute(window.location.pathname));
   const route = routes[location.path] ?? routes['/'];
   const Page = route.component;
@@ -141,18 +143,26 @@ export default function PublicSite() {
 
   useEffect(() => {
     document.documentElement.classList.add('dark');
-    document.documentElement.lang = 'ru';
-    document.body.className = 'bg-background text-on-background font-body-md overflow-x-hidden';
+    // Без `overflow-x-hidden`: утилита ломает `position: sticky` первого
+    // экрана, делая body контейнером прокрутки. Горизонтальный вылет режет
+    // `overflow-x: clip` в styles.css.
+    document.body.className = 'bg-background text-on-background font-body-md';
+  }, []);
 
+  // lang в зависимостях: при смене языка вкладка и описание должны
+  // перезаписаться, даже если маршрут остался прежним.
+  // Атрибут lang у <html> ставит сам LanguageProvider.
+  useEffect(() => {
     // Страница товара уточнит заголовок и описание сама, когда загрузит
     // данные. Здесь — значения маршрута, чтобы вкладка не оставалась
     // от предыдущей страницы, пока идёт запрос.
     applyMeta({
-      title: route.title,
-      description: route.description,
+      title: t(route.titleKey),
+      description: t(route.descriptionKey),
+      locale: localeOf(lang),
       noindex: route.noindex,
     });
-  }, [route, routeKey]);
+  }, [route, routeKey, lang, t]);
 
   useEffect(() => {
     track({ type: 'visit', path: window.location.pathname, referrer: document.referrer });
@@ -211,7 +221,10 @@ export default function PublicSite() {
           страницей. */}
       <PageBackground />
 
-      <div onClick={handleClick}>
+      {/* `kns-world` — само полотно земли: на нём лежит зерно доски,
+          разрежающееся к подвалу. Шапка, страница и подвал — его прямые
+          дети и своего фона не имеют, поэтому шва между ними нет. */}
+      <div className="kns-world" onClick={handleClick}>
         <Header active={route.nav} />
         <MobileDrawer active={route.nav} />
 

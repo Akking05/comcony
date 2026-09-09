@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+
+import './admin.css';
+import { useIconFont } from './lib/iconFont.js';
 import { adminApi } from './api.js';
 import { AdminLayout } from './components/AdminLayout.jsx';
 import { Login } from './components/Login.jsx';
@@ -40,6 +43,10 @@ function resolve(pathname) {
 }
 
 export default function AdminApp() {
+  // Шрифт иконок админки: он больше не висит в index.html, а приезжает
+  // вместе с её чанком. Публичный сайт рисует иконки штрихом.
+  useIconFont();
+
   const [user, setUser] = useState(null);
   const [checking, setChecking] = useState(true);
   const [path, setPath] = useState(() => window.location.pathname.replace(/\/+$/, '') || '/admin');
@@ -56,7 +63,8 @@ export default function AdminApp() {
   useEffect(() => {
     document.title = 'KAE Engineering | Панель управления';
     document.documentElement.classList.add('dark');
-    document.body.className = 'bg-background text-on-background font-body-md';
+    // Земля мира и под панелью: у неё нет своего фона, есть только плотность.
+    document.body.className = 'bg-ground text-ink';
   }, []);
 
   const navigate = useCallback((to) => {
@@ -89,7 +97,7 @@ export default function AdminApp() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="kae-admin flex min-h-screen items-center justify-center">
         <Spinner label="Проверяем сессию…" />
       </div>
     );

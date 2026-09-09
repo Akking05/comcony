@@ -1,157 +1,455 @@
 @import "tailwindcss";
+@import "./fonts.css";
+
+/* ===========================================================================
+   Мир «Консигнации» в project3.
+
+   Борт транспортного ящика под лампой ночного дока. Правила, из которых
+   собран весь файл:
+
+   · земля непрерывна — ни у шапки, ни у секции, ни у подвала нет своего фона;
+     меняется только плотность маркировки на общем полотне;
+   · ноль скруглений (кроме честных окружностей — точек и колец);
+   · один акцентный цвет, и на экране одновременно виден максимум один
+     акцентный элемент;
+   · разделитель — не смена фона, а хайрлайн или сгущение штриховки;
+   · мелкий текст не тише 4.5:1 к земле.
+
+   Имена токенов Tailwind (`primary`, `surface`, `on-surface-variant`, …)
+   оставлены прежними: на них стоят шесть публичных страниц и админка.
+   Изменились их значения. Рядом добавлены собственные имена мира
+   (`ground`, `ink`, `stencil`, `hairline`, `accent`) — ими пользуются
+   новые секции.
+=========================================================================== */
 
 @theme {
   /* Брейкпоинт для самых узких телефонов (iPhone SE и подобные) */
   --breakpoint-xs: 400px;
 
-  --color-secondary: #adc6ff;
-  --color-primary: #a4e6ff;
-  --color-primary-fixed: #00d1ff;
-  --color-on-surface-variant: #bbc9cf;
-  --color-surface-container-lowest: #090f12;
-  --color-on-background: #dde3e7;
-  --color-surface-container-high: #242b2e;
-  --color-primary-container: #00d1ff;
-  --color-on-primary: #003543;
-  --color-surface: #0e1417;
-  --color-background: #0e1417;
-  --color-outline-variant: #3c494e;
-  --color-on-surface: #dde3e7;
-  --color-on-primary-container: #00566a;
-  --color-outline: #859399;
+  /* --- палитра мира ------------------------------------------------ */
 
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.5rem;
-  --radius-full: 0.75rem;
+  --color-ground: #070f16;
+  --color-ground-deep: #04090e;
+  --color-ink: #e2ebf1;
+  --color-ink-dim: #97abb9;
+  --color-ink-quiet: #7f9dae;
+  --color-stencil: #8fb6cf;
+  --color-stencil-dim: #55788d;
+  --color-hairline: rgba(143, 182, 207, 0.22);
+  --color-hairline-soft: rgba(143, 182, 207, 0.11);
+  --color-part-fill: #0a151d;
+  --color-accent: #3fd0ff;
+  --color-accent-ink: #04121b;
+
+  /* --- те же цвета под прежними именами ----------------------------
+     Чтобы страницы, ещё не перестроенные по секциям, сразу стояли
+     на палитре мира. `outline` намеренно взят от `ink-quiet`, а не от
+     `stencil-dim`: на земле мира stencil-dim даёт 4.05:1, и мелкая
+     подпись переставала бы читаться. stencil-dim остаётся тем, чем он
+     был в чертеже, — цветом штриха, а не текста. */
+
+  --color-background: var(--color-ground);
+  --color-surface: var(--color-ground);
+  --color-surface-container-lowest: var(--color-ground-deep);
+  --color-surface-container-high: var(--color-part-fill);
+  --color-on-background: var(--color-ink);
+  --color-on-surface: var(--color-ink);
+  --color-on-surface-variant: var(--color-ink-dim);
+  --color-outline: var(--color-ink-quiet);
+  --color-outline-variant: var(--color-hairline);
+  --color-secondary: var(--color-stencil);
+  --color-primary: var(--color-accent);
+  --color-primary-fixed: var(--color-accent);
+  --color-primary-container: var(--color-accent);
+  --color-on-primary: var(--color-accent-ink);
+  --color-on-primary-container: var(--color-accent-ink);
+
+  /* --- скруглений нет ----------------------------------------------
+     Всё, что было прямоугольником, остаётся прямоугольником.
+     `--radius-full` сохранён: точка-индикатор и кольца — настоящие
+     окружности, а не скруглённые прямоугольники. */
+
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+  --radius-full: 9999px;
+
+  /* --- шкала отступов ----------------------------------------------
+     Поле, борт и полоса — три меры мира. Прежние имена сохранены,
+     значения подтянуты к gutter / rail / band из `site/world.module.css`. */
 
   --spacing-unit: 8px;
-  --spacing-margin-desktop: 64px;
-  --spacing-container-max: 1440px;
-  --spacing-margin-mobile: 20px;
+  --spacing-gutter: clamp(20px, 5vw, 88px);
+  --spacing-rail: clamp(30px, 4vw, 54px);
+  --spacing-band: clamp(96px, 13vh, 176px);
+  --spacing-margin-mobile: clamp(20px, 5vw, 88px);
+  --spacing-margin-desktop: clamp(20px, 5vw, 88px);
+  --spacing-container-max: 1600px;
   --spacing-stack-xs: 4px;
   --spacing-stack-sm: 12px;
-  --spacing-gutter: 24px;
   --spacing-stack-md: 24px;
-  --spacing-stack-xl: 80px;
   --spacing-stack-lg: 48px;
+  --spacing-stack-xl: clamp(64px, 9vh, 120px);
 
-  --container-container-max: 1440px;
+  --container-container-max: 1600px;
 
-  --font-headline-md: "Exo 2", "Plus Jakarta Sans", sans-serif;
-  --font-body-lg: Inter, Outfit, sans-serif;
-  --font-headline-lg: "Exo 2", "Plus Jakarta Sans", sans-serif;
-  --font-display-lg: "Exo 2", "Plus Jakarta Sans", sans-serif;
-  --font-display-md: "Exo 2", "Plus Jakarta Sans", sans-serif;
-  --font-label-sm: Geist, sans-serif;
-  --font-label-lg: Geist, sans-serif;
-  --font-label-mono: Geist, monospace;
-  --font-button-text: Geist, sans-serif;
-  --font-headline-lg-mobile: "Exo 2", "Plus Jakarta Sans", sans-serif;
-  --font-body-md: Inter, Outfit, sans-serif;
-  --font-label-md: Geist, sans-serif;
+  /* -------------------------------------------------------------------
+     Типографика мира.
 
+     Три гарнитуры, у каждой своя работа:
+       Oswald               — дисплей: узкий прописной гротеск трафарета;
+       Fira Sans Condensed  — текст;
+       JetBrains Mono       — маркировка, номера, подписи по борту.
+
+     Все три с кириллицей и лежат в `public/fonts` (см. `src/fonts.css`):
+     здесь Vite, а не Next, и подключены они руками, а не next/font.
+     Спецификация называла Bebas Neue — у неё в Google Fonts нет кириллицы,
+     поэтому дисплей Oswald: тот же трафаретный характер, но с русским.
+
+     Ступень размера и ступень гарнитуры носят одно имя и на месте
+     применения всегда идут парой: `font-title-md text-title-md`.
+     Насыщенность в ступень не входит — `font-bold` на месте применения
+     должен выигрывать.
+  ------------------------------------------------------------------- */
+
+  --font-kns-display: Oswald, "Fira Sans Condensed", system-ui, sans-serif;
+  --font-kns-text: "Fira Sans Condensed", system-ui, sans-serif;
+  --font-kns-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Дисплейные. Потолок 66px: выше трафарет перестаёт быть надписью
+     на борту и становится плакатом. */
+  --font-display-xl: var(--font-kns-display);
+  --text-display-xl: clamp(40px, 6.4vw, 66px);
+  --text-display-xl--line-height: 0.92;
+  --text-display-xl--letter-spacing: 0.005em;
+
+  --font-display-lg: var(--font-kns-display);
+  --text-display-lg: clamp(36px, 5vw, 58px);
+  --text-display-lg--line-height: 0.94;
+  --text-display-lg--letter-spacing: 0.005em;
+
+  --font-display-md: var(--font-kns-display);
+  --text-display-md: clamp(32px, 4.4vw, 50px);
+  --text-display-md--line-height: 0.96;
+  --text-display-md--letter-spacing: 0.01em;
+
+  /* Заголовки разделов */
+  --font-headline-lg: var(--font-kns-display);
+  --text-headline-lg: clamp(28px, 3.6vw, 40px);
+  --text-headline-lg--line-height: 1.02;
+  --text-headline-lg--letter-spacing: 0.01em;
+
+  --font-headline-lg-mobile: var(--font-kns-display);
+  --text-headline-lg-mobile: 30px;
+  --text-headline-lg-mobile--line-height: 1.05;
+  --text-headline-lg-mobile--letter-spacing: 0.01em;
+
+  --font-title-lg: var(--font-kns-display);
+  --text-title-lg: clamp(24px, 2.6vw, 30px);
+  --text-title-lg--line-height: 1.08;
+  --text-title-lg--letter-spacing: 0.015em;
+
+  --font-headline-md: var(--font-kns-display);
   --text-headline-md: 24px;
-  --text-body-lg: 18px;
-  --text-headline-lg: 40px;
-  --text-display-lg: 64px;
-  --text-display-md: 56px;
-  --text-label-sm: 12px;
-  --text-label-lg: 16px;
-  --text-label-mono: 12px;
-  --text-headline-lg-mobile: 32px;
-  --text-body-md: 16px;
-  --text-label-md: 14px;
+  --text-headline-md--line-height: 1.12;
+  --text-headline-md--letter-spacing: 0.02em;
+
+  --font-title-md: var(--font-kns-display);
+  --text-title-md: 20px;
+  --text-title-md--line-height: 1.2;
+  --text-title-md--letter-spacing: 0.03em;
+
+  --font-title-sm: var(--font-kns-display);
+  --text-title-sm: 18px;
+  --text-title-sm--line-height: 1.25;
+  --text-title-sm--letter-spacing: 0.04em;
+
+  /* Текст. 17px/1.5 — мера мира, а не 16/1.6: Fira Sans Condensed уже
+     Inter, и на прежнем кегле строка теряла рост. */
+  --font-body-lg: var(--font-kns-text);
+  --text-body-lg: 19px;
+  --text-body-lg--line-height: 1.55;
+
+  --font-body-md: var(--font-kns-text);
+  --text-body-md: 17px;
+  --text-body-md--line-height: 1.5;
+
+  --font-body-sm: var(--font-kns-text);
+  --text-body-sm: 15px;
+  --text-body-sm--line-height: 1.5;
+
+  /* Подписи и маркировка — моноширинные, как штамп на борту. Исключение —
+     `label-lg`: это пункт меню, а не отметка, и он идёт дисплеем. */
+  --font-label-lg: var(--font-kns-display);
+  --text-label-lg: 17px;
+  --text-label-lg--line-height: 1.3;
+
+  --font-label-md: var(--font-kns-mono);
+  --text-label-md: 12px;
+  --text-label-md--line-height: 1.5;
+  --text-label-md--letter-spacing: 0.16em;
+
+  --font-label-sm: var(--font-kns-mono);
+  --text-label-sm: 11px;
+  --text-label-sm--line-height: 1.5;
+  --text-label-sm--letter-spacing: 0.16em;
+
+  --font-label-xs: var(--font-kns-mono);
+  --text-label-xs: 11px;
+  --text-label-xs--line-height: 1.5;
+  --text-label-xs--letter-spacing: 0.14em;
+
+  /* Мельче не опускаемся: 10 пикселей прописными и с разрядкой — уже
+     предел разборчивости, особенно кириллицей. */
+  --font-label-2xs: var(--font-kns-mono);
+  --text-label-2xs: 10px;
+  --text-label-2xs--line-height: 1.5;
+  --text-label-2xs--letter-spacing: 0.18em;
+
+  --font-label-mono: var(--font-kns-mono);
+  --text-label-mono: 11px;
+  --text-label-mono--line-height: 1.5;
+  --text-label-mono--letter-spacing: 0.16em;
+
+  --font-button-text: var(--font-kns-mono);
+}
+
+/* ===========================================================================
+   Земля
+=========================================================================== */
+
+html {
+  color-scheme: dark;
 }
 
 body {
-  background-color: #0e1417;
-  color: #dde3e7;
-  overflow-x: hidden;
+  background-color: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-kns-text);
+  font-size: 17px;
+  line-height: 1.5;
+  font-weight: 300;
+  /*
+    `clip`, а не `hidden`. `overflow-x: hidden` заставляет вторую ось стать
+    `auto`, body превращается в контейнер прокрутки — и `position: sticky`
+    внутри липнет уже не к окну. Первый экран из-за этого уезжал вверх,
+    оставляя под собой полтора пустых экрана. `clip` режет вылет по
+    горизонтали и контейнера прокрутки не создаёт.
+  */
+  overflow-x: clip;
 }
 
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+/* Поверхности, которые рисует браузер, а не мы. Без них страница выдаёт,
+   что её собрали, а не сделали. */
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+* {
+  scrollbar-color: var(--color-stencil-dim) transparent;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-ground-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-stencil-dim);
+  border: 3px solid var(--color-ground-deep);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-stencil);
+}
+
+a {
+  text-underline-offset: 0.24em;
+  text-decoration-thickness: 1px;
+}
+
+/* Цифры в номерах партий, артикулах и таблицах не должны прыгать. */
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   Полотно земли.
+
+   Два слоя вместо прежних шести. Внизу — фиксированная подложка
+   (`.page-bg`): ночной док, свет сверху справа. Поверх — зерно доски
+   на самом полотне страницы (`.kns-world`), которое книзу разрежается.
+   Шва между шапкой, main и подвалом нет по устройству: ни у одного из них
+   нет собственного фона.
+--------------------------------------------------------------------------- */
+
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: var(--color-ground);
+  background-image:
+    radial-gradient(78% 46% at 74% 0%, rgba(63, 145, 200, 0.17), transparent 68%),
+    linear-gradient(180deg, #0a1721 0%, #070f16 46%, #04090e 100%);
+}
+
+.kns-world {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  min-height: 100vh;
+}
+
+/* Зерно доски. Отдельным слоем, потому что к низу оно разрежается: шва
+   между main и подвалом нет, земля просто становится реже. */
+.kns-world::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(143, 182, 207, 0.035) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(180deg, rgba(4, 9, 14, 0.5) 0 2px, transparent 2px 26px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.25) 84%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.25) 84%, transparent 100%);
+}
+
+.kns-world > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Шапка больше не висит поверх страницы: она такая же часть полотна, как
+   секция и подвал. Прежний отступ сверху на `main` компенсировал
+   `position: fixed` и теперь только рвал бы первый экран.
+
+   Правило вне слоёв Tailwind, поэтому выигрывает у утилит `pt-*` на самих
+   страницах. Таски 02–04 снимают эти утилиты с `main`, и правило уходит. */
+.kns-world main {
+  padding-top: clamp(16px, 3vh, 34px);
+}
+
+/* ===========================================================================
+   Грамматика мира: разделитель — не фон, а хайрлайн или сгущение штриха
+=========================================================================== */
+
+/* Трафаретная маркировка: моноширинная, прописная, с разрядкой. */
+.kns-mark {
+  font-family: var(--font-kns-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-quiet);
+}
+
+/* Надпись трафаретом. */
+.kns-display {
+  font-family: var(--font-kns-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: 0.005em;
+}
+
+/* Штриховой пунктир — им мир разделяет, когда одной линии мало. */
+.kns-dash {
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--color-hairline) 0 8px, transparent 8px 15px);
+}
+
+/* Прокатка краски: сгущение маркировки вместо собственного фона секции. */
+.kns-roll {
+  background: repeating-linear-gradient(
+    118deg,
+    rgba(143, 182, 207, 0.05) 0 3px,
+    transparent 3px 14px
+  );
+}
+
+/* Разрежение земли перед подвалом: шаг штриха расходится. */
+.kns-thinning {
+  height: 3px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-stencil-dim) 0 1px,
+    transparent 1px var(--kns-thin, 26px)
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   Прежние материалы «стекла» переопределены здесь, а не вычищены со
+   страниц: страницы перестраивают таски 02–04, а выглядеть своим миром
+   сайт должен уже сейчас. Стекла, свечения и второй сетки в этом мире
+   не существует — на их месте хайрлайн и плотность.
+--------------------------------------------------------------------------- */
+
+.glass-panel,
+.glass-card {
+  background: transparent;
+  backdrop-filter: none;
+  border: 1px solid var(--color-hairline-soft);
+  border-radius: 0;
+}
+
+.glass-card {
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.glass-card:hover,
+.glass-card:focus-within {
+  border-color: var(--color-hairline);
+  background: rgba(143, 182, 207, 0.04);
+}
+
+.primary-glow,
+.glow-button {
+  box-shadow: none;
+}
+
+.glow-button {
+  transition: background 160ms ease, color 160ms ease;
+}
+
+/* Точка-индикатор: единственная честная окружность мира. */
+.active-glow {
+  width: 5px;
+  height: 5px;
+  background-color: var(--color-accent);
+  border-radius: 999px;
+  box-shadow: none;
 }
 
 .tech-grid,
 .technical-grid {
-  background-size: 64px 64px;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    repeating-linear-gradient(90deg, rgba(143, 182, 207, 0.035) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(180deg, rgba(4, 9, 14, 0.5) 0 2px, transparent 2px 26px);
 }
 
-.technical-grid {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-}
-
-.glass-panel,
-.glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-top-color: rgba(255, 255, 255, 0.2);
-}
-
-.glass-card {
-  border-color: transparent;
-  border-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)) 1;
-  transition: background 0.4s cubic-bezier(0.23, 1, 0.32, 1),
-    box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1),
-    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  transform: translateY(-8px);
-  box-shadow: 0 0 40px rgba(0, 209, 255, 0.1);
-}
-
-.glass-card:hover .card-image {
-  transform: scale(1.05);
-}
-
-.primary-glow {
-  box-shadow: 0 0 20px rgba(0, 209, 255, 0.3);
-}
-
-.glow-button {
-  box-shadow: 0 0 20px rgba(0, 209, 255, 0.2);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.glow-button:hover {
-  box-shadow: 0 0 35px rgba(0, 209, 255, 0.4);
-  transform: scale(1.02);
-}
-
-.active-glow {
-  width: 6px;
-  height: 6px;
-  background-color: #00d1ff;
-  border-radius: 999px;
-  box-shadow: 0 0 10px #00d1ff;
-}
-
-@keyframes video-zest-anim {
-  0% {
-    transform: scale(1.5);
-    filter: blur(20px) brightness(2);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1.05);
-    filter: blur(0px) brightness(1);
-    opacity: 0.4;
-  }
-}
-
-.video-zest {
-  animation: video-zest-anim 3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-}
+/* ===========================================================================
+   Движение
+=========================================================================== */
 
 #mobile-drawer {
   transition: visibility 0.4s;
@@ -187,12 +485,50 @@ body {
   transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+/* Парение предметного кадра в первом экране: размах маленький,
+   период долгий — взгляд цепляется, но ничто не мельтешит. */
+@keyframes hero-float {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(0, -14px, 0); }
+}
+
+.hero-float {
+  animation: hero-float 6s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Прежняя заставка приходила из размытия и пересвета — обоих в этом мире
+   нет. Осталась только проявка. */
+@keyframes video-zest-anim {
+  0% { opacity: 0; }
+  100% { opacity: 0.5; }
+}
+
+.video-zest {
+  animation: video-zest-anim 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-float,
+  .video-zest {
+    animation: none;
+  }
+
+  .video-zest {
+    opacity: 0.5;
+  }
+}
+
+/* ===========================================================================
+   Знаки на борту
+=========================================================================== */
+
 header img[alt="KAE Engineering"],
 footer img[alt="KAE Logo"] {
   display: block;
   width: auto;
-  height: 40px;
-  max-height: 40px;
+  height: 34px;
+  max-height: 34px;
   object-fit: contain;
   object-position: center;
   flex-shrink: 0;
@@ -201,104 +537,7 @@ footer img[alt="KAE Logo"] {
 @media (max-width: 767px) {
   header img[alt="KAE Engineering"],
   footer img[alt="KAE Logo"] {
-    height: 32px;
-    max-height: 32px;
-  }
-}
-
-/* ---------------------------------------------------------------------------
-   Фон страниц: несколько слоёв вместо плоской сетки.
-   Порядок снизу вверх — подложка, топография, свечения, сетка, зерно, виньетка.
---------------------------------------------------------------------------- */
-
-.page-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.page-bg > * {
-  position: absolute;
-  inset: 0;
-}
-
-/* Подложка: уводит плоский фон в глубину */
-.bg-base {
-  background:
-    radial-gradient(120% 80% at 50% -10%, rgba(0, 209, 255, 0.07), transparent 60%),
-    linear-gradient(180deg, #101820 0%, #0e1417 45%, #0b1013 100%);
-}
-
-/* Топографические кольца — намёк на карту, без буквальности */
-.bg-topo {
-  opacity: 0.5;
-  background-image:
-    repeating-radial-gradient(circle at 18% 22%, transparent 0 46px, rgba(0, 209, 255, 0.045) 46px 47px),
-    repeating-radial-gradient(circle at 82% 68%, transparent 0 58px, rgba(173, 198, 255, 0.035) 58px 59px);
-  mask-image: radial-gradient(120% 100% at 50% 30%, #000 20%, transparent 78%);
-}
-
-/* Медленно дрейфующие световые пятна */
-.bg-glow::before,
-.bg-glow::after {
-  content: '';
-  position: absolute;
-  border-radius: 999px;
-  filter: blur(120px);
-}
-
-.bg-glow::before {
-  width: 46vw;
-  height: 46vw;
-  top: -12vw;
-  left: -8vw;
-  background: rgba(0, 209, 255, 0.1);
-  animation: bg-drift-a 34s ease-in-out infinite alternate;
-}
-
-.bg-glow::after {
-  width: 40vw;
-  height: 40vw;
-  right: -10vw;
-  bottom: -14vw;
-  background: rgba(173, 198, 255, 0.07);
-  animation: bg-drift-b 42s ease-in-out infinite alternate;
-}
-
-@keyframes bg-drift-a {
-  to { transform: translate3d(8vw, 6vh, 0) scale(1.15); }
-}
-
-@keyframes bg-drift-b {
-  to { transform: translate3d(-7vw, -5vh, 0) scale(1.1); }
-}
-
-/* Инженерная сетка — тоньше прежней и растворяется книзу */
-.bg-grid {
-  background-size: 72px 72px;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
-  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 55%, transparent 100%);
-}
-
-/* Зерно: убирает полосы на градиентах и даёт фактуру */
-.bg-grain {
-  opacity: 0.035;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Виньетка — собирает внимание к центру */
-.bg-vignette {
-  background: radial-gradient(120% 90% at 50% 40%, transparent 45%, rgba(6, 10, 12, 0.75) 100%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bg-glow::before,
-  .bg-glow::after {
-    animation: none;
+    height: 28px;
+    max-height: 28px;
   }
 }

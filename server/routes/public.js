@@ -30,18 +30,58 @@ const trackLimit = rateLimit({
 /** Обрезает и чистит пользовательский ввод. */
 const clean = (value, limit = 200) => String(value ?? '').trim().slice(0, limit);
 
+/** ?lang=en — единственный язык, отличный от русского по умолчанию. */
+const wantsEnglish = (req) => clean(req.query?.lang, 5).toLowerCase() === 'en';
+
+/**
+ * Выражение SELECT для переводимого поля.
+ *
+ *   translated(true)('p.name')  → COALESCE(NULLIF(p.name_en, ''), p.name) AS name
+ *   translated(false)('p.name') → p.name AS name
+ *
+ * Пустой перевод подменяется оригиналом прямо в запросе: страница с
+ * наполовину заполненными переводами должна читаться, а не зиять пропусками.
+ * Имя колонки в ответе остаётся прежним, поэтому клиент о втором языке
+ * ничего не знает.
+ */
+const translated =
+  (english) =>
+  (qualified, alias = qualified.split('.').pop()) =>
+    english ? `COALESCE(NULLIF(${qualified}_en, ''), ${qualified}) AS ${alias}` : `${qualified} AS ${alias}`;
+
 // ---------------------------------------------------------------------------
 // Каталог
 // ---------------------------------------------------------------------------
 
+/*
+  Отсев демонстрационных позиций прежней сборки.
+
+  В базе рядом с настоящим оборудованием лежат записи `Series-X`,
+  `Precision-Core`, `Modular-X`, `Forge-OS`, `Vanguard-Lab` — заглушки от
+  предыдущего каркаса. Отличает их одно проверяемое свойство: снимок у них
+  не свой, `main_image` ведёт на внешний хост (lh3.googleusercontent.com),
+  тогда как всё загруженное через админку живёт в `/uploads/`.
+
+  Условие написано «не внешняя ссылка», а не «есть /uploads/»: позиция,
+  которую только что завели и снимок ещё не приложили, обязана появиться
+  в каталоге с честной заглушкой, а не исчезнуть.
+
+  Данные при этом целы: записи на месте и видны в админке. Скрыт только
+  публичный показ — снять отсев значит убрать одно условие.
+*/
+export const NOT_DEMO_SQL = "main_image NOT LIKE 'http%'";
+
+
 publicRouter.get('/products', (req, res) => {
+  const t = translated(wantsEnglish(req));
+
   const products = getDb()
     .prepare(`
-      SELECT p.id, p.slug, p.name, p.short_description, p.main_image, p.badge,
-             c.name AS category, c.slug AS category_slug
+      SELECT p.id, p.slug, ${t('p.name')}, ${t('p.short_description')}, p.main_image, ${t('p.badge')},
+             ${t('c.name', 'category')}, c.slug AS category_slug
       FROM products p
       LEFT JOIN categories c ON c.id = p.category_id
-      WHERE p.status = 'published'
+      WHERE p.status = 'published' AND ${NOT_DEMO_SQL}
       ORDER BY p.sort, p.id
     `)
     .all();
@@ -51,22 +91,26 @@ publicRouter.get('/products', (req, res) => {
 
 publicRouter.get('/products/:slug', (req, res) => {
   const db = getDb();
+  const t = translated(wantsEnglish(req));
 
   const product = db
     .prepare(`
-      SELECT p.id, p.slug, p.name, p.short_description, p.full_description,
-             p.main_image, p.badge,
-             c.name AS category, c.slug AS category_slug
+      SELECT p.id, p.slug, ${t('p.name')}, ${t('p.short_description')}, ${t('p.full_description')},
+             p.main_image, ${t('p.badge')},
+             ${t('c.name', 'category')}, c.slug AS category_slug
       FROM products p
       LEFT JOIN categories c ON c.id = p.category_id
-      WHERE p.slug = ? AND p.status = 'published'
+      WHERE p.slug = ? AND p.status = 'published' AND ${NOT_DEMO_SQL}
     `)
     .get(req.params.slug);
 
   if (!product) return res.status(404).json({ error: 'Товар не найден' });
 
   const specs = db
-    .prepare('SELECT spec_group, name, value, is_key FROM product_specs WHERE product_id = ? ORDER BY sort, id')
+    .prepare(`
+      SELECT ${t('spec_group')}, ${t('name')}, ${t('value')}, is_key
+      FROM product_specs WHERE product_id = ? ORDER BY sort, id
+    `)
     .all(product.id);
 
   // Ключевые ТТХ выводятся отдельным блоком на странице товара,
@@ -89,14 +133,17 @@ publicRouter.get('/products/:slug', (req, res) => {
     key_specs: specs.filter((item) => item.is_key).map(({ name, value }) => ({ name, value })),
     spec_groups: groups,
     gallery: db
-      .prepare('SELECT path, alt FROM product_images WHERE product_id = ? ORDER BY sort, id')
+      .prepare(`SELECT path, ${t('alt')} FROM product_images WHERE product_id = ? ORDER BY sort, id`)
       .all(product.id),
     applications: db
-      .prepare('SELECT title, description FROM product_applications WHERE product_id = ? ORDER BY sort, id')
+      .prepare(`
+        SELECT ${t('title')}, ${t('description')}
+        FROM product_applications WHERE product_id = ? ORDER BY sort, id
+      `)
       .all(product.id),
     documents: db
       .prepare(`
-        SELECT title, file_path, file_size, type
+        SELECT ${t('title')}, file_path, file_size, type
         FROM documents
         WHERE product_id = ? AND status = 'published'
         ORDER BY sort, id
@@ -109,15 +156,32 @@ publicRouter.get('/products/:slug', (req, res) => {
 // Тексты и команда
 // ---------------------------------------------------------------------------
 
+/**
+ * Тексты страниц. ?lang=en отдаёт английские значения, ?lang=ru и любой
+ * неизвестный язык — русские.
+ *
+ * Незаполненный английский вариант подменяется русским прямо в запросе:
+ * половина переведённой страницы читается, половина пустой — нет.
+ */
 publicRouter.get('/texts', (req, res) => {
-  const rows = getDb().prepare('SELECT key, value FROM texts').all();
+  const english = wantsEnglish(req);
+
+  const rows = getDb()
+    .prepare(
+      english
+        ? "SELECT key, COALESCE(NULLIF(value_en, ''), value) AS value FROM texts"
+        : 'SELECT key, value FROM texts',
+    )
+    .all();
 
   res.json(Object.fromEntries(rows.map((row) => [row.key, row.value])));
 });
 
 publicRouter.get('/team', (req, res) => {
+  const t = translated(wantsEnglish(req));
+
   const members = getDb()
-    .prepare('SELECT name, position, photo, tags FROM team_members ORDER BY sort, id')
+    .prepare(`SELECT ${t('name')}, ${t('position')}, photo, tags FROM team_members ORDER BY sort, id`)
     .all();
 
   res.json(members.map((member) => ({ ...member, tags: member.tags ? member.tags.split(',') : [] })));

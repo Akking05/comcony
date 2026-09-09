@@ -98,24 +98,24 @@ export default function ProductsList({ user, navigate }) {
           )}
         </EmptyState>
       ) : (
-        <div className="overflow-x-auto rounded-sm border border-outline-variant/60">
+        <div className="overflow-x-auto rounded-sm border border-hairline-soft">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-outline-variant/60 bg-surface/60">
+              <tr className="border-b border-hairline-soft bg-part-fill">
                 <th className="w-20 px-3 py-3"></th>
-                <th className="px-3 py-3 text-left font-label-sm text-[10px] uppercase tracking-widest text-outline">
+                <th className="px-3 py-3 text-left font-label-2xs text-label-2xs uppercase text-ink-quiet">
                   Товар
                 </th>
-                <th className="hidden px-3 py-3 text-left font-label-sm text-[10px] uppercase tracking-widest text-outline md:table-cell">
+                <th className="hidden px-3 py-3 text-left font-label-2xs text-label-2xs uppercase text-ink-quiet md:table-cell">
                   Категория
                 </th>
-                <th className="hidden px-3 py-3 text-center font-label-sm text-[10px] uppercase tracking-widest text-outline lg:table-cell">
+                <th className="hidden px-3 py-3 text-center font-label-2xs text-label-2xs uppercase text-ink-quiet lg:table-cell">
                   ТТХ
                 </th>
-                <th className="hidden px-3 py-3 text-center font-label-sm text-[10px] uppercase tracking-widest text-outline lg:table-cell">
+                <th className="hidden px-3 py-3 text-center font-label-2xs text-label-2xs uppercase text-ink-quiet lg:table-cell">
                   Документы
                 </th>
-                <th className="px-3 py-3 text-left font-label-sm text-[10px] uppercase tracking-widest text-outline">
+                <th className="px-3 py-3 text-left font-label-2xs text-label-2xs uppercase text-ink-quiet">
                   Статус
                 </th>
                 <th className="w-32 px-3 py-3"></th>
@@ -123,7 +123,7 @@ export default function ProductsList({ user, navigate }) {
             </thead>
             <tbody>
               {products.map((product, index) => (
-                <tr key={product.id} className="border-b border-outline-variant/30 last:border-0 hover:bg-white/[0.02]">
+                <tr key={product.id} className="border-b border-hairline-soft last:border-0">
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-1">
                       {editable && (
@@ -144,11 +144,11 @@ export default function ProductsList({ user, navigate }) {
                           />
                         </div>
                       )}
-                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-sm bg-surface-container-high">
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-sm bg-part-fill">
                         {product.main_image ? (
                           <img src={product.main_image} alt="" className="h-full w-full object-cover" />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-outline/40">
+                          <div className="flex h-full w-full items-center justify-center text-stencil-dim">
                             <span className="material-symbols-outlined text-[16px]">image</span>
                           </div>
                         )}
@@ -159,22 +159,22 @@ export default function ProductsList({ user, navigate }) {
                   <td className="px-3 py-3">
                     <a
                       href={`/admin/products/${product.id}`}
-                      className="font-label-md text-label-md text-white hover:text-primary"
+                      className="font-body-md text-[15px] text-ink hover:text-stencil"
                     >
                       {product.name}
                     </a>
-                    <div className="font-label-sm text-[11px] text-outline">/{product.slug}</div>
+                    <div className="font-label-xs text-label-xs text-ink-quiet">/{product.slug}</div>
                   </td>
 
-                  <td className="hidden px-3 py-3 font-body-md text-body-md text-on-surface-variant md:table-cell">
+                  <td className="hidden px-3 py-3 font-body-md text-[15px] text-ink-dim md:table-cell">
                     {product.category ?? '—'}
                   </td>
 
-                  <td className="hidden px-3 py-3 text-center font-label-md text-label-md text-on-surface-variant lg:table-cell">
+                  <td className="hidden px-3 py-3 text-center font-label-md text-label-md text-ink-dim lg:table-cell">
                     {product.specs_count}
                   </td>
 
-                  <td className="hidden px-3 py-3 text-center font-label-md text-label-md text-on-surface-variant lg:table-cell">
+                  <td className="hidden px-3 py-3 text-center font-label-md text-label-md text-ink-dim lg:table-cell">
                     {product.documents_count}
                   </td>
 

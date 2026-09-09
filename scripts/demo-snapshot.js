@@ -24,10 +24,17 @@ const OUTPUT = join(root, 'public', 'demo-data.json');
 const db = getDb();
 
 // --- Каталог ----------------------------------------------------------------
-const products = db
+// Витрине сервера взять неоткуда, поэтому подстановку русского вместо пустого
+// перевода делаем здесь же, при сборке снимка, и складываем два готовых
+// набора: products/details — русский, products_en/details_en — английский.
+/** Как COALESCE(NULLIF(x_en, ''), x) в публичном API, только в JS. */
+const pick = (row, field, lang) => (lang === 'en' ? row[`${field}_en`] || row[field] : row[field]);
+
+const productRows = db
   .prepare(`
-    SELECT p.id, p.slug, p.name, p.short_description, p.main_image, p.badge,
-           c.name AS category, c.slug AS category_slug
+    SELECT p.id, p.slug, p.name, p.name_en, p.short_description, p.short_description_en,
+           p.full_description, p.full_description_en, p.main_image, p.badge, p.badge_en,
+           c.name AS category, c.name_en AS category_en, c.slug AS category_slug
     FROM products p
     LEFT JOIN categories c ON c.id = p.category_id
     WHERE p.status = 'published'
@@ -35,56 +42,133 @@ const products = db
   `)
   .all();
 
-// --- Страницы товаров -------------------------------------------------------
-const details = {};
+const specRows = new Map();
+const imageRows = new Map();
+const applicationRows = new Map();
+const documentRows = new Map();
 
-for (const product of products) {
-  const specs = db
-    .prepare('SELECT spec_group, name, value, is_key FROM product_specs WHERE product_id = ? ORDER BY sort, id')
-    .all(product.id);
-
-  const groups = [];
-  for (const spec of specs.filter((item) => !item.is_key)) {
-    const title = spec.spec_group || '';
-    let group = groups.find((item) => item.title === title);
-
-    if (!group) {
-      group = { title, items: [] };
-      groups.push(group);
-    }
-
-    group.items.push({ name: spec.name, value: spec.value });
-  }
-
-  details[product.slug] = {
-    ...product,
-    full_description: db.prepare('SELECT full_description FROM products WHERE id = ?').get(product.id)
-      .full_description,
-    key_specs: specs.filter((item) => item.is_key).map(({ name, value }) => ({ name, value })),
-    spec_groups: groups,
-    gallery: db
-      .prepare('SELECT path, alt FROM product_images WHERE product_id = ? ORDER BY sort, id')
+for (const product of productRows) {
+  specRows.set(
+    product.id,
+    db
+      .prepare(`
+        SELECT spec_group, spec_group_en, name, name_en, value, value_en, is_key
+        FROM product_specs WHERE product_id = ? ORDER BY sort, id
+      `)
       .all(product.id),
-    applications: db
-      .prepare('SELECT title, description FROM product_applications WHERE product_id = ? ORDER BY sort, id')
+  );
+  imageRows.set(
+    product.id,
+    db.prepare('SELECT path, alt, alt_en FROM product_images WHERE product_id = ? ORDER BY sort, id').all(product.id),
+  );
+  applicationRows.set(
+    product.id,
+    db
+      .prepare(`
+        SELECT title, title_en, description, description_en
+        FROM product_applications WHERE product_id = ? ORDER BY sort, id
+      `)
       .all(product.id),
-    documents: db
-      .prepare(
-        "SELECT title, file_path, file_size, type FROM documents WHERE product_id = ? AND status = 'published' ORDER BY sort, id",
-      )
+  );
+  documentRows.set(
+    product.id,
+    db
+      .prepare(`
+        SELECT title, title_en, file_path, file_size, type
+        FROM documents WHERE product_id = ? AND status = 'published' ORDER BY sort, id
+      `)
       .all(product.id),
-  };
+  );
 }
 
-// --- Тексты и команда -------------------------------------------------------
-const texts = Object.fromEntries(
-  db.prepare('SELECT key, value FROM texts').all().map((row) => [row.key, row.value]),
-);
+/** Каталог на одном языке — ровно та форма, что отдаёт GET /api/products. */
+const catalogFor = (lang) =>
+  productRows.map((product) => ({
+    id: product.id,
+    slug: product.slug,
+    name: pick(product, 'name', lang),
+    short_description: pick(product, 'short_description', lang),
+    main_image: product.main_image,
+    badge: pick(product, 'badge', lang),
+    category: pick(product, 'category', lang),
+    category_slug: product.category_slug,
+  }));
 
-const team = db
-  .prepare('SELECT name, position, photo, tags FROM team_members ORDER BY sort, id')
-  .all()
-  .map((member) => ({ ...member, tags: member.tags ? member.tags.split(',') : [] }));
+/** Страницы товаров на одном языке — форма GET /api/products/:slug. */
+const detailsFor = (lang) => {
+  const result = {};
+
+  for (const product of productRows) {
+    const specs = specRows.get(product.id);
+
+    const groups = [];
+    for (const spec of specs.filter((item) => !item.is_key)) {
+      const title = pick(spec, 'spec_group', lang) || '';
+      let group = groups.find((item) => item.title === title);
+
+      if (!group) {
+        group = { title, items: [] };
+        groups.push(group);
+      }
+
+      group.items.push({ name: pick(spec, 'name', lang), value: pick(spec, 'value', lang) });
+    }
+
+    result[product.slug] = {
+      id: product.id,
+      slug: product.slug,
+      name: pick(product, 'name', lang),
+      short_description: pick(product, 'short_description', lang),
+      full_description: pick(product, 'full_description', lang),
+      main_image: product.main_image,
+      badge: pick(product, 'badge', lang),
+      category: pick(product, 'category', lang),
+      category_slug: product.category_slug,
+      key_specs: specs
+        .filter((item) => item.is_key)
+        .map((item) => ({ name: pick(item, 'name', lang), value: pick(item, 'value', lang) })),
+      spec_groups: groups,
+      gallery: imageRows.get(product.id).map((image) => ({ path: image.path, alt: pick(image, 'alt', lang) })),
+      applications: applicationRows
+        .get(product.id)
+        .map((item) => ({ title: pick(item, 'title', lang), description: pick(item, 'description', lang) })),
+      documents: documentRows.get(product.id).map((item) => ({
+        title: pick(item, 'title', lang),
+        file_path: item.file_path,
+        file_size: item.file_size,
+        type: item.type,
+      })),
+    };
+  }
+
+  return result;
+};
+
+const products = catalogFor('ru');
+const details = detailsFor('ru');
+const productsEn = catalogFor('en');
+const detailsEn = detailsFor('en');
+
+// --- Тексты и команда -------------------------------------------------------
+const textRows = db.prepare('SELECT key, value, value_en FROM texts').all();
+
+const texts = Object.fromEntries(textRows.map((row) => [row.key, row.value]));
+const textsEn = Object.fromEntries(textRows.map((row) => [row.key, row.value_en || row.value]));
+
+const memberRows = db
+  .prepare('SELECT name, name_en, position, position_en, photo, tags FROM team_members ORDER BY sort, id')
+  .all();
+
+const teamFor = (lang) =>
+  memberRows.map((member) => ({
+    name: pick(member, 'name', lang),
+    position: pick(member, 'position', lang),
+    photo: member.photo,
+    tags: member.tags ? member.tags.split(',') : [],
+  }));
+
+const team = teamFor('ru');
+const teamEn = teamFor('en');
 
 // --- Картинки, на которые ссылается снимок ----------------------------------
 // Копируем только используемые файлы, чтобы не тащить в сборку всю медиатеку.
@@ -95,6 +179,9 @@ const collect = (path) => {
 };
 
 products.forEach((product) => collect(product.main_image));
+// Снимки галереи и постер видео задаются в текстах, а не привязаны к товару.
+// Без этого прохода на витрине они превратились бы в битые ссылки.
+Object.values(texts).forEach(collect);
 Object.values(details).forEach((detail) => {
   detail.gallery.forEach((image) => collect(image.path));
   detail.documents.forEach((document) => collect(document.file_path));
@@ -120,13 +207,31 @@ if (referenced.size) {
   }
 }
 
-writeFileSync(OUTPUT, JSON.stringify({ products, details, texts, team }, null, 2), 'utf8');
+writeFileSync(
+  OUTPUT,
+  JSON.stringify(
+    {
+      products,
+      products_en: productsEn,
+      details,
+      details_en: detailsEn,
+      texts,
+      texts_en: textsEn,
+      team,
+      team_en: teamEn,
+    },
+    null,
+    2,
+  ),
+  'utf8',
+);
 
 console.log(`\nСнимок: ${OUTPUT}`);
 console.table({
   товаров: products.length,
   'страниц товаров': Object.keys(details).length,
   текстов: Object.keys(texts).length,
+  'из них переведено': textRows.filter((row) => row.value_en).length,
   'команда': team.length,
   'файлов скопировано': copied,
 });

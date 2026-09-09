@@ -1,0 +1,893 @@
+/*
+  Главная в мире «Консигнации»: восемь экранов упаковочного листа.
+
+  Почему здесь CSS, а не только утилиты: мир держится на вещах, которых в
+  утилитарном словаре нет, — штрих SVG, вынос секции за поле страницы,
+  наклон клейма, разрежение краски. Токены при этом берутся те же
+  (`--color-*`, `--spacing-*`, `--font-kns-*`): своей палитры и своей шкалы
+  у страницы нет, файл только собирает из них формы.
+
+  Правила, из которых собран файл:
+  · земля непрерывна — ни у одной секции нет собственного фона, меняется
+    только плотность маркировки на ней;
+  · ноль скруглений, кроме честных окружностей;
+  · один акцент в кадре — он принадлежит целевому действию;
+  · разделитель — не линия, а смена плотности;
+  · конечное состояние движения записано в самих правилах, поэтому без
+    скрипта страница отрисована разложенной.
+*/
+
+.kns-home {
+  --kns-gutter: var(--spacing-gutter);
+  --kns-rail: var(--spacing-rail);
+  --kns-band: var(--spacing-band);
+
+  overflow-x: clip;
+}
+
+/* --- общее: секция, борт, ghost-нумерал ---------------------------- */
+
+.kns-section {
+  position: relative;
+  padding: var(--kns-band) var(--kns-gutter) var(--kns-band)
+    calc(var(--kns-rail) + var(--kns-gutter));
+  min-height: 96px;
+  /* Переход по указателю экранов не должен ставить секцию впритык к кромке. */
+  scroll-margin-top: clamp(24px, 6vh, 64px);
+}
+
+/* Секция, внутри которой полоса несёт собственные поля. */
+.kns-section-tight {
+  padding-top: clamp(48px, 7vh, 96px);
+  padding-bottom: clamp(48px, 7vh, 96px);
+}
+
+.kns-section-tight .kns-rail {
+  top: clamp(48px, 7vh, 96px);
+  bottom: clamp(48px, 7vh, 96px);
+}
+
+/*
+  Подпись секции идёт по борту, как трафарет на боковине ящика, а не
+  оверлайном над заголовком: над заголовком у этого мира не стоит ничего.
+*/
+.kns-rail {
+  position: absolute;
+  left: var(--kns-gutter);
+  top: var(--kns-band);
+  bottom: var(--kns-band);
+  width: var(--kns-rail);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border-left: 1px solid var(--color-hairline-soft);
+  pointer-events: none;
+}
+
+.kns-rail-text {
+  font-family: var(--font-kns-mono);
+  font-variant-numeric: tabular-nums;
+  writing-mode: vertical-rl;
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-ink-quiet);
+  padding: 4px 0 0 10px;
+}
+
+.kns-ghost {
+  position: absolute;
+  z-index: -1;
+  right: var(--kns-gutter);
+  top: calc(var(--kns-band) - 0.28em);
+  font-family: var(--font-kns-display);
+  font-size: clamp(150px, 20vw, 300px);
+  line-height: 0.7;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  color: rgba(143, 182, 207, 0.055);
+  user-select: none;
+  pointer-events: none;
+}
+
+.kns-heading {
+  font-family: var(--font-kns-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 0.94;
+  letter-spacing: 0.005em;
+  font-size: clamp(32px, 4.2vw, 58px);
+  max-width: 13ch;
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+
+.kns-lead {
+  max-width: 58ch;
+  color: var(--color-ink-dim);
+  font-size: clamp(16px, 1.25vw, 19px);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.kns-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Заглушка всегда выглядит заглушкой: моно, в скобках, с пунктиром. */
+.kns-placeholder {
+  font-family: var(--font-kns-mono);
+  font-size: 0.85em;
+  letter-spacing: 0.08em;
+  color: var(--color-ink);
+  border-bottom: 1px dashed var(--color-stencil-dim);
+  padding-bottom: 1px;
+  white-space: nowrap;
+}
+
+.kns-placeholder-bracket {
+  color: var(--color-stencil);
+}
+
+/* --- 1. Первый экран: кофр ----------------------------------------- */
+
+.kns-hero {
+  position: relative;
+}
+
+.kns-hero-stage {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: 18px var(--kns-gutter) 26px calc(var(--kns-rail) + var(--kns-gutter));
+}
+
+/* Полоса маркировки партии по верхнему борту — она же строка адреса груза. */
+.kns-hero-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--font-kns-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-quiet);
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--color-hairline-soft);
+}
+
+.kns-hero-mark-strong {
+  color: var(--color-stencil);
+}
+
+.kns-hero-rule {
+  flex: 1 1 60px;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--color-hairline) 0 8px, transparent 8px 15px);
+}
+
+.kns-hero-body {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(24px, 5vh, 48px);
+  align-items: center;
+}
+
+.kns-hero-canvas {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+  min-width: 0;
+}
+
+.kns-hero-canvas svg {
+  width: 100%;
+  height: auto;
+}
+
+.kns-hero-wide {
+  display: none;
+}
+
+.kns-hero-narrow {
+  display: block;
+}
+
+/* Штрих чертежа не тоньше и не толще оттого, что деталь уехала в масштаб. */
+.kns-part,
+.kns-part * {
+  vector-effect: non-scaling-stroke;
+}
+
+.kns-hero-text {
+  position: relative;
+  order: -1;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: min(34ch, 96%);
+  padding-block: 24px;
+}
+
+.kns-hero-status {
+  font-family: var(--font-kns-mono);
+  font-size: 11px;
+  line-height: 1.7;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-stencil);
+  max-width: 30ch;
+  padding-left: 14px;
+  border-left: 1px solid var(--color-hairline);
+}
+
+.kns-hero-title {
+  font-family: var(--font-kns-display);
+  font-size: clamp(38px, 4.4vw, 66px);
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: 0.005em;
+  margin: 0;
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+
+.kns-hero-lead {
+  /*
+    Мера под две строки, а не под «покрасивее»: описание приходит из базы,
+    и владелец сайта пишет его длиной, какой считает нужным. При 50ch
+    сегодняшний текст встаёт в две строки, а вдвое более длинный — в четыре,
+    и это лучше, чем обрезать чужой текст многоточием.
+  */
+  max-width: 50ch;
+  margin: -8px 0 0;
+  color: var(--color-ink-dim);
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.kns-hero-index {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 3;
+  padding-left: 12px;
+  border-left: 1px solid var(--color-hairline-soft);
+}
+
+.kns-hero-index-item {
+  display: flex;
+  gap: 8px;
+  font-family: var(--font-kns-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-quiet);
+  transition: color 160ms ease;
+}
+
+.kns-hero-index-item:hover,
+.kns-hero-index-item:focus-visible {
+  color: var(--color-stencil);
+}
+
+/* --- штрих чертежа: общие правила SVG ------------------------------ */
+
+.kns-pocket {
+  fill: none;
+  stroke: var(--color-stencil-dim);
+  stroke-width: 1;
+  stroke-dasharray: 5 5;
+}
+
+.kns-foam {
+  fill: rgba(9, 21, 30, 0.72);
+  stroke: var(--color-hairline-soft);
+  stroke-width: 1;
+}
+
+.kns-shell {
+  fill: #08131b;
+  stroke: var(--color-stencil-dim);
+  stroke-width: 2;
+}
+
+.kns-lid-face {
+  fill: #0a1a25;
+  stroke: var(--color-stencil);
+  stroke-width: 2;
+}
+
+.kns-leader {
+  fill: none;
+  stroke: var(--color-stencil-dim);
+  stroke-width: 1;
+}
+
+.kns-shelf {
+  fill: none;
+  stroke: var(--color-stencil);
+  stroke-width: 1;
+}
+
+.kns-name {
+  font-family: var(--font-kns-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--color-stencil);
+}
+
+.kns-role {
+  font-family: var(--font-kns-mono);
+  letter-spacing: 0.02em;
+  fill: var(--color-ink-dim);
+}
+
+.kns-stencil-text {
+  font-family: var(--font-kns-display);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  fill: var(--color-stencil);
+}
+
+/* --- 2. Статус: полоса маркировки в край --------------------------- */
+
+.kns-status-band {
+  position: relative;
+  width: calc(100% + var(--kns-rail) + 2 * var(--kns-gutter));
+  margin-left: calc(-1 * (var(--kns-rail) + var(--kns-gutter)));
+  padding: clamp(40px, 6vh, 76px) var(--kns-gutter) clamp(40px, 6vh, 76px)
+    calc(var(--kns-rail) + var(--kns-gutter));
+  border-top: 1px solid var(--color-hairline-soft);
+  border-bottom: 1px solid var(--color-hairline-soft);
+  overflow: hidden;
+}
+
+/* Прокатка краски слева направо — вся полоса печатается одним валиком. */
+.kns-status-roll {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    118deg,
+    rgba(143, 182, 207, 0.05) 0 3px,
+    transparent 3px 14px
+  );
+  pointer-events: none;
+}
+
+.kns-statement {
+  position: relative;
+  font-family: var(--font-kns-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.96;
+  letter-spacing: 0.005em;
+  font-size: clamp(26px, 3.4vw, 46px);
+  max-width: 24ch;
+  color: var(--color-ink);
+}
+
+.kns-signs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(22px, 4vw, 64px);
+  margin-top: clamp(30px, 5vh, 56px);
+}
+
+.kns-sign {
+  flex: 1 1 210px;
+  max-width: 34ch;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.kns-sign-index {
+  font-family: var(--font-kns-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--color-ink-quiet);
+}
+
+.kns-sign-title {
+  font-family: var(--font-kns-display);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: clamp(17px, 1.5vw, 21px);
+  color: var(--color-stencil);
+}
+
+.kns-sign-line {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-ink-dim);
+}
+
+/* --- 3. Направления: клейма по борту -------------------------------- */
+
+/*
+  Борт — полоса, уходящая в правый край кадра. Её кромки не линии, а
+  сгущение штрихов маркировки. Рамок у клейм нет: клеймо держится краской,
+  а не коробкой, поэтому и общего габарита у них нет.
+*/
+.kns-board {
+  position: relative;
+  margin-top: clamp(34px, 5vh, 60px);
+  margin-right: calc(var(--kns-gutter) * -1);
+  padding: clamp(26px, 4vh, 46px) 0;
+  background-image:
+    repeating-linear-gradient(90deg, var(--color-hairline) 0 16px, transparent 16px 30px),
+    repeating-linear-gradient(90deg, var(--color-hairline-soft) 0 8px, transparent 8px 16px);
+  background-size: 100% 1px, 100% 1px;
+  background-position: 0 0, 0 100%;
+  background-repeat: no-repeat;
+}
+
+.kns-stamp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: clamp(18px, 3vw, 52px);
+  padding-right: var(--kns-gutter);
+}
+
+/* Своя доля ширины, своя посадка по высоте, свой наклон — у каждого клейма. */
+.kns-stamp {
+  flex: var(--stamp-span, 1) 1 210px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: min(var(--stamp-drop, 0px), 4vw);
+  transform: rotate(var(--stamp-tilt, 0deg)) translateY(var(--stamp-rise, 0px));
+  transform-origin: left top;
+}
+
+.kns-stamp-glyph {
+  width: var(--stamp-glyph, 84px);
+  height: var(--stamp-glyph, 84px);
+  color: var(--color-stencil);
+}
+
+.kns-stamp-number {
+  font-family: var(--font-kns-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--color-ink-quiet);
+}
+
+.kns-stamp-title {
+  font-family: var(--font-kns-display);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: clamp(18px, 1.7vw, 24px);
+  line-height: 1.05;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.kns-stamp-line {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-ink-dim);
+}
+
+/* --- 4. Что делаем: сплит 5/7 --------------------------------------- */
+
+.kns-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(34px, 5vw, 72px);
+  align-items: center;
+  margin-top: clamp(28px, 4vh, 48px);
+}
+
+.kns-axis {
+  height: 1px;
+  width: 100%;
+  transform-origin: left center;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-stencil-dim) 0 22px,
+    transparent 22px 34px
+  );
+  margin-bottom: clamp(24px, 4vh, 44px);
+}
+
+.kns-split-text {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.kns-claims {
+  display: flex;
+  flex-direction: column;
+  margin-top: 6px;
+  width: 100%;
+  max-width: 46ch;
+}
+
+.kns-claim {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--color-hairline-soft);
+}
+
+.kns-claim:first-child {
+  border-top: 1px solid var(--color-hairline-soft);
+}
+
+.kns-claim-index {
+  font-family: var(--font-kns-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--color-ink-quiet);
+}
+
+.kns-claim-text {
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+
+/* Разобранный узел уходит за правый край кадра. */
+.kns-node {
+  position: relative;
+  min-height: 240px;
+  margin-right: calc(-1 * var(--kns-gutter) - 6vw);
+  color: var(--color-stencil);
+}
+
+.kns-node svg {
+  width: 100%;
+  height: auto;
+}
+
+/* --- 5. Номенклатура: плотное поле в край --------------------------- */
+
+.kns-nomenclature {
+  padding-bottom: clamp(72px, 9vh, 128px);
+}
+
+.kns-field {
+  width: calc(100% + var(--kns-rail) + 2 * var(--kns-gutter));
+  margin-left: calc(-1 * (var(--kns-rail) + var(--kns-gutter)));
+  margin-top: clamp(30px, 4vh, 52px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--color-hairline);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+/* Ячейка списка — сама сетка, поэтому пункт списка её только держит. */
+.kns-field > li {
+  display: flex;
+  min-width: 0;
+}
+
+.kns-cell {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 16px;
+  border-right: 1px solid var(--color-hairline-soft);
+  border-bottom: 1px solid var(--color-hairline-soft);
+  min-width: 0;
+  transition: background 160ms ease;
+}
+
+a.kns-cell:hover,
+a.kns-cell:focus-visible {
+  background: rgba(143, 182, 207, 0.05);
+}
+
+.kns-cell-article {
+  font-family: var(--font-kns-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-quiet);
+}
+
+.kns-cell-name {
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.kns-cell-direction {
+  font-family: var(--font-kns-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-stencil);
+  overflow-wrap: anywhere;
+}
+
+.kns-cell-price {
+  font-family: var(--font-kns-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-dim);
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.kns-field-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: clamp(24px, 3vh, 40px);
+}
+
+/* --- 6. Поставка: ось маршрута -------------------------------------- */
+
+.kns-route {
+  margin-top: clamp(34px, 5vh, 62px);
+  width: 100%;
+  color: var(--color-stencil);
+}
+
+.kns-route svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.kns-route-axis {
+  fill: none;
+  stroke: var(--color-stencil-dim);
+  stroke-width: 1;
+  stroke-dasharray: 1000;
+}
+
+.kns-route-title {
+  font-family: var(--font-kns-display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 17px;
+  fill: var(--color-ink);
+}
+
+.kns-route-line {
+  font-family: var(--font-kns-text);
+  font-size: 13px;
+  fill: var(--color-ink-dim);
+}
+
+.kns-route-index {
+  font-family: var(--font-kns-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  fill: var(--color-ink-quiet);
+}
+
+/* --- 7. Документы: таблица упаковочного листа ----------------------- */
+
+.kns-table {
+  width: 100%;
+  margin-top: clamp(28px, 4vh, 48px);
+  max-width: 78ch;
+}
+
+.kns-table-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--color-hairline-soft);
+}
+
+.kns-table-row:first-child {
+  border-top: 1px solid var(--color-hairline);
+}
+
+.kns-table-key {
+  font-family: var(--font-kns-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-stencil);
+}
+
+.kns-table-value {
+  text-align: right;
+}
+
+/* --- 8. Нижняя кромка ящика ----------------------------------------- */
+
+.kns-kromka {
+  position: relative;
+  padding: clamp(48px, 7vh, 92px) var(--kns-gutter) clamp(40px, 6vh, 72px)
+    calc(var(--kns-rail) + var(--kns-gutter));
+}
+
+/* Разрежение краски: шаг штриха расходится к низу страницы. */
+.kns-kromka-thinning {
+  height: 3px;
+  margin-bottom: clamp(30px, 5vh, 56px);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-stencil-dim) 0 1px,
+    transparent 1px var(--kns-thin, 26px)
+  );
+}
+
+.kns-kromka-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(24px, 4vw, 56px);
+}
+
+.kns-kromka-marks {
+  display: flex;
+  gap: clamp(18px, 3vw, 40px);
+  color: var(--color-stencil-dim);
+}
+
+.kns-kromka-mark svg {
+  width: clamp(44px, 5vw, 60px);
+  height: auto;
+  display: block;
+}
+
+.kns-kromka-mark-label {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--font-kns-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-quiet);
+}
+
+.kns-kromka-address {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-kns-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--color-ink-dim);
+  max-width: 40ch;
+}
+
+.kns-kromka-key {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-quiet);
+}
+
+.kns-kromka-line {
+  color: var(--color-ink);
+}
+
+/* --- ширины --------------------------------------------------------- */
+
+/*
+  На узкой ширине борт с подписью секции первому экрану не нужен, а
+  чертежу нужен весь кадр: 390px устройства — это ровно 390 единиц
+  раскладки, и на полях экономить нечем.
+*/
+@media (max-width: 899px) {
+  .kns-hero-stage {
+    padding-left: var(--kns-gutter);
+    padding-right: 14px;
+  }
+}
+
+@media (min-width: 720px) {
+  .kns-field {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .kns-cell {
+    padding: 22px 20px;
+  }
+}
+
+@media (min-width: 900px) {
+  .kns-hero-text {
+    order: 0;
+    max-width: min(50ch, 46%);
+  }
+
+  /*
+    На широком экране кофр занимает весь кадр, а текст стоит поверх его
+    пустого левого борта: раскладка подчиняется предмету, а не колонкам.
+    Высота секции — три экрана: столько длится разбор.
+  */
+  .kns-hero {
+    min-height: 260vh;
+  }
+
+  .kns-hero-stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    min-height: 640px;
+    overflow: hidden;
+    padding-right: calc(var(--kns-gutter) + 70px);
+  }
+
+  .kns-hero-canvas {
+    position: absolute;
+    inset: 0;
+  }
+
+  .kns-hero-canvas svg {
+    height: 100%;
+  }
+
+  .kns-hero-wide {
+    display: block;
+  }
+
+  .kns-hero-narrow {
+    display: none;
+  }
+
+  .kns-hero-index {
+    display: flex;
+  }
+
+  .kns-split {
+    grid-template-columns: 5fr 7fr;
+  }
+
+  .kns-field {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/*
+  При запрете на движение сцена приходит в конечном состоянии и не
+  переезжает: `t` в этом случае равно единице с первого кадра, а здесь
+  снимаются переходы, которые иначе дали бы мигание.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .kns-home *,
+  .kns-home *::before,
+  .kns-home *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

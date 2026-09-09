@@ -44,9 +44,10 @@ const absolute = (path) => new URL(path, window.location.origin).href;
  * @param {string} [meta.description]
  * @param {string} [meta.image]    путь к картинке превью
  * @param {string} [meta.path]     канонический путь; по умолчанию — текущий
+ * @param {string} [meta.locale]   og:locale, например ru_RU или en_US
  * @param {boolean} [meta.noindex] закрыть страницу от индексации
  */
-export function applyMeta({ title, description, image, path, noindex = false }) {
+export function applyMeta({ title, description, image, path, locale = 'ru_RU', noindex = false }) {
   // Параметры запроса в canonical не входят: /products?from=mail и
   // /products — одна и та же страница.
   const url = absolute(path ?? window.location.pathname);
@@ -59,7 +60,7 @@ export function applyMeta({ title, description, image, path, noindex = false }) 
 
   upsertMeta('og:type', 'property', 'website');
   upsertMeta('og:site_name', 'property', SITE_NAME);
-  upsertMeta('og:locale', 'property', 'ru_RU');
+  upsertMeta('og:locale', 'property', locale);
   upsertMeta('og:title', 'property', title);
   upsertMeta('og:description', 'property', description);
   upsertMeta('og:url', 'property', url);

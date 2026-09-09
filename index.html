@@ -26,20 +26,17 @@
     <meta property="og:image" content="/kae-logo.svg" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Шрифт заголовков задан в @theme (src/styles.css) и грузится отсюда —
-         эти два места обязаны совпадать, иначе заголовки молча падают на
-         запасной шрифт. Ровно так и было с Orbitron.
+    <!-- Шрифты живут у нас: public/fonts, объявлены в src/fonts.css, названы
+         в @theme (src/styles.css). Внешнего CDN нет — первый экран не должен
+         ждать чужой домен, а кириллица не должна зависеть от того, какое
+         подмножество отдадут сегодня.
 
-         Ещё важнее кириллица: у Orbitron и Sora её нет, поэтому русский текст
-         рисовался бы запасным шрифтом, что бы ни стояло в теме. Проверка
-         нового шрифта: в ответе fonts.googleapis.com должен быть диапазон
-         U+0400-045F. -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500&family=Outfit:wght@400;500&family=Geist:wght@400;500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-      rel="stylesheet"
-    />
+         Дисплей и текст предзагружены латиницей и кириллицей: этими четырьмя
+         файлами набран весь первый экран на обоих языках. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/oswald-300-600-latin.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/oswald-300-600-cyrillic.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/firasanscondensed-300-latin.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/firasanscondensed-300-cyrillic.woff2" />
   </head>
   <body>
     <div id="root"></div>

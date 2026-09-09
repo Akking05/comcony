@@ -94,17 +94,17 @@ export default function Users({ user }) {
         </Button>
       </PageHeader>
 
-      <div className="mb-6 overflow-x-auto rounded-sm border border-outline-variant/60">
+      <div className="mb-6 overflow-x-auto rounded-sm border border-hairline-soft">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-outline-variant/60 bg-surface/60">
-              <th className="px-4 py-3 text-left font-label-sm text-[10px] uppercase tracking-widest text-outline">
+            <tr className="border-b border-hairline-soft bg-part-fill">
+              <th className="px-4 py-3 text-left font-label-2xs text-label-2xs uppercase text-ink-quiet">
                 Пользователь
               </th>
-              <th className="px-4 py-3 text-left font-label-sm text-[10px] uppercase tracking-widest text-outline">
+              <th className="px-4 py-3 text-left font-label-2xs text-label-2xs uppercase text-ink-quiet">
                 Роль
               </th>
-              <th className="hidden px-4 py-3 text-left font-label-sm text-[10px] uppercase tracking-widest text-outline lg:table-cell">
+              <th className="hidden px-4 py-3 text-left font-label-2xs text-label-2xs uppercase text-ink-quiet lg:table-cell">
                 Последний вход
               </th>
               <th className="w-24 px-4 py-3"></th>
@@ -112,13 +112,13 @@ export default function Users({ user }) {
           </thead>
           <tbody>
             {users.map((item) => (
-              <tr key={item.id} className="border-b border-outline-variant/30 last:border-0 hover:bg-white/[0.02]">
+              <tr key={item.id} className="border-b border-hairline-soft last:border-0">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <span className="font-label-md text-label-md text-white">{item.name}</span>
+                    <span className="font-body-md text-[15px] text-ink">{item.name}</span>
                     {item.id === user.id && <Badge tone="success">это вы</Badge>}
                   </div>
-                  <div className="font-label-sm text-[11px] text-outline">{item.email}</div>
+                  <div className="font-label-xs text-label-xs text-ink-quiet">{item.email}</div>
                 </td>
 
                 <td className="px-4 py-3">
@@ -131,7 +131,7 @@ export default function Users({ user }) {
                   </Select>
                 </td>
 
-                <td className="hidden px-4 py-3 font-label-sm text-[11px] text-outline lg:table-cell">
+                <td className="hidden px-4 py-3 font-label-xs text-label-xs text-ink-quiet lg:table-cell">
                   {formatDate(item.last_login_at)}
                 </td>
 
@@ -161,7 +161,7 @@ export default function Users({ user }) {
           {ROLES.map((role) => (
             <li key={role.value} className="flex flex-wrap items-center gap-3">
               <Badge tone={role.value === 'admin' ? 'success' : 'neutral'}>{role.label}</Badge>
-              <span className="font-body-md text-body-md text-on-surface-variant">{role.hint}</span>
+              <span className="font-body-md text-[15px] text-ink-dim">{role.hint}</span>
             </li>
           ))}
         </ul>
@@ -169,14 +169,14 @@ export default function Users({ user }) {
 
       {creating && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setCreating(null)}></div>
-          <div className="relative w-full max-w-md rounded-sm border border-outline-variant bg-surface p-6">
-            <h2 className="mb-5 font-headline-md text-[18px] text-white">Новый пользователь</h2>
+          <div className="absolute inset-0 bg-background/80" onClick={() => setCreating(null)}></div>
+          <div className="relative w-full max-w-md rounded-sm border border-hairline bg-ground p-6">
+            <h2 className="mb-5 font-title-md text-[18px] uppercase text-ink">Новый пользователь</h2>
 
             <div className="space-y-4">
               <label className="block space-y-1.5">
-                <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
-                  Email <span className="text-primary">*</span>
+                <span className="block font-label-md text-label-md uppercase text-ink-dim">
+                  Email <span className="text-stencil">*</span>
                 </span>
                 <Input
                   autoFocus
@@ -187,7 +187,7 @@ export default function Users({ user }) {
               </label>
 
               <label className="block space-y-1.5">
-                <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
+                <span className="block font-label-md text-label-md uppercase text-ink-dim">
                   Имя
                 </span>
                 <Input
@@ -197,19 +197,19 @@ export default function Users({ user }) {
               </label>
 
               <label className="block space-y-1.5">
-                <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
-                  Пароль <span className="text-primary">*</span>
+                <span className="block font-label-md text-label-md uppercase text-ink-dim">
+                  Пароль <span className="text-stencil">*</span>
                 </span>
                 <Input
                   type="password"
                   value={creating.password}
                   onChange={(event) => setCreating({ ...creating, password: event.target.value })}
                 />
-                <span className="block font-label-sm text-[11px] text-outline">Не короче 10 символов</span>
+                <span className="block font-label-xs text-label-xs text-ink-quiet">Не короче 10 символов</span>
               </label>
 
               <label className="block space-y-1.5">
-                <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
+                <span className="block font-label-md text-label-md uppercase text-ink-dim">
                   Роль
                 </span>
                 <Select
@@ -239,10 +239,10 @@ export default function Users({ user }) {
 
       {resetting && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setResetting(null)}></div>
-          <div className="relative w-full max-w-md rounded-sm border border-outline-variant bg-surface p-6">
-            <h2 className="mb-2 font-headline-md text-[18px] text-white">Новый пароль</h2>
-            <p className="mb-5 font-body-md text-body-md text-on-surface-variant">
+          <div className="absolute inset-0 bg-background/80" onClick={() => setResetting(null)}></div>
+          <div className="relative w-full max-w-md rounded-sm border border-hairline bg-ground p-6">
+            <h2 className="mb-2 font-title-md text-[18px] uppercase text-ink">Новый пароль</h2>
+            <p className="mb-5 font-body-md text-[15px] text-ink-dim">
               Для пользователя «{resetting.name}»
             </p>
 

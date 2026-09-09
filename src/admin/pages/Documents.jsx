@@ -30,7 +30,10 @@ export default function Documents({ user }) {
   const [error, setError] = useState(null);
   const [confirming, setConfirming] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [draft, setDraft] = useState({ title: '', productId: '', type: 'datasheet' });
+  const [draft, setDraft] = useState({ title: '', title_en: '', productId: '', type: 'datasheet' });
+  // Названия документа раньше нельзя было исправить после загрузки. Теперь
+  // строка раскрывается в две — русскую и английскую.
+  const [renaming, setRenaming] = useState(null);
   const fileRef = useRef(null);
   const replaceRef = useRef(null);
   const [replacingId, setReplacingId] = useState(null);
@@ -58,11 +61,12 @@ export default function Documents({ user }) {
       await adminApi.uploadDocument({
         file,
         title: draft.title || file.name,
+        title_en: draft.title_en,
         productId: draft.productId || null,
         type: draft.type,
       });
 
-      setDraft({ title: '', productId: '', type: 'datasheet' });
+      setDraft({ title: '', title_en: '', productId: '', type: 'datasheet' });
       load();
       notify('Документ загружен как черновик');
     } catch (uploadError) {
@@ -121,8 +125,8 @@ export default function Documents({ user }) {
       {!readOnly && (
         <Panel title="Загрузить документ" className="mb-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <label className="block space-y-1.5 md:col-span-2">
-              <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
+            <label className="block space-y-1.5">
+              <span className="block font-label-md text-label-md uppercase text-ink-dim">
                 Название
               </span>
               <Input
@@ -133,7 +137,19 @@ export default function Documents({ user }) {
             </label>
 
             <label className="block space-y-1.5">
-              <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
+              <span className="block font-label-md text-label-md uppercase text-ink-dim">
+                Название (English)
+              </span>
+              <Input
+                lang="en"
+                value={draft.title_en}
+                onChange={(event) => setDraft({ ...draft, title_en: event.target.value })}
+                placeholder={draft.title || 'Пусто — покажем русское'}
+              />
+            </label>
+
+            <label className="block space-y-1.5">
+              <span className="block font-label-md text-label-md uppercase text-ink-dim">
                 Товар
               </span>
               <Select
@@ -150,7 +166,7 @@ export default function Documents({ user }) {
             </label>
 
             <label className="block space-y-1.5">
-              <span className="block font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">
+              <span className="block font-label-md text-label-md uppercase text-ink-dim">
                 Тип
               </span>
               <Select value={draft.type} onChange={(event) => setDraft({ ...draft, type: event.target.value })}>
@@ -189,17 +205,38 @@ export default function Documents({ user }) {
           {documents.map((document) => (
             <div
               key={document.id}
-              className="flex flex-wrap items-center gap-3 rounded-sm border border-outline-variant/60 bg-surface/40 px-4 py-3"
+              className="flex flex-wrap items-center gap-3 rounded-sm border border-hairline-soft bg-part-fill px-4 py-3"
             >
-              <span className="material-symbols-outlined text-2xl text-primary">picture_as_pdf</span>
+              <span className="material-symbols-outlined text-2xl text-stencil">picture_as_pdf</span>
 
               <div className="min-w-0 flex-1">
-                <div className="truncate font-label-md text-label-md text-white">{document.title}</div>
-                <div className="font-label-sm text-[11px] text-outline">
-                  {formatSize(document.file_size)} · {TYPES.find((type) => type.value === document.type)?.label ?? document.type}
-                  {' · '}
-                  {formatDate(document.created_at)}
-                </div>
+                {renaming?.id === document.id ? (
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <Input
+                      autoFocus
+                      value={renaming.title}
+                      onChange={(event) => setRenaming({ ...renaming, title: event.target.value })}
+                      placeholder="Название"
+                    />
+                    <Input
+                      lang="en"
+                      value={renaming.title_en}
+                      onChange={(event) => setRenaming({ ...renaming, title_en: event.target.value })}
+                      placeholder={renaming.title || 'English'}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div className="truncate font-body-md text-[15px] text-ink">{document.title}</div>
+                    <div className="font-label-xs text-label-xs text-ink-quiet">
+                      {document.title_en && <span className="text-ink-dim">{document.title_en} · </span>}
+                      {formatSize(document.file_size)} ·{' '}
+                      {TYPES.find((type) => type.value === document.type)?.label ?? document.type}
+                      {' · '}
+                      {formatDate(document.created_at)}
+                    </div>
+                  </>
+                )}
               </div>
 
               {document.product_name ? (
@@ -219,8 +256,33 @@ export default function Documents({ user }) {
                   onClick={() => window.open(document.file_path, '_blank', 'noopener')}
                 />
 
-                {!readOnly && (
+                {!readOnly && renaming?.id === document.id && (
                   <>
+                    <IconButton
+                      icon="check"
+                      title="Сохранить названия"
+                      onClick={() => {
+                        patch(document.id, { title: renaming.title, title_en: renaming.title_en }, 'Название обновлено');
+                        setRenaming(null);
+                      }}
+                    />
+                    <IconButton icon="close" title="Отмена" onClick={() => setRenaming(null)} />
+                  </>
+                )}
+
+                {!readOnly && renaming?.id !== document.id && (
+                  <>
+                    <IconButton
+                      icon="edit"
+                      title="Переименовать"
+                      onClick={() =>
+                        setRenaming({
+                          id: document.id,
+                          title: document.title,
+                          title_en: document.title_en ?? '',
+                        })
+                      }
+                    />
                     <IconButton
                       icon={document.status === 'published' ? 'visibility_off' : 'publish'}
                       title={document.status === 'published' ? 'Снять с публикации' : 'Опубликовать'}

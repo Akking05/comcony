@@ -7,13 +7,13 @@ const STATUS_LABEL = { new: 'Новая', in_progress: 'В работе', done: 
 
 function Metric({ icon, label, value, hint }) {
   return (
-    <div className="rounded-sm border border-outline-variant/60 bg-surface/40 p-5">
-      <div className="mb-3 flex items-center gap-2 text-primary">
+    <div className="rounded-sm border border-hairline-soft bg-part-fill p-5">
+      <div className="mb-3 flex items-center gap-2 text-stencil">
         <span className="material-symbols-outlined text-[20px]">{icon}</span>
-        <span className="font-label-sm text-[10px] uppercase tracking-[0.2em]">{label}</span>
+        <span className="font-label-2xs text-label-2xs uppercase tracking-[0.2em]">{label}</span>
       </div>
-      <div className="font-headline-lg text-[32px] leading-none text-white">{value}</div>
-      {hint && <div className="mt-2 font-label-sm text-[11px] text-outline">{hint}</div>}
+      <div className="font-headline-md text-[30px] leading-none text-ink">{value}</div>
+      {hint && <div className="mt-2 font-label-xs text-label-xs text-ink-quiet">{hint}</div>}
     </div>
   );
 }
@@ -21,7 +21,7 @@ function Metric({ icon, label, value, hint }) {
 /** Столбчатый график по дням — без библиотек, на flex. */
 function DailyChart({ daily }) {
   if (!daily.length) {
-    return <p className="py-8 text-center font-body-md text-body-md text-on-surface-variant">Пока нет данных за период.</p>;
+    return <p className="py-8 text-center font-body-md text-[15px] text-ink-dim">Пока нет данных за период.</p>;
   }
 
   const peak = Math.max(...daily.map((day) => day.visits), 1);
@@ -32,14 +32,14 @@ function DailyChart({ daily }) {
         <div key={day.day} className="group flex min-w-[14px] flex-1 flex-col items-center gap-2">
           <div className="relative flex w-full flex-1 items-end">
             <div
-              className="w-full rounded-t-sm bg-primary/30 transition-all group-hover:bg-primary/60"
+              className="w-full bg-stencil/35 transition-colors duration-150 group-hover:bg-stencil/70"
               style={{ height: `${Math.max(2, (day.visits / peak) * 100)}%` }}
             ></div>
-            <div className="pointer-events-none absolute -top-1 left-1/2 z-10 hidden -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-sm border border-outline-variant bg-surface px-2 py-1 font-label-sm text-[10px] text-white group-hover:block">
+            <div className="pointer-events-none absolute -top-1 left-1/2 z-10 hidden -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-sm border border-hairline bg-ground px-2 py-1 font-label-2xs text-label-2xs text-ink group-hover:block">
               {day.day}: {day.visits} визитов, {day.requests} заявок
             </div>
           </div>
-          <span className="font-label-sm text-[9px] text-outline">{day.day.slice(8)}</span>
+          <span className="font-label-2xs text-label-2xs text-ink-quiet">{day.day.slice(8)}</span>
         </div>
       ))}
     </div>
@@ -101,23 +101,23 @@ export default function Dashboard() {
 
         <Panel title="Популярные товары">
           {stats.top_products.length === 0 ? (
-            <p className="py-6 text-center font-body-md text-body-md text-on-surface-variant">
+            <p className="py-6 text-center font-body-md text-[15px] text-ink-dim">
               Пока нет просмотров.
             </p>
           ) : (
             <ol className="space-y-3">
               {stats.top_products.map((product, index) => (
                 <li key={product.slug} className="flex items-center gap-3">
-                  <span className="font-label-mono w-5 text-[11px] text-outline">{index + 1}</span>
+                  <span className="font-label-2xs text-label-2xs w-5 text-ink-quiet">{index + 1}</span>
                   <a
                     href={`/products/${product.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 truncate font-body-md text-body-md text-on-surface hover:text-primary"
+                    className="flex-1 truncate font-body-md text-[15px] text-ink hover:text-stencil"
                   >
                     {product.name}
                   </a>
-                  <span className="font-label-md text-label-md text-primary">{product.views}</span>
+                  <span className="font-label-md text-label-md text-ink">{product.views}</span>
                 </li>
               ))}
             </ol>
@@ -129,23 +129,23 @@ export default function Dashboard() {
         title="Последние заявки"
         className="mt-6"
         action={
-          <a href="/admin/requests" className="font-label-sm text-[11px] uppercase tracking-widest text-primary hover:underline">
+          <a href="/admin/requests" className="font-label-md text-label-md uppercase text-stencil hover:text-ink">
             Все заявки
           </a>
         }
       >
         {stats.latest_requests.length === 0 ? (
-          <p className="py-6 text-center font-body-md text-body-md text-on-surface-variant">Заявок пока нет.</p>
+          <p className="py-6 text-center font-body-md text-[15px] text-ink-dim">Заявок пока нет.</p>
         ) : (
-          <ul className="divide-y divide-outline-variant/40">
+          <ul className="divide-y divide-hairline-soft">
             {stats.latest_requests.map((request) => (
               <li key={request.id} className="flex flex-wrap items-center gap-3 py-3 first:pt-0 last:pb-0">
                 <Badge tone={STATUS_TONE[request.status]}>{STATUS_LABEL[request.status]}</Badge>
-                <span className="font-label-md text-label-md text-white">{request.name}</span>
-                <span className="min-w-0 flex-1 truncate font-body-md text-body-md text-on-surface-variant">
+                <span className="font-body-md text-[15px] text-ink">{request.name}</span>
+                <span className="min-w-0 flex-1 truncate font-body-md text-[15px] text-ink-dim">
                   {request.subject || request.product_name || '—'}
                 </span>
-                <span className="font-label-sm text-[11px] text-outline">{formatDate(request.created_at)}</span>
+                <span className="font-label-xs text-label-xs text-ink-quiet">{formatDate(request.created_at)}</span>
               </li>
             ))}
           </ul>

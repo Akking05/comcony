@@ -1,168 +1,283 @@
-import { motion } from 'motion/react';
+import { useMemo, useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
+
 import { useApi } from '../hooks/useApi.js';
 import { api } from '../lib/api.js';
+import { useLang } from '../lib/i18n.jsx';
 import { rise } from '../lib/motion.js';
-import { Reveal, STEP } from '../components/Reveal.jsx';
+import { Reveal } from '../components/Reveal.jsx';
+import { Button, Icon, StatusBlock } from '../components/ui/index.js';
 
-function ProductCard({ product, index }) {
+/*
+  Каталог — не витрина карточек, а продолжение упаковочного листа: то же
+  плотное поле в край экрана, что и в номенклатуре главной, те же
+  моноширинные клейма, тот же счёт позиций. Полей вокруг ячеек нет, зазора
+  между ними нет: перечень читается как один лист, а не как двенадцать
+  плиток на подложке.
+
+  Отличие от листа ровно одно — снимок. Каталог и карточка позиции остаются
+  единственным местом сайта, где есть фотографии; всё остальное графическое.
+
+  Акцент в кадре не тратится ни на категорию, ни на стрелку: выбранное
+  направление отмечено плотностью краски, а не цветом, и синий остаётся
+  фокусной рамке и единственному целевому действию.
+*/
+
+/**
+ * Поле уходит в край экрана, поэтому ему нужно снять поля страницы.
+ * Мобильное и настольное значения совпадают (одинаковый clamp), поэтому
+ * одного отрицательного отступа хватает на всех ширинах.
+ */
+const FULL_BLEED = { marginInline: 'calc(var(--spacing-margin-mobile) * -1)' };
+
+/** Шаг печати строки. Дальше двенадцатой ячейки задержка не растёт: ждать нечего. */
+const PRINT_STEP = 0.045;
+const PRINT_MAX = 12;
+
+/** Клеймо позиции: своего артикула в базе нет, обозначением служит slug. */
+const designationOf = (product) => String(product.slug ?? '').toUpperCase();
+
+/** Ключ направления. Позиция без категории попадает в собственную группу. */
+const categoryKeyOf = (product) => product.category_slug || '';
+
+function PhotoCell({ product, noPhotoLabel }) {
+  if (!product.main_image) {
+    // Заглушка, а не растянутый снимок соседа: чужая картинка в тендерном
+    // перечне — это подмена позиции, а не украшение ячейки.
+    return (
+      <div className="flex aspect-4/3 w-full flex-col items-center justify-center gap-2 border border-dashed border-hairline bg-part-fill">
+        <Icon name="image" size="2xl" className="text-stencil-dim" />
+        <span className="font-label-2xs text-label-2xs uppercase text-ink-quiet">{noPhotoLabel}</span>
+      </div>
+    );
+  }
+
   return (
-    <Reveal
-      delay={index * STEP}
-      className="glass-card group flex flex-col p-2 transition-colors hover:border-primary/30"
-    >
-      <div className="relative mb-4 h-[320px] overflow-hidden bg-surface-container-high">
-        {product.main_image ? (
-          <img
-            alt={product.name}
-            loading="lazy"
-            decoding="async"
-            className="card-image h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0"
-            src={product.main_image}
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-outline/40">
-            <span className="material-symbols-outlined text-6xl">image</span>
-          </div>
-        )}
-
-        {product.badge && (
-          <div className="absolute right-4 top-4 flex items-center gap-2 rounded border border-white/10 bg-surface/80 px-3 py-1 backdrop-blur-md">
-            <div className="active-glow"></div>
-            <span className="font-label-sm text-label-sm text-white">{product.badge}</span>
-          </div>
-        )}
-
-        <div className="absolute inset-0 bg-primary/5 opacity-0 transition-opacity group-hover:opacity-100"></div>
-      </div>
-
-      <div className="px-4 pb-6 pt-2">
-        <h3 className="mb-2 font-headline-md text-headline-md text-primary">{product.category || product.name}</h3>
-        <p className="mb-6 font-body-md text-body-md text-on-surface-variant">{product.short_description}</p>
-
-        <a
-          href={`/products/${product.slug}`}
-          className="flex cursor-pointer items-center justify-between border-t border-white/10 pt-4"
-        >
-          <span className="font-label-sm text-label-sm uppercase tracking-widest text-outline">{product.name}</span>
-          <span className="material-symbols-outlined text-primary transition-transform duration-300 group-hover:translate-x-2">
-            arrow_forward
-          </span>
-        </a>
-      </div>
-    </Reveal>
-  );
-}
-
-function CardSkeleton() {
-  return (
-    <div className="glass-card flex flex-col p-2">
-      <div className="mb-4 h-[320px] animate-pulse bg-surface-container-high"></div>
-      <div className="space-y-3 px-4 pb-6 pt-2">
-        <div className="h-6 w-2/3 animate-pulse rounded bg-white/5"></div>
-        <div className="h-4 w-full animate-pulse rounded bg-white/5"></div>
-        <div className="mt-6 h-px w-full bg-white/10"></div>
-      </div>
+    <div className="aspect-4/3 w-full overflow-hidden bg-part-fill">
+      <img
+        src={product.main_image}
+        alt={product.name}
+        loading="lazy"
+        decoding="async"
+        className="h-full w-full object-cover"
+      />
     </div>
   );
 }
 
-export default function Products() {
-  const { data: products, loading, error } = useApi((signal) => api.products(signal));
+function Cell({ product, index, still, t }) {
+  const hidden = still ? { opacity: 1, y: 0 } : { opacity: 0.06, y: 10 };
 
   return (
-    <main className="relative z-10 mx-auto max-w-container-max px-margin-mobile pb-stack-xl pt-24 md:px-margin-desktop md:pt-[120px]">
-      <header className="relative mb-stack-lg md:mb-stack-xl">
-        <motion.div
-          {...rise(0.5)}
-          className="absolute right-0 top-0 hidden flex-col items-end gap-2 rounded-lg border border-white/10 bg-surface/30 p-4 backdrop-blur-md lg:flex"
-        >
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] uppercase tracking-tighter text-outline">Core Status</span>
-              <span className="text-label-sm font-bold text-primary">OPERATIONAL</span>
-            </div>
-            <div className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary/20">
-              <div className="absolute inset-0 animate-spin rounded-full border-t-2 border-primary"></div>
-              <span className="material-symbols-outlined text-sm text-primary">memory</span>
-            </div>
-          </div>
-          <div className="h-1 w-full overflow-hidden rounded-full bg-white/10">
-            <div className="h-full w-3/4 animate-pulse bg-primary"></div>
-          </div>
-        </motion.div>
+    <Reveal
+      as="li"
+      hidden={hidden}
+      shown={{ opacity: 1, y: 0 }}
+      duration={0.55}
+      delay={Math.min(index, PRINT_MAX) * PRINT_STEP}
+      className="flex min-w-0 border-b border-r border-hairline-soft"
+    >
+      <a
+        href={`/products/${product.slug}`}
+        className="group flex min-w-0 flex-1 flex-col gap-3 p-4 outline-none transition-colors hover:bg-stencil/6 focus-visible:bg-stencil/6 md:p-5"
+      >
+        <PhotoCell product={product} noPhotoLabel={t('catalog.no_photo')} />
 
-        <motion.div {...rise(0.05)} className="mb-stack-sm flex items-center gap-3">
-          <div className="active-glow"></div>
-          <span className="rounded-full border border-primary/30 bg-primary/5 px-3 py-1 font-label-md text-label-md uppercase tracking-[0.2em] text-primary">
-            Enterprise Portfolio
+        <span className="font-label-2xs text-label-2xs truncate text-ink-quiet">
+          {designationOf(product)}
+        </span>
+
+        <span className="font-body-md text-body-sm text-ink">{product.name}</span>
+
+        {product.category && (
+          <span className="font-label-2xs text-label-2xs truncate uppercase text-stencil">
+            {product.category}
           </span>
-        </motion.div>
+        )}
 
-        <motion.div {...rise(0.12)} className="mb-2 font-label-sm text-label-sm tracking-widest text-outline/60">
-          SYSTEM ID: KAE-PRD-024
-        </motion.div>
+        <span className="mt-auto flex items-baseline justify-between gap-3 pt-3">
+          <span className="font-label-2xs text-label-2xs text-ink-dim">{t('catalog.price')}</span>
+          <span className="font-label-2xs text-label-2xs inline-flex items-center gap-2 uppercase text-ink-quiet transition-all group-hover:gap-3 group-hover:text-stencil group-focus-visible:text-stencil">
+            {t('catalog.open')}
+            <Icon name="arrow_forward" size="xs" />
+          </span>
+        </span>
+      </a>
+    </Reveal>
+  );
+}
 
-        <motion.h1 {...rise(0.2)} className="mb-4 max-w-3xl font-display-lg text-headline-lg-mobile md:text-display-lg">
-          Наша продукция
+function CellSkeleton() {
+  return (
+    <li className="flex min-w-0 border-b border-r border-hairline-soft">
+      <div className="flex min-w-0 flex-1 flex-col gap-3 p-4 md:p-5">
+        <div className="aspect-4/3 w-full animate-pulse bg-part-fill"></div>
+        <div className="h-3 w-1/2 animate-pulse bg-part-fill"></div>
+        <div className="h-4 w-3/4 animate-pulse bg-part-fill"></div>
+      </div>
+    </li>
+  );
+}
+
+export default function Products() {
+  const { lang, t } = useLang();
+  const still = useReducedMotion();
+
+  // lang в зависимостях: смена языка — это новый запрос за каталогом.
+  const { data, loading, error } = useApi((signal) => api.products(lang, signal), [lang]);
+
+  const products = useMemo(() => data ?? [], [data]);
+
+  /** Направления берём из самой выборки: отдельного публичного списка нет. */
+  const categories = useMemo(() => {
+    const found = new Map();
+
+    for (const product of products) {
+      const key = categoryKeyOf(product);
+      if (!found.has(key)) found.set(key, product.category || t('catalog.uncategorized'));
+    }
+
+    return [...found].map(([key, title]) => ({ key, title }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, lang]);
+
+  // null — «фильтр не трогали»: показываем всё, включая направления,
+  // которые появятся в базе позже. Массив — осознанная выборка посетителя.
+  const [chosen, setChosen] = useState(null);
+
+  const isOn = (key) => chosen === null || chosen.includes(key);
+  const filtered = chosen === null ? products : products.filter((one) => chosen.includes(categoryKeyOf(one)));
+
+  const toggle = (key) => {
+    const current = chosen ?? categories.map((one) => one.key);
+
+    setChosen(current.includes(key) ? current.filter((one) => one !== key) : [...current, key]);
+  };
+
+  const reset = () => setChosen(null);
+
+  return (
+    <main className="relative z-10 mx-auto max-w-container-max px-margin-mobile pb-stack-xl md:px-margin-desktop">
+      <header className="relative mb-stack-lg">
+        {/* Клеймо по левому борту: маркировка ящика, а не подпись к заголовку. */}
+        <span
+          aria-hidden="true"
+          className="font-label-sm text-label-sm absolute top-1 hidden uppercase text-ink-quiet xl:block"
+          style={{
+            writingMode: 'vertical-rl',
+            letterSpacing: '0.34em',
+            left: 'calc(var(--spacing-rail) * -1)',
+          }}
+        >
+          {t('catalog.rail')}
+        </span>
+
+        <motion.h1
+          {...rise(0.05)}
+          className="max-w-3xl font-display-lg text-headline-lg-mobile text-ink md:text-display-lg"
+        >
+          {t('products.title')}
         </motion.h1>
 
-        <motion.p {...rise(0.3)} className="max-w-2xl font-body-lg text-body-lg text-on-surface-variant">
-          Технологии, созданные для сложных задач. Мы проектируем будущее через призму инженерного совершенства и
-          абсолютной надежности.
+        <motion.p {...rise(0.16)} className="mt-stack-sm max-w-[62ch] font-body-lg text-body-md text-ink-dim">
+          {t('products.intro')}
         </motion.p>
       </header>
 
-      {loading && (
-        <section className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }, (_, index) => (
-            <CardSkeleton key={index} />
-          ))}
-        </section>
+      {!loading && !error && categories.length > 1 && (
+        <>
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('catalog.filter_label')}>
+            <span aria-hidden="true" className="font-label-2xs text-label-2xs mr-1 uppercase text-ink-quiet">
+              {t('catalog.filter_label')}
+            </span>
+
+            {categories.map(({ key, title }) => (
+              <button
+                key={key || 'none'}
+                type="button"
+                aria-pressed={isOn(key)}
+                onClick={() => toggle(key)}
+                className={`font-label-sm text-label-sm cursor-pointer border px-4 py-2.5 uppercase transition-colors ${
+                  isOn(key)
+                    ? 'border-hairline text-ink kns-roll'
+                    : 'border-hairline-soft text-ink-quiet hover:border-hairline hover:text-ink'
+                }`}
+              >
+                {title}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-stack-sm flex flex-wrap items-baseline justify-between gap-4">
+            <span aria-live="polite" className="font-label-2xs text-label-2xs text-ink-dim">
+              {t('catalog.count', { count: filtered.length })}
+            </span>
+
+            {chosen !== null && (
+              <Button variant="ghost" size="sm" iconEnd="arrow_forward" onClick={reset}>
+                {t('catalog.reset')}
+              </Button>
+            )}
+          </div>
+        </>
       )}
 
-      {!loading && products?.length > 0 && (
-        <section className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3">
-          {products.map((product, index) => (
-            <ProductCard key={product.slug} product={product} index={index} />
+      {loading && (
+        <ul
+          style={FULL_BLEED}
+          className="mt-stack-md grid grid-cols-2 border-t border-b border-hairline md:grid-cols-3 lg:grid-cols-4"
+        >
+          {Array.from({ length: 8 }, (_, index) => (
+            <CellSkeleton key={index} />
           ))}
-        </section>
+        </ul>
+      )}
+
+      {!loading && !error && filtered.length > 0 && (
+        <ul
+          style={FULL_BLEED}
+          className="mt-stack-md grid grid-cols-2 border-t border-b border-hairline md:grid-cols-3 lg:grid-cols-4"
+        >
+          {filtered.map((product, index) => (
+            <Cell key={product.slug} product={product} index={index} still={still} t={t} />
+          ))}
+        </ul>
+      )}
+
+      {/* Пустая выборка — не пустота, а пустой борт ящика: сказано, что
+          произошло, и рядом лежит способ вернуть перечень. */}
+      {!loading && !error && products.length > 0 && filtered.length === 0 && (
+        <div
+          style={FULL_BLEED}
+          className="kns-roll mt-stack-md flex flex-col items-start gap-4 border-t border-b border-hairline px-margin-mobile py-stack-xl md:px-margin-desktop"
+        >
+          <h2 className="kns-display text-title-lg text-ink">{t('catalog.empty_title')}</h2>
+          <p className="max-w-[46ch] font-body-md text-body-md text-ink-dim">{t('catalog.empty_text')}</p>
+          <Button variant="ghost" iconEnd="arrow_forward" onClick={reset}>
+            {t('catalog.reset')}
+          </Button>
+        </div>
+      )}
+
+      {!loading && !error && products.length === 0 && (
+        <div className="mt-stack-md">
+          <StatusBlock icon="inventory_2" title={t('products.empty_title')} text={t('products.empty_text')} />
+        </div>
       )}
 
       {error && (
-        <div className="glass-card border border-primary/20 p-8 text-center">
-          <span className="material-symbols-outlined mb-3 text-4xl text-primary/60">cloud_off</span>
-          <p className="font-body-md text-on-surface-variant">
-            Не удалось загрузить каталог. Обновите страницу или попробуйте позже.
-          </p>
+        <div className="mt-stack-md">
+          <StatusBlock icon="cloud_off" title={t('products.error_title')} text={t('products.error_text')}>
+            <Button href="/contacts" variant="outline">
+              {t('common.write_us')}
+            </Button>
+          </StatusBlock>
         </div>
       )}
 
-      {!loading && !error && products?.length === 0 && (
-        <div className="glass-card border border-white/10 p-8 text-center">
-          <p className="font-body-md text-on-surface-variant">Каталог пока пуст.</p>
-        </div>
+      {!loading && !error && filtered.length > 0 && (
+        <p className="mt-stack-md max-w-[52ch] font-body-md text-body-sm text-ink-dim">{t('catalog.note')}</p>
       )}
-
-      <Reveal as="section" className="mt-stack-xl flex flex-col items-center text-center">
-        <h2 className="mb-stack-lg select-none font-display-lg text-headline-lg-mobile font-black leading-none tracking-tighter text-outline/10 md:text-[120px]">
-          READY FOR TOMORROW
-        </h2>
-
-        <div className="glass-card w-full max-w-3xl border border-primary/20 bg-primary/5 p-stack-lg">
-          <h3 className="mb-6 font-headline-lg text-headline-md md:text-headline-lg">
-            Готовы к реализации вашего проекта?
-          </h3>
-          <p className="mb-8 px-4 font-body-lg text-body-md text-on-surface-variant md:text-body-lg">
-            Свяжитесь с нашими инженерами для обсуждения спецификаций и возможностей масштабирования.
-          </p>
-          <a
-            href="/contacts"
-            className="glow-button inline-block w-full rounded-lg bg-primary-container px-12 py-5 font-headline-md text-headline-md text-on-primary-container md:w-auto"
-          >
-            Оставить заявку
-          </a>
-        </div>
-      </Reveal>
     </main>
   );
 }
