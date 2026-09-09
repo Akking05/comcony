@@ -29,7 +29,8 @@ export function Footer() {
         <div className="flex flex-col gap-stack-lg pt-stack-xl pb-stack-lg lg:flex-row lg:items-end lg:justify-between">
           <div className="flex max-w-sm flex-col gap-4">
             <div className="flex items-center gap-4">
-              <img src="/kae-logo.svg" alt="KAE Logo" className="object-contain" />
+              {/* Та же причина, что в шапке: без высоты файл 1632x714 рвёт подвал. */}
+              <img src="/kae-logo.svg" alt="KAE Logo" className="h-8 w-auto object-contain md:h-9" />
               <span aria-hidden="true" className="h-6 w-px bg-hairline" />
               <img src="/aselsan-yeni-logo.svg" alt="Aselsan" className="h-8 object-contain md:h-9" />
             </div>

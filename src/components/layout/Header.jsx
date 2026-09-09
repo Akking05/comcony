@@ -30,7 +30,12 @@ export function Header({ active }) {
     <header className="relative w-full">
       <div className="mx-auto flex max-w-container-max flex-wrap items-center justify-between gap-x-6 gap-y-4 px-margin-mobile pt-6 pb-5 md:px-margin-desktop md:pt-7">
         <a href="/" className="flex shrink-0 items-center gap-3 sm:gap-4">
-          <img src="/kae-logo.svg" alt="KAE Engineering" className="object-contain" />
+          {/*
+            Высота обязательна: сам файл — 1632x714, и без неё браузер
+            растягивает логотип по ширине контейнера, а высоту считает
+            пропорционально. Шапка вырастала до полутысячи пикселей.
+          */}
+          <img src="/kae-logo.svg" alt="KAE Engineering" className="h-7 w-auto object-contain sm:h-8" />
           <span aria-hidden="true" className="h-6 w-px bg-hairline sm:h-7"></span>
           <img src="/aselsan-emblem.svg" alt="Aselsan" className="h-6 object-contain sm:h-7" />
         </a>
