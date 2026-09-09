@@ -6,7 +6,14 @@ export function MobileDrawer({ active }) {
   const t = useT();
 
   return (
-    <div id="mobile-drawer" className="closed pointer-events-none fixed inset-0 z-[100] flex justify-end">
+    // data-detached: меню позиционирует себя само и не должно получать
+    // `position: relative` от правила `.kns-world > *` — иначе оно вернётся
+    // в поток и займёт высоту, оставаясь невидимым.
+    <div
+      id="mobile-drawer"
+      data-detached
+      className="closed pointer-events-none fixed inset-0 z-[100] flex justify-end"
+    >
       <div
         id="drawer-overlay"
         className="absolute inset-0 bg-ground-deep/90 opacity-0 transition-opacity duration-300"
